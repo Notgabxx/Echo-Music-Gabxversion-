@@ -230,6 +230,16 @@ widget/         Home-screen widget
 - Shimmer loading placeholders (`ui/component/shimmer/`, `libs.shimmer`) are
   the standard loading-state pattern — use them for new async-loading UI
   instead of spinners.
+- **Motion & dynamic color pack** (see DESIGN.md → "Motion & Dynamic Color
+  Pack"): `ui/theme/Motion.kt` (`EchoMotion` tokens, `fadeThroughTransform`),
+  `ui/theme/AdaptiveContrast.kt` (WCAG helpers for artwork colors under white
+  text), `ui/player/ArtworkMorph.kt` (mini ↔ full artwork morph driven by the
+  sheet progress), `ui/player/AudioReactiveHalo.kt` + `:playback`
+  `AudioLevelProcessor`/`AudioLevels` (pass-through band analyser feeding
+  audio-reactive visuals), `ui/component/AmbientBackdrop.kt` (album-tinted
+  ambient light). Toggles: `FluidPlayerTransitionKey`, `AudioReactiveHaloKey`,
+  `AmbientBackdropKey`. Rule: never read per-frame animation state during
+  composition — read it in draw/graphicsLayer lambdas.
 
 ## Commit message format (required)
 

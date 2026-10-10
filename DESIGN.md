@@ -91,3 +91,49 @@ Before adding a brand new UI component, always check `ui/component/` to see if a
 ## Ambient Mode Canvas
 
 Ambient Mode may layer muted Canvas video artwork inside the existing album-art square. Keep the original square size, rounded clipping, and interaction surface unchanged; Canvas is a non-interactive visual layer above the normal album art and follows playback state. The existing glow background remains separate underneath the screen.
+
+## Motion & Dynamic Color Pack (premium UI)
+
+### Motion tokens
+Shared easing and spring presets live in `ui/theme/Motion.kt` (`EchoMotion`). Use
+`EchoMotion.Emphasized` / `EmphasizedDecelerate` / `EmphasizedAccelerate` instead of ad-hoc
+curves, and `fadeThroughTransform()` for `AnimatedContent` switches between two states that share
+the same space (e.g. artwork ↔ lyrics).
+
+### Player sheet physics & fluid morph
+* `BottomSheet` settles with a momentum-preserving spring (`SheetDampingRatio` 0.86,
+  `SheetStiffness` 420) that receives the release velocity, so flings feel physical.
+* `BottomSheet(fluidMorph = true)` grows the expanded content out of the bar (94% → 100%, origin at
+  the bottom) while the collapsed bar lifts and dissolves.
+* `ArtworkMorph.kt`: the mini-player and full-player artworks are tagged with
+  `Modifier.artworkMorphMini(cornerFraction)` / `Modifier.artworkMorphFull(cornerRadius)`; an overlay
+  inside the sheet interpolates position, size and corner radius from the sheet progress in the
+  graphics-layer phase (no recomposition). New artwork placements that should take part in the morph
+  only need the matching modifier.
+* The app content behind the sheet recedes like a card (scale 94%, 28dp corners, black scrim) — see
+  the content `Box` in `MainActivity`.
+* Toggle: `FluidPlayerTransitionKey` (Settings → Appearance → Player).
+
+### Audio-reactive visuals
+`AudioLevelProcessor` (`:playback`) is a pass-through band analyser in the audio chain that writes to
+`AudioLevels` only while a visualiser holds `AudioLevels.acquire()`. In the UI use
+`rememberAudioReactiveState(active)` and read `bass` / `mid` / `treble` / `kick` / `phase` **only
+inside draw or graphicsLayer lambdas**. `AudioReactiveHalo` is the reference implementation:
+radial-gradient shaders only, no blur passes. Toggle: `AudioReactiveHaloKey`.
+
+### Ambient backdrop
+`AmbientBackdrop.kt` paints two soft pools from `primaryContainer` / `tertiaryContainer` (already
+seeded from the artwork) behind the screen content, the top bar and the liquid-glass backdrop. Colors
+animate between tracks and are read only while drawing. Pass the window width as
+`referenceWidth` so surfaces anchored at the window origin paint one continuous field.
+Toggle: `AmbientBackdropKey`.
+
+### Adaptive contrast
+`AdaptiveContrast` (WCAG 2.x) adjusts artwork-derived colors that sit behind white content:
+`legibleGradientForWhite()` for gradients (first stop ≥ 3:1, others ≥ 4.5:1) and
+`ensureContrast()` for single colors. Any new artwork-tinted surface with fixed white text must pass
+its colors through these helpers.
+
+### Performance rule
+Infinite animations must not be read during composition. Read `State` values inside `drawBehind`,
+`drawWithCache` or `graphicsLayer {}` (see the glow background and the wavy play/pause rotation).

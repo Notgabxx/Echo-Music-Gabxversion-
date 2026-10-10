@@ -40,16 +40,37 @@ object PlayerColorExtractor {
           enhanceColorEchodness(fallbackDominant, 1.1f)
         }
 
-      listOf(
-        primaryColor,
-        primaryColor.copy(
-          red = (primaryColor.red * 0.6f).coerceAtLeast(0f),
-          green = (primaryColor.green * 0.6f).coerceAtLeast(0f),
-          blue = (primaryColor.blue * 0.6f).coerceAtLeast(0f)
-        ),
-        Color.Black
+      // Adaptive contrast: white text/icons are drawn on top of this gradient, so every stop is
+      // nudged (hue-preserving) until it meets WCAG AA — bright covers no longer wash text out.
+      AdaptiveContrast.legibleGradientForWhite(
+        listOf(
+          primaryColor,
+          primaryColor.copy(
+            red = (primaryColor.red * 0.6f).coerceAtLeast(0f),
+            green = (primaryColor.green * 0.6f).coerceAtLeast(0f),
+            blue = (primaryColor.blue * 0.6f).coerceAtLeast(0f)
+          ),
+          Color.Black
+        )
       )
     }
+
+  /**
+   * Six glow colors for the animated "glow" backgrounds, made legible for white content. Glows are
+   * drawn translucent over near-black, so [AdaptiveContrast.AA_LARGE] on the raw color is a
+   * conservative bound for the composited result.
+   */
+  fun legibleGlowColors(palette: Palette, fallbackColor: Int): List<Color> =
+    listOf(
+        palette.getVibrantColor(fallbackColor),
+        palette.getLightVibrantColor(fallbackColor),
+        palette.getDarkVibrantColor(fallbackColor),
+        palette.getMutedColor(fallbackColor),
+        palette.getLightMutedColor(fallbackColor),
+        palette.getDarkMutedColor(fallbackColor),
+      )
+      .map { AdaptiveContrast.ensureContrast(Color(it), Color.White, AdaptiveContrast.AA_LARGE) }
+      .distinct()
 
   private fun isColorVibrant(color: Color): Boolean {
     val argb = color.toArgb()

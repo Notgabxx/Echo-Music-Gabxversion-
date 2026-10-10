@@ -590,6 +590,7 @@ private fun NewMiniPlayerThumbnail(
       contentAlignment = Alignment.Center,
       modifier =
         Modifier.size(40.dp)
+          .artworkMorphMini(cornerFraction = 0.5f)
           .clip(CircleShape)
           .border(1.dp, outlineColor.copy(alpha = 0.3f), CircleShape)
     ) {
@@ -937,7 +938,11 @@ private fun LegacyMiniMediaInfo(
     modifier = modifier,
   ) {
     Box(
-      modifier = Modifier.padding(6.dp).size(48.dp).clip(RoundedCornerShape(ThumbnailCornerRadius))
+      modifier =
+        Modifier.padding(6.dp)
+          .size(48.dp)
+          .artworkMorphMini(cornerFraction = ThumbnailCornerRadius.value / 48f)
+          .clip(RoundedCornerShape(ThumbnailCornerRadius))
     ) {
       Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant))
 
@@ -1066,15 +1071,7 @@ private fun MiniPlayerColorExtractor(
                 }
               val extractedColors =
                 if (miniPlayerBackground == PlayerBackgroundStyle.GLOW_ANIMATED) {
-                  listOfNotNull(
-                      palette.getVibrantColor(fallbackColor).let { Color(it) },
-                      palette.getLightVibrantColor(fallbackColor).let { Color(it) },
-                      palette.getDarkVibrantColor(fallbackColor).let { Color(it) },
-                      palette.getMutedColor(fallbackColor).let { Color(it) },
-                      palette.getLightMutedColor(fallbackColor).let { Color(it) },
-                      palette.getDarkMutedColor(fallbackColor).let { Color(it) }
-                    )
-                    .distinct()
+                  PlayerColorExtractor.legibleGlowColors(palette, fallbackColor)
                 } else {
                   PlayerColorExtractor.extractGradientColors(
                     palette = palette,

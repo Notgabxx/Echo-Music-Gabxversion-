@@ -108,6 +108,9 @@ import echo.music.iad1tya.constants.SliderStyle
 import echo.music.iad1tya.constants.SliderStyleKey
 import echo.music.iad1tya.constants.SquigglySliderKey
 import echo.music.iad1tya.constants.WavyPlayPauseKey
+import echo.music.iad1tya.constants.AmbientBackdropKey
+import echo.music.iad1tya.constants.AudioReactiveHaloKey
+import echo.music.iad1tya.constants.FluidPlayerTransitionKey
 import echo.music.iad1tya.constants.SwipeLyricsKey
 import echo.music.iad1tya.constants.SwipeSensitivityKey
 import echo.music.iad1tya.constants.SwipeThumbnailKey
@@ -239,6 +242,12 @@ fun AppearanceSettings(
     rememberPreference(SquigglySliderKey, defaultValue = false)
   val (wavyPlayPause, onWavyPlayPauseChange) =
     rememberPreference(WavyPlayPauseKey, defaultValue = true)
+  val (fluidPlayerTransition, onFluidPlayerTransitionChange) =
+    rememberPreference(FluidPlayerTransitionKey, defaultValue = true)
+  val (audioReactiveHalo, onAudioReactiveHaloChange) =
+    rememberPreference(AudioReactiveHaloKey, defaultValue = true)
+  val (ambientBackdrop, onAmbientBackdropChange) =
+    rememberPreference(AmbientBackdropKey, defaultValue = true)
   val (swipeThumbnail, onSwipeThumbnailChange) =
     rememberPreference(SwipeThumbnailKey, defaultValue = true)
   val (swipeSensitivity, onSwipeSensitivityChange) =
@@ -977,6 +986,31 @@ fun AppearanceSettings(
           )
           add(
             Material3SettingsItem(
+              isHighlighted = (highlightKey == stringResource(R.string.ambient_backdrop)),
+              icon = painterResource(R.drawable.palette),
+              title = { Text(stringResource(R.string.ambient_backdrop)) },
+              description = { Text(stringResource(R.string.ambient_backdrop_desc)) },
+              trailingContent = {
+                Switch(
+                  checked = ambientBackdrop,
+                  onCheckedChange = onAmbientBackdropChange,
+                  thumbContent = {
+                    Icon(
+                      painter =
+                        painterResource(
+                          if (ambientBackdrop) R.drawable.check else R.drawable.close
+                        ),
+                      contentDescription = null,
+                      modifier = Modifier.size(SwitchDefaults.IconSize)
+                    )
+                  }
+                )
+              },
+              onClick = { onAmbientBackdropChange(!ambientBackdrop) }
+            )
+          )
+          add(
+            Material3SettingsItem(
               isHighlighted = (highlightKey == stringResource(R.string.enable_high_refresh_rate)),
               icon = painterResource(R.drawable.speed),
               title = { Text(stringResource(R.string.enable_high_refresh_rate)) },
@@ -1249,6 +1283,52 @@ fun AppearanceSettings(
               )
             },
             onClick = { onWavyPlayPauseChange(!wavyPlayPause) }
+          ),
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.fluid_player_transition)),
+            icon = painterResource(R.drawable.swipe),
+            title = { Text(stringResource(R.string.fluid_player_transition)) },
+            description = { Text(stringResource(R.string.fluid_player_transition_desc)) },
+            trailingContent = {
+              Switch(
+                checked = fluidPlayerTransition,
+                onCheckedChange = onFluidPlayerTransitionChange,
+                thumbContent = {
+                  Icon(
+                    painter =
+                      painterResource(
+                        if (fluidPlayerTransition) R.drawable.check else R.drawable.close
+                      ),
+                    contentDescription = null,
+                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                  )
+                }
+              )
+            },
+            onClick = { onFluidPlayerTransitionChange(!fluidPlayerTransition) }
+          ),
+          Material3SettingsItem(
+            isHighlighted = (highlightKey == stringResource(R.string.audio_reactive_halo)),
+            icon = painterResource(R.drawable.sparks),
+            title = { Text(stringResource(R.string.audio_reactive_halo)) },
+            description = { Text(stringResource(R.string.audio_reactive_halo_desc)) },
+            trailingContent = {
+              Switch(
+                checked = audioReactiveHalo,
+                onCheckedChange = onAudioReactiveHaloChange,
+                thumbContent = {
+                  Icon(
+                    painter =
+                      painterResource(
+                        if (audioReactiveHalo) R.drawable.check else R.drawable.close
+                      ),
+                    contentDescription = null,
+                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                  )
+                }
+              )
+            },
+            onClick = { onAudioReactiveHaloChange(!audioReactiveHalo) }
           ),
           Material3SettingsItem(
             isHighlighted = (highlightKey == stringResource(R.string.enable_swipe_thumbnail)),

@@ -86,6 +86,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -179,6 +180,7 @@ import echo.music.iad1tya.constants.AudioQuality
 import echo.music.iad1tya.constants.AudioQualityKey
 import echo.music.iad1tya.constants.CanvasThumbnailAnimationKey
 import echo.music.iad1tya.constants.CropAlbumArtKey
+import echo.music.iad1tya.constants.FluidPlayerTransitionKey
 import echo.music.iad1tya.constants.DarkModeKey
 import echo.music.iad1tya.constants.EnableLyricsThumbnailPlayPauseKey
 import echo.music.iad1tya.constants.HidePlayerThumbnailKey
@@ -224,6 +226,8 @@ import echo.music.iad1tya.ui.menu.PlayerMenu
 import echo.music.iad1tya.ui.screens.settings.DarkMode
 import echo.music.iad1tya.ui.theme.PlayerColorExtractor
 import echo.music.iad1tya.ui.theme.PlayerSliderColors
+import echo.music.iad1tya.ui.theme.fadeThroughTransform
+import echo.music.iad1tya.ui.utils.resize
 import echo.music.iad1tya.ui.utils.ShowMediaInfo
 import echo.music.iad1tya.ui.utils.ShowOffsetDialog
 import echo.music.iad1tya.utils.isLocalMediaId
@@ -645,15 +649,7 @@ fun BottomSheetPlayer(
                 }
               val extractedColors =
                 if (playerBackground == PlayerBackgroundStyle.GLOW_ANIMATED) {
-                  listOfNotNull(
-                      palette.getVibrantColor(fallbackColor).let { Color(it) },
-                      palette.getLightVibrantColor(fallbackColor).let { Color(it) },
-                      palette.getDarkVibrantColor(fallbackColor).let { Color(it) },
-                      palette.getMutedColor(fallbackColor).let { Color(it) },
-                      palette.getLightMutedColor(fallbackColor).let { Color(it) },
-                      palette.getDarkMutedColor(fallbackColor).let { Color(it) }
-                    )
-                    .distinct()
+                  PlayerColorExtractor.legibleGlowColors(palette, fallbackColor)
                 } else {
                   PlayerColorExtractor.extractGradientColors(
                     palette = palette,
@@ -1029,9 +1025,38 @@ fun BottomSheetPlayer(
   val backgroundAlphaProvider = remember(state) { { state.progress.coerceIn(0f, 1f) } }
   val showCanvas by remember(state) { derivedStateOf { backgroundAlphaProvider() > 0.01f } }
 
+  // Fluid transition: the mini player morphs into the full player (artwork shared element,
+  // content growing out of the bar) instead of a plain cross-fade.
+  val fluidPlayerTransition by rememberPreference(FluidPlayerTransitionKey, defaultValue = true)
+  val artworkMorphState = remember(state) { ArtworkMorphState { state.progress } }
+  val activeArtworkMorph = if (fluidPlayerTransition) artworkMorphState else null
+  val morphArtworkUrl = mediaMetadata?.thumbnailUrl?.resize(1200, 1200)
+
+  // Warm the full-size artwork as soon as the track changes so the morph can start instantly.
+  LaunchedEffect(morphArtworkUrl, fluidPlayerTransition) {
+    if (!fluidPlayerTransition || morphArtworkUrl == null) return@LaunchedEffect
+    context.imageLoader.enqueue(
+      ImageRequest.Builder(context)
+        .data(morphArtworkUrl)
+        .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
+        .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
+        .build()
+    )
+  }
+
   BottomSheet(
     state = state,
     modifier = modifier,
+    fluidMorph = fluidPlayerTransition,
+    overlay = {
+      if (activeArtworkMorph != null) {
+        ArtworkMorphOverlay(
+          morph = activeArtworkMorph,
+          imageUrl = morphArtworkUrl,
+          contentScale = if (cropAlbumArt) ContentScale.Crop else ContentScale.Fit,
+        )
+      }
+    },
     background = {
       val backgroundThumbnailUrl =
         mediaMetadata?.thumbnailUrl
@@ -1097,7 +1122,10 @@ fun BottomSheetPlayer(
               if (colors.isNotEmpty()) {
                 val infiniteTransition = rememberInfiniteTransition(label = "GlowAnimation")
 
-                val progress by
+                // Read only inside drawWithCache: the glow animates in the draw phase, so the
+                // background no longer recomposes on every frame (previously a constant source of
+                // jank on mid-range devices while the player was open).
+                val progressState =
                   infiniteTransition.animateFloat(
                     initialValue = 0f,
                     targetValue = 1f,
@@ -1109,140 +1137,81 @@ fun BottomSheetPlayer(
                     label = "glowProgress"
                   )
 
-                fun rotatedColorAt(index: Int): Color {
-                  val size = colors.size
-                  val idx = index.toFloat() + progress * size
-                  val a = kotlin.math.floor(idx).toInt() % size
-                  val b = (a + 1) % size
-                  val frac = idx - kotlin.math.floor(idx)
-                  return androidx.compose.ui.graphics.lerp(
-                    colors.getOrElse(a) { Color.DarkGray },
-                    colors.getOrElse(b) { Color.DarkGray },
-                    frac
-                  )
-                }
-
-                fun oscillate(min: Float, max: Float, phase: Float, speed: Float = 1f): Float {
-                  val v =
-                    kotlin.math.sin(2f * kotlin.math.PI.toFloat() * (progress * speed + phase))
-                  return min + (max - min) * ((v + 1f) * 0.5f)
-                }
-
-                val color1 = rotatedColorAt(0)
-                val color2 = rotatedColorAt(1)
-                val color3 = rotatedColorAt(2)
-                val color4 = rotatedColorAt(3)
-                val color5 = rotatedColorAt(4)
-                val color6 = rotatedColorAt(5)
-
-                val o1x = oscillate(0.0f, 1.0f, 0.00f, 1.0f)
-                val o1y = oscillate(0.0f, 0.5f, 0.07f, 1.0f)
-                val r1 = oscillate(0.8f, 1.6f, 0.12f, 1.0f)
-
-                val o2x = oscillate(1.0f, 0.0f, 0.2f, 1.0f)
-                val o2y = oscillate(0.5f, 1.0f, 0.25f, 1.0f)
-                val r2 = oscillate(0.7f, 1.5f, 0.18f, 1.0f)
-
-                val o3x = oscillate(0.2f, 0.8f, 0.33f, 1.0f)
-                val o3y = oscillate(0.8f, 0.2f, 0.36f, 1.0f)
-                val r3 = oscillate(0.6f, 1.4f, 0.29f, 1.0f)
-
-                val o4x = oscillate(0.3f, 0.7f, 0.44f, 1.0f)
-                val o4y = oscillate(0.2f, 0.8f, 0.41f, 1.0f)
-                val r4 = oscillate(0.9f, 1.7f, 0.47f, 1.0f)
-
-                val o5x = oscillate(0.4f, 0.6f, 0.55f, 1.0f)
-                val o5y = oscillate(0.0f, 1.0f, 0.51f, 1.0f)
-                val r5 = oscillate(0.7f, 1.5f, 0.58f, 1.0f)
-
-                val o6x = oscillate(0.0f, 1.0f, 0.66f, 1.0f)
-                val o6y = oscillate(0.5f, 0.7f, 0.62f, 1.0f)
-                val r6 = oscillate(0.8f, 1.8f, 0.69f, 1.0f)
-
                 Box(
                   modifier =
                     Modifier.fillMaxSize()
                       .graphicsLayer { alpha = backgroundAlphaProvider() }
                       .drawWithCache {
+                        val progress = progressState.value
                         val width = size.width
                         val height = size.height
                         val baseColor = Color(0xFF050505)
 
-                        val brush1 =
-                          Brush.radialGradient(
-                            colors =
-                              listOf(
-                                color1.copy(alpha = 0.85f),
-                                color1.copy(alpha = 0.5f),
-                                Color.Transparent
-                              ),
-                            center = Offset(width * o1x, height * o1y),
-                            radius = width * r1
+                        fun rotatedColorAt(index: Int): Color {
+                          val count = colors.size
+                          val idx = index.toFloat() + progress * count
+                          val a = kotlin.math.floor(idx).toInt() % count
+                          val b = (a + 1) % count
+                          val frac = idx - kotlin.math.floor(idx)
+                          return androidx.compose.ui.graphics.lerp(
+                            colors.getOrElse(a) { Color.DarkGray },
+                            colors.getOrElse(b) { Color.DarkGray },
+                            frac
                           )
-                        val brush2 =
-                          Brush.radialGradient(
-                            colors =
-                              listOf(
-                                color2.copy(alpha = 0.8f),
-                                color2.copy(alpha = 0.45f),
-                                Color.Transparent
-                              ),
-                            center = Offset(width * o2x, height * o2y),
-                            radius = width * r2
-                          )
-                        val brush3 =
-                          Brush.radialGradient(
-                            colors =
-                              listOf(
-                                color3.copy(alpha = 0.75f),
-                                color3.copy(alpha = 0.4f),
-                                Color.Transparent
-                              ),
-                            center = Offset(width * o3x, height * o3y),
-                            radius = width * r3
-                          )
-                        val brush4 =
-                          Brush.radialGradient(
-                            colors =
-                              listOf(
-                                color4.copy(alpha = 0.7f),
-                                color4.copy(alpha = 0.35f),
-                                Color.Transparent
-                              ),
-                            center = Offset(width * o4x, height * o4y),
-                            radius = width * r4
-                          )
-                        val brush5 =
-                          Brush.radialGradient(
-                            colors =
-                              listOf(
-                                color5.copy(alpha = 0.65f),
-                                color5.copy(alpha = 0.3f),
-                                Color.Transparent
-                              ),
-                            center = Offset(width * o5x, height * o5y),
-                            radius = width * r5
-                          )
-                        val brush6 =
-                          Brush.radialGradient(
-                            colors =
-                              listOf(
-                                color6.copy(alpha = 0.6f),
-                                color6.copy(alpha = 0.25f),
-                                Color.Transparent
-                              ),
-                            center = Offset(width * o6x, height * o6y),
-                            radius = width * r6
+                        }
+
+                        fun oscillate(min: Float, max: Float, phase: Float): Float {
+                          val v = kotlin.math.sin(2f * kotlin.math.PI.toFloat() * (progress + phase))
+                          return min + (max - min) * ((v + 1f) * 0.5f)
+                        }
+
+                        fun glow(index: Int, alphaHigh: Float, alphaMid: Float, center: Offset, radius: Float) =
+                          rotatedColorAt(index).let { c ->
+                            Brush.radialGradient(
+                              colors =
+                                listOf(c.copy(alpha = alphaHigh), c.copy(alpha = alphaMid), Color.Transparent),
+                              center = center,
+                              radius = radius
+                            )
+                          }
+
+                        val brushes =
+                          listOf(
+                            glow(
+                              0, 0.85f, 0.5f,
+                              Offset(width * oscillate(0.0f, 1.0f, 0.00f), height * oscillate(0.0f, 0.5f, 0.07f)),
+                              width * oscillate(0.8f, 1.6f, 0.12f)
+                            ),
+                            glow(
+                              1, 0.8f, 0.45f,
+                              Offset(width * oscillate(1.0f, 0.0f, 0.2f), height * oscillate(0.5f, 1.0f, 0.25f)),
+                              width * oscillate(0.7f, 1.5f, 0.18f)
+                            ),
+                            glow(
+                              2, 0.75f, 0.4f,
+                              Offset(width * oscillate(0.2f, 0.8f, 0.33f), height * oscillate(0.8f, 0.2f, 0.36f)),
+                              width * oscillate(0.6f, 1.4f, 0.29f)
+                            ),
+                            glow(
+                              3, 0.7f, 0.35f,
+                              Offset(width * oscillate(0.3f, 0.7f, 0.44f), height * oscillate(0.2f, 0.8f, 0.41f)),
+                              width * oscillate(0.9f, 1.7f, 0.47f)
+                            ),
+                            glow(
+                              4, 0.65f, 0.3f,
+                              Offset(width * oscillate(0.4f, 0.6f, 0.55f), height * oscillate(0.0f, 1.0f, 0.51f)),
+                              width * oscillate(0.7f, 1.5f, 0.58f)
+                            ),
+                            glow(
+                              5, 0.6f, 0.25f,
+                              Offset(width * oscillate(0.0f, 1.0f, 0.66f), height * oscillate(0.5f, 0.7f, 0.62f)),
+                              width * oscillate(0.8f, 1.8f, 0.69f)
+                            ),
                           )
 
                         onDrawBehind {
                           drawRect(color = baseColor)
-                          drawRect(brush = brush1)
-                          drawRect(brush = brush2)
-                          drawRect(brush = brush3)
-                          drawRect(brush = brush4)
-                          drawRect(brush = brush5)
-                          drawRect(brush = brush6)
+                          brushes.forEach { drawRect(brush = it) }
                         }
                       }
                 )
@@ -1475,11 +1444,13 @@ fun BottomSheetPlayer(
       playerConnection.service.clearPersistedQueueFiles()
     },
     collapsedContent = {
-      MiniPlayer(
-        positionState = positionState,
-        durationState = durationState,
-        onClick = { state.expandSoft() }
-      )
+      CompositionLocalProvider(LocalArtworkMorphState provides activeArtworkMorph) {
+        MiniPlayer(
+          positionState = positionState,
+          durationState = durationState,
+          onClick = { state.expandSoft() }
+        )
+      }
     },
   ) {
     val controlsContent: @Composable ColumnScope.(MediaMetadata) -> Unit = { mediaMetadata ->
@@ -2478,7 +2449,11 @@ fun BottomSheetPlayer(
                 )
 
               val infiniteTransition = rememberInfiniteTransition(label = "rotation")
-              val rotation by
+              // The wavy outline used to be rebuilt with a new rotation every frame, recomposing
+              // the whole controls row at display refresh rate. Rotating the button layer on the
+              // GPU (and counter-rotating the glyph) gives the identical look with zero
+              // recomposition while playing.
+              val rotationState =
                 infiniteTransition.animateFloat(
                   initialValue = 0f,
                   targetValue = 360f,
@@ -2510,7 +2485,7 @@ fun BottomSheetPlayer(
                   }
                 },
                 shape =
-                  if (wavyPlayPause && cookieIndent > 0f) WavyShape(9, cookieIndent, rotation) else CircleShape,
+                  if (wavyPlayPause && cookieIndent > 0f) WavyShape(9, cookieIndent, 0f) else CircleShape,
                 interactionSource = playPauseInteractionSource,
                 colors =
                   IconButtonDefaults.filledIconButtonColors(
@@ -2521,11 +2496,16 @@ fun BottomSheetPlayer(
                   Modifier.size(84.dp).graphicsLayer {
                     scaleX = playPauseScale
                     scaleY = playPauseScale
+                    rotationZ = if (wavyPlayPause) rotationState.value else 0f
                   }
               ) {
                 Row(
                   verticalAlignment = Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.Center
+                  horizontalArrangement = Arrangement.Center,
+                  modifier =
+                    Modifier.graphicsLayer {
+                      rotationZ = if (wavyPlayPause) -rotationState.value else 0f
+                    }
                 ) {
                   Icon(
                     painter =
@@ -2844,7 +2824,7 @@ fun BottomSheetPlayer(
             AnimatedContent(
               targetState = showInlineLyrics,
               label = "Lyrics",
-              transitionSpec = { fadeIn() togetherWith fadeOut() }
+              transitionSpec = { fadeThroughTransform() }
             ) { showLyrics ->
               if (showLyrics) {
                 InlineLyricsView(
@@ -2853,13 +2833,15 @@ fun BottomSheetPlayer(
                   positionProvider = { effectivePosition }
                 )
               } else {
-                Thumbnail(
-                  sliderPositionProvider = sliderPositionProvider,
-                  modifier = Modifier.animateContentSize(),
-                  isPlayerExpanded = isExpandedProvider,
-                  isLandscape = true,
-                  isListenTogetherGuest = isListenTogetherGuest
-                )
+                CompositionLocalProvider(LocalArtworkMorphState provides activeArtworkMorph) {
+                  Thumbnail(
+                    sliderPositionProvider = sliderPositionProvider,
+                    modifier = Modifier.animateContentSize(),
+                    isPlayerExpanded = isExpandedProvider,
+                    isLandscape = true,
+                    isListenTogetherGuest = isListenTogetherGuest
+                  )
+                }
               }
             }
           }
@@ -2910,7 +2892,7 @@ fun BottomSheetPlayer(
             AnimatedContent(
               targetState = showInlineLyrics,
               label = "Lyrics",
-              transitionSpec = { fadeIn() togetherWith fadeOut() }
+              transitionSpec = { fadeThroughTransform() }
             ) { showLyrics ->
               if (showLyrics) {
                 InlineLyricsView(
@@ -2919,12 +2901,14 @@ fun BottomSheetPlayer(
                   positionProvider = { effectivePosition }
                 )
               } else {
-                Thumbnail(
-                  sliderPositionProvider = sliderPositionProvider,
-                  modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
-                  isPlayerExpanded = isExpandedProvider,
-                  isListenTogetherGuest = isListenTogetherGuest
-                )
+                CompositionLocalProvider(LocalArtworkMorphState provides activeArtworkMorph) {
+                  Thumbnail(
+                    sliderPositionProvider = sliderPositionProvider,
+                    modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
+                    isPlayerExpanded = isExpandedProvider,
+                    isListenTogetherGuest = isListenTogetherGuest
+                  )
+                }
               }
             }
           }

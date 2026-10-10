@@ -157,6 +157,11 @@ android {
       signingConfig = signingConfigs.getByName("release")
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       buildConfigField("String", "ARCHITECTURE", "\"release\"")
+      // Community CI builds (premium UI fork) install side by side with the official app.
+      if (project.hasProperty("premiumUiBuild")) {
+        applicationIdSuffix = ".premium"
+        versionNameSuffix = "-premium-ui"
+      }
     }
     debug {
       applicationIdSuffix = ".debug"

@@ -30,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -41,10 +42,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import echo.music.iad1tya.constants.NavigationBarAnimationSpec
+import echo.music.iad1tya.ui.theme.EchoMotion
 import kotlin.math.pow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * Draggable sheet used by the player (and the queue inside it).
+ *
+ * @param fluidMorph when true the sheet "morphs" instead of cross-fading: the expanded content
+ *   grows out of the collapsed bar (scale from the bottom edge) while the collapsed bar lifts and
+ *   dissolves, so the transition reads as one continuous surface.
+ * @param overlay drawn above both the collapsed and the expanded content, inside the moving sheet.
+ *   Used for shared-element style effects (e.g. the artwork flying from the mini player into the
+ *   full player). It must not consume touches.
+ */
 @Composable
 fun BottomSheet(
   state: BottomSheetState,
@@ -53,10 +65,10 @@ fun BottomSheet(
   onDismiss: (() -> Unit)? = null,
   collapsedContent: @Composable BoxScope.() -> Unit,
   isExpandable: Boolean = true,
+  fluidMorph: Boolean = false,
+  overlay: @Composable BoxScope.() -> Unit = {},
   content: @Composable BoxScope.() -> Unit,
 ) {
-  val density = LocalDensity.current
-
   Box(
     modifier =
       modifier
@@ -85,7 +97,7 @@ fun BottomSheet(
             },
             onDragCancel = {
               velocityTracker.resetTracking()
-              state.snapTo(state.collapsedBound)
+              state.collapseSoft()
             },
             onDragEnd = {
               val velocity = -velocityTracker.calculateVelocity().y
@@ -95,7 +107,9 @@ fun BottomSheet(
           )
         }
         .graphicsLayer {
-          val cornerRadius = if (!state.isExpanded) 16.dp.toPx() else 0f
+          // Continuous corner morph instead of snapping from 16dp to 0dp at the very top.
+          val progress = state.progress.coerceIn(0f, 1f)
+          val cornerRadius = 16.dp.toPx() * (1f - progress)
           shape = RoundedCornerShape(topStart = cornerRadius, topEnd = cornerRadius)
           clip = true
         }
@@ -108,7 +122,17 @@ fun BottomSheet(
       BoxWithConstraints(
         modifier =
           Modifier.fillMaxSize().graphicsLayer {
-            alpha = ((state.progress - 0.15f) * 4).coerceIn(0f, 1f)
+            val progress = state.progress
+            alpha = ((progress - 0.15f) * 4).coerceIn(0f, 1f)
+            if (fluidMorph) {
+              // Grow out of the bar at the bottom: 94% → 100% on an ease-out curve.
+              val t = progress.coerceIn(0f, 1f)
+              val eased = 1f - (1f - t) * (1f - t) * (1f - t)
+              val scale = 0.94f + 0.06f * eased
+              scaleX = scale
+              scaleY = scale
+              transformOrigin = TransformOrigin(0.5f, 1f)
+            }
           },
         content = content
       )
@@ -117,7 +141,17 @@ fun BottomSheet(
     if (!state.isExpanded && (onDismiss == null || !state.isDismissed)) {
       Box(
         modifier =
-          Modifier.graphicsLayer { alpha = 1f - (state.progress * 4).coerceAtMost(1f) }
+          Modifier.graphicsLayer {
+              val fade = (state.progress * 4).coerceIn(0f, 1f)
+              alpha = 1f - fade
+              if (fluidMorph) {
+                // The bar lifts and swells slightly while it dissolves into the full player.
+                translationY = -18.dp.toPx() * fade
+                val scale = 1f + 0.04f * fade
+                scaleX = scale
+                scaleY = scale
+              }
+            }
             .clickable(
               interactionSource = remember { MutableInteractionSource() },
               indication = null,
@@ -128,6 +162,8 @@ fun BottomSheet(
         content = collapsedContent,
       )
     }
+
+    overlay()
   }
 }
 
@@ -138,6 +174,7 @@ class BottomSheetState(
   private val animatable: Animatable<Dp, AnimationVector1D>,
   private val onAnchorChanged: (Int) -> Unit,
   val collapsedBound: Dp,
+  private val density: Float = 0f,
 ) : DraggableState by draggableState {
   val dismissedBound: Dp
     get() = animatable.lowerBound!!
@@ -157,14 +194,33 @@ class BottomSheetState(
     1f - (animatable.upperBound!! - animatable.value) / (animatable.upperBound!! - collapsedBound)
   }
 
+  /**
+   * Spring used after a fling: keeps the finger's momentum (initial velocity) and lands with a
+   * barely visible overshoot, which is what makes the sheet feel physical rather than scripted.
+   */
+  private val settleSpec: AnimationSpec<Dp> =
+    spring(dampingRatio = EchoMotion.SheetDampingRatio, stiffness = EchoMotion.SheetStiffness)
+
   fun collapse(animationSpec: AnimationSpec<Dp>) {
     onAnchorChanged(collapsedAnchor)
     coroutineScope.launch { animatable.animateTo(collapsedBound, animationSpec) }
   }
 
+  fun collapse(animationSpec: AnimationSpec<Dp>, initialVelocity: Dp) {
+    onAnchorChanged(collapsedAnchor)
+    coroutineScope.launch { animatable.animateTo(collapsedBound, animationSpec, initialVelocity) }
+  }
+
   fun expand(animationSpec: AnimationSpec<Dp>) {
     onAnchorChanged(expandedAnchor)
     coroutineScope.launch { animatable.animateTo(animatable.upperBound!!, animationSpec) }
+  }
+
+  fun expand(animationSpec: AnimationSpec<Dp>, initialVelocity: Dp) {
+    onAnchorChanged(expandedAnchor)
+    coroutineScope.launch {
+      animatable.animateTo(animatable.upperBound!!, animationSpec, initialVelocity)
+    }
   }
 
   private fun collapse() {
@@ -198,6 +254,45 @@ class BottomSheetState(
   }
 
   fun performFling(velocity: Float, onDismiss: (() -> Unit)?) {
+    // velocity is in px/s, positive when moving towards the expanded state.
+    if (density <= 0f) {
+      performFlingWithoutMomentum(velocity, onDismiss)
+      return
+    }
+    val momentum = (velocity / density).dp
+
+    if (velocity > 250) {
+      expand(settleSpec, momentum)
+    } else if (velocity < -250) {
+      if (value < collapsedBound && onDismiss != null) {
+        dismiss()
+        onDismiss.invoke()
+      } else {
+        collapse(settleSpec, momentum)
+      }
+    } else {
+      val l0 = dismissedBound
+      val l1 = (collapsedBound - dismissedBound) / 2
+      val l2 = (expandedBound - collapsedBound) / 2
+      val l3 = expandedBound
+
+      when (value) {
+        in l0..l1 -> {
+          if (onDismiss != null) {
+            dismiss()
+            onDismiss.invoke()
+          } else {
+            collapse(settleSpec, momentum)
+          }
+        }
+        in l1..l2 -> collapse(settleSpec, momentum)
+        in l2..l3 -> expand(settleSpec, momentum)
+        else -> Unit
+      }
+    }
+  }
+
+  private fun performFlingWithoutMomentum(velocity: Float, onDismiss: (() -> Unit)?) {
     if (velocity > 250) {
       expand()
     } else if (velocity < -250) {
@@ -321,7 +416,8 @@ fun rememberBottomSheetState(
       onAnchorChanged = { previousAnchor = it },
       coroutineScope = coroutineScope,
       animatable = animatable,
-      collapsedBound = collapsedBound
+      collapsedBound = collapsedBound,
+      density = density.density,
     )
   }
 }

@@ -2,8 +2,15 @@
   "features": [
     "Local Taste Engine: Offline, account-free algorithmic recommendation engine with skip tracking and taste mix generation",
     "Local Taste Engine (Slice 2): Multi-source Last.fm recommendation pipeline (similar tracks, similar artists, top genres) with 1-hour taste snapshot caching and additive scoring bonuses",
-    "Local Taste Engine (Slice 3): Genre awareness with additive scoring bonus (+1.0), YouTube taste signals extraction, cross-screen generation status synchronization, and 'From Taste' quick action"
+    "Local Taste Engine (Slice 3): Genre awareness with additive scoring bonus (+1.0), YouTube taste signals extraction, cross-screen generation status synchronization, and 'From Taste' quick action",
+    "Fluid player transition: mini player morphs into the full player with a shared-artwork overlay, momentum-preserving spring physics, content growing out of the bar and a receding-card depth effect behind the sheet",
+    "Audio-reactive aura: a GPU-only light halo behind the album art driven by a new pass-through band analyser (bass/mid/treble) in the playback chain, with a beat 'kick' on the cover",
+    "Ambient backdrop: album-tinted ambient light behind the main screens, top bar and liquid-glass surfaces, animating between tracks without recomposition",
+    "Adaptive contrast: artwork-derived player and mini-player gradients/glows are adjusted to WCAG AA so white text stays legible on bright covers",
+    "Smoother player modes: artwork ↔ lyrics switch uses a Material fade-through with scale on emphasized easing"
   ],
-  "bug_fixes": [],
+  "bug_fixes": [
+    "Performance: the animated glow player background and the wavy play/pause button no longer recompose every frame (animation moved to the draw/GPU layer)"
+  ],
   "contributors": []
 }

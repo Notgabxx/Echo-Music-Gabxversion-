@@ -78,6 +78,7 @@ import echo.music.iad1tya.R
 import echo.music.iad1tya.applecanvas.AppleMusicCanvasProvider
 import echo.music.iad1tya.canvas.CanvasArtwork
 import echo.music.iad1tya.canvas.TidalCanvasProvider
+import echo.music.iad1tya.constants.AudioReactiveHaloKey
 import echo.music.iad1tya.constants.CanvasThumbnailAnimationKey
 import echo.music.iad1tya.constants.CropAlbumArtKey
 import echo.music.iad1tya.constants.HidePlayerThumbnailKey
@@ -279,6 +280,15 @@ fun Thumbnail(
 
   val textBackgroundColor = getTextColor(playerBackground)
 
+  // Audio-reactive aura: runs only while the player is fully expanded and playing.
+  val audioReactiveHalo by rememberPreference(AudioReactiveHaloKey, defaultValue = true)
+  val isPlayingForHalo by playerConnection.isPlaying.collectAsState()
+  val isExpandedForHalo by remember { derivedStateOf { isPlayerExpanded() } }
+  val audioReactiveState =
+    rememberAudioReactiveState(
+      active = audioReactiveHalo && isPlayingForHalo && isExpandedForHalo && !hidePlayerThumbnail
+    )
+
   val thumbnailLazyGridState = rememberLazyGridState()
 
   val mediaItemsData by
@@ -455,7 +465,8 @@ fun Thumbnail(
                 isListenTogetherGuest = isListenTogetherGuest,
                 currentMediaId = mediaMetadata?.id,
                 currentMediaThumbnail = mediaMetadata?.thumbnailUrl,
-                playerBackground = playerBackground
+                playerBackground = playerBackground,
+                audioReactive = if (audioReactiveHalo) audioReactiveState else null,
               )
             }
           }
@@ -554,6 +565,7 @@ private fun ThumbnailItem(
   currentMediaId: String? = null,
   currentMediaThumbnail: String? = null,
   playerBackground: PlayerBackgroundStyle = PlayerBackgroundStyle.DEFAULT,
+  audioReactive: AudioReactiveState? = null,
   modifier: Modifier = Modifier,
 ) {
   val rotatingThumbnail by rememberPreference(RotatingThumbnailKey, defaultValue = false)
@@ -642,9 +654,32 @@ private fun ThumbnailItem(
         },
     contentAlignment = Alignment.Center
   ) {
+    val reactive = if (isCurrentItem && !hidePlayerThumbnail) audioReactive else null
+    if (reactive != null) {
+      AudioReactiveHalo(
+        state = reactive,
+        primary = MaterialTheme.colorScheme.primary,
+        secondary = MaterialTheme.colorScheme.secondary,
+        tertiary = MaterialTheme.colorScheme.tertiary,
+        modifier = Modifier.size(dimensions.thumbnailSize)
+      )
+    }
     Box(
       modifier =
         Modifier.size(dimensions.thumbnailSize)
+          .then(
+            if (isCurrentItem && !rotatingThumbnail && !hidePlayerThumbnail) {
+              Modifier.artworkMorphFull(dimensions.cornerRadius)
+            } else {
+              Modifier
+            }
+          )
+          .graphicsLayer {
+            // A gentle beat "kick": the cover swells by up to 2% on bass onsets.
+            val kick = reactive?.kick ?: 0f
+            scaleX = 1f + 0.02f * kick
+            scaleY = 1f + 0.02f * kick
+          }
           .graphicsLayer { rotationZ = rotation }
           .clip(
             if (rotatingThumbnail) {

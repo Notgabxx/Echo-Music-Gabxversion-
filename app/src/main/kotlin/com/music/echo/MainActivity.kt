@@ -80,7 +80,10 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -138,6 +141,8 @@ import echo.music.iad1tya.constants.DarkModeKey
 import echo.music.iad1tya.constants.DefaultOpenTabKey
 import echo.music.iad1tya.constants.DisableScreenshotKey
 import echo.music.iad1tya.constants.DynamicThemeKey
+import echo.music.iad1tya.constants.AmbientBackdropKey
+import echo.music.iad1tya.constants.FluidPlayerTransitionKey
 import echo.music.iad1tya.constants.EnableHighRefreshRateKey
 import echo.music.iad1tya.constants.FloatingToolbarBottomPadding
 import echo.music.iad1tya.constants.FloatingToolbarHorizontalPadding
@@ -186,6 +191,8 @@ import echo.music.iad1tya.ui.component.*
 import echo.music.iad1tya.ui.component.AppFloatingNavBar
 import echo.music.iad1tya.ui.component.GlassEffectConfig
 import echo.music.iad1tya.ui.component.LocalAppBackdrop
+import echo.music.iad1tya.ui.component.drawAmbientBackdrop
+import echo.music.iad1tya.ui.component.rememberAmbientBackdropColors
 import echo.music.iad1tya.ui.component.LocalGlassEffectConfig
 import echo.music.iad1tya.ui.component.RingtoneProgressDialog
 import echo.music.iad1tya.ui.component.RingtoneTrimmerDialog
@@ -1188,8 +1195,19 @@ class MainActivity : ComponentActivity() {
             )
           }
 
+        // Album-tinted ambient light behind content, top bar and glass surfaces.
+        val (ambientBackdropEnabled) = rememberPreference(AmbientBackdropKey, defaultValue = true)
+        val ambientColors =
+          rememberAmbientBackdropColors(enabled = ambientBackdropEnabled, pureBlack = pureBlack)
+        val windowWidthPx = with(density) { maxWidth.toPx() }
+
+        // Depth: while the player sheet rises, the app behind it recedes like a card.
+        val (fluidPlayerTransition) =
+          rememberPreference(FluidPlayerTransitionKey, defaultValue = true)
+
         val appBackdrop = rememberLayerBackdrop {
           drawRect(baseBg)
+          drawAmbientBackdrop(ambientColors, windowWidthPx)
           drawContent()
         }
 
@@ -1295,7 +1313,9 @@ class MainActivity : ComponentActivity() {
                     scrollBehavior = topAppBarScrollBehavior,
                     colors =
                       TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
+                        containerColor =
+                          if (ambientBackdropEnabled) Color.Transparent
+                          else MaterialTheme.colorScheme.surface,
                         scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
                         titleContentColor = MaterialTheme.colorScheme.onSurface,
                         actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1303,7 +1323,18 @@ class MainActivity : ComponentActivity() {
                       ),
                     windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Top),
                     modifier =
-                      Modifier.windowInsetsPadding(
+                      Modifier.then(
+                          if (ambientBackdropEnabled) {
+                            val topBarSurface = MaterialTheme.colorScheme.surface
+                            Modifier.drawBehind {
+                              drawRect(if (pureBlack) Color.Black else topBarSurface)
+                              drawAmbientBackdrop(ambientColors, windowWidthPx)
+                            }
+                          } else {
+                            Modifier
+                          }
+                        )
+                        .windowInsetsPadding(
                         if (showRail) {
                           WindowInsets(left = NavigationBarHeight)
                             .add(cutoutInsets.only(WindowInsetsSides.Start))
@@ -1565,7 +1596,28 @@ class MainActivity : ComponentActivity() {
                   aiHubContentDescription = stringResource(R.string.ai_lyrics_translation)
                 )
               }
-              Box(Modifier.weight(1f)) {
+              Box(
+                Modifier.weight(1f)
+                  .graphicsLayer {
+                    val progress = playerBottomSheetState.progress.coerceIn(0f, 1f)
+                    if (fluidPlayerTransition && progress > 0f) {
+                      val scale = 1f - 0.06f * progress
+                      scaleX = scale
+                      scaleY = scale
+                      transformOrigin = TransformOrigin(0.5f, 0.4f)
+                      val corner = 28.dp.toPx() * (progress * 3f).coerceAtMost(1f)
+                      shape = RoundedCornerShape(corner)
+                      clip = true
+                    }
+                  }
+                  .drawWithContent {
+                    drawContent()
+                    val progress = playerBottomSheetState.progress.coerceIn(0f, 1f)
+                    if (fluidPlayerTransition && progress > 0f) {
+                      drawRect(Color.Black.copy(alpha = 0.4f * progress))
+                    }
+                  }
+              ) {
                 NavHost(
                   navController = navController,
                   startDestination =
@@ -1635,7 +1687,8 @@ class MainActivity : ComponentActivity() {
                       } + fadeOut(tween(400, easing = EmphasizedEasing))
                   },
                   modifier =
-                    Modifier.layerBackdrop(appBackdrop)
+                    Modifier.drawBehind { drawAmbientBackdrop(ambientColors, windowWidthPx) }
+                      .layerBackdrop(appBackdrop)
                       .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                 ) {
                   navigationBuilder(

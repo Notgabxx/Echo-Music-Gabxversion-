@@ -154,6 +154,7 @@ import echo.music.iad1tya.models.PersistQueue
 import echo.music.iad1tya.models.toMediaMetadata
 import echo.music.iad1tya.playback.audio.BeatAnalyzer
 import echo.music.iad1tya.playback.audio.SilenceDetectorAudioProcessor
+import echo.music.iad1tya.playback.audio.AudioLevelProcessor
 import echo.music.iad1tya.playback.queues.EmptyQueue
 import echo.music.iad1tya.playback.queues.Queue
 import echo.music.iad1tya.playback.queues.YouTubeQueue
@@ -1287,6 +1288,10 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
 
     val stereoWidener = StereoWidenerAudioProcessor()
 
+    // Pass-through band analyser feeding the audio-reactive player visuals (idle unless a
+    // visualiser is on screen).
+    val levelProcessor = AudioLevelProcessor()
+
     runBlocking {
       val skipSilence = dataStore.get(SkipSilenceKey, false)
       val instantSkip = dataStore.get(SkipSilenceInstantKey, false)
@@ -1298,7 +1303,13 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
       ExoPlayer.Builder(this)
         .setMediaSourceFactory(createMediaSourceFactory())
         .setRenderersFactory(
-          createRenderersFactory(eqProcessor, silenceProcessor, duckProcessor, stereoWidener)
+          createRenderersFactory(
+            eqProcessor,
+            silenceProcessor,
+            duckProcessor,
+            stereoWidener,
+            levelProcessor,
+          )
         )
         .setLoadControl(
           DefaultLoadControl.Builder()
@@ -3736,6 +3747,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
     silenceProcessor: SilenceDetectorAudioProcessor,
     duckProcessor: AutomixDuckAudioProcessor,
     stereoWidener: StereoWidenerAudioProcessor,
+    levelProcessor: AudioLevelProcessor,
   ) =
     object : DefaultRenderersFactory(this) {
       override fun buildAudioSink(
@@ -3753,6 +3765,7 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
                 duckProcessor,
                 silenceProcessor,
                 stereoWidener,
+                levelProcessor,
               ),
               SilenceSkippingAudioProcessor(2_000_000, 20_000, 256),
               SonicAudioProcessor(),

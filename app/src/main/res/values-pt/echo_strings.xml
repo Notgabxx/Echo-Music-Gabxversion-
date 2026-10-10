@@ -391,4 +391,10 @@
     <string name="crossfade">Transição suave</string>
     <string name="crossfade_desc">Transição suave entre músicas</string>
     <string name="crossfade_duration">Duração da transição suave</string>
+    <string name="fluid_player_transition">Transição fluida do player</string>
+    <string name="fluid_player_transition_desc">O mini player se transforma no player completo com capa compartilhada, física de mola e profundidade</string>
+    <string name="audio_reactive_halo">Aura reativa ao áudio</string>
+    <string name="audio_reactive_halo_desc">Luz suave ao redor da capa que reage aos graves, médios e agudos</string>
+    <string name="ambient_backdrop">Fundo ambiente</string>
+    <string name="ambient_backdrop_desc">Tinge as telas principais com uma luz suave vinda da capa atual</string>
 </resources>

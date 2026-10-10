@@ -1082,4 +1082,10 @@
     <string name="legacy_icon">Legacy Icon</string>
     <string name="legacy_icon_desc">Revert the app icon back to the original legacy design</string>
     <string name="clear_queue_confirm">Are you sure you want to clear upcoming songs from the queue?</string>
+    <string name="fluid_player_transition">Fluid player transition</string>
+    <string name="fluid_player_transition_desc">The mini player morphs into the full player with shared artwork, spring physics and depth</string>
+    <string name="audio_reactive_halo">Audio-reactive aura</string>
+    <string name="audio_reactive_halo_desc">Soft light around the album art that reacts to the bass, mids and treble</string>
+    <string name="ambient_backdrop">Ambient backdrop</string>
+    <string name="ambient_backdrop_desc">Tint the main screens with soft light from the current album</string>
 </resources>

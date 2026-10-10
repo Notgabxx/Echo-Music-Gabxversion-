@@ -67,6 +67,11 @@ val GridItemsSizeKey = stringPreferencesKey("gridItemSize")
 val SliderStyleKey = stringPreferencesKey("sliderStyle")
 val SquigglySliderKey = booleanPreferencesKey("squigglySlider")
 val WavyPlayPauseKey = booleanPreferencesKey("wavyPlayPause")
+
+// Premium UI pack: fluid player morph, audio-reactive aura and album-tinted ambient backdrop.
+val FluidPlayerTransitionKey = booleanPreferencesKey("fluidPlayerTransition")
+val AudioReactiveHaloKey = booleanPreferencesKey("audioReactiveHalo")
+val AmbientBackdropKey = booleanPreferencesKey("ambientBackdrop")
 val SwipeToSongKey = booleanPreferencesKey("SwipeToSong")
 val SwipeToRemoveSongKey = booleanPreferencesKey("SwipeToRemoveSong")
 val UseNewPlayerDesignKey = booleanPreferencesKey("useNewPlayerDesign")
