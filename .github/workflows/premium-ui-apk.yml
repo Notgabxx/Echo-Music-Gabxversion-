@@ -60,6 +60,15 @@ jobs:
             -alias "$KEY_ALIAS" -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=Echo Music Premium UI, O=Community fork, C=BR"
 
+      - name: Strip upstream Firebase config
+        shell: bash
+        run: |
+          # The committed google-services.json belongs to the upstream maintainer's Firebase
+          # project and only matches the official package name. Community builds must not send
+          # telemetry there, and without the file the Firebase/Crashlytics Gradle plugins are
+          # simply not applied (the app never calls Firebase APIs directly).
+          rm -f app/google-services.json
+
       - name: Build release APK
         shell: bash
         run: |
