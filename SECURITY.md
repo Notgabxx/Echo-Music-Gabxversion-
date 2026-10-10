@@ -6,9 +6,10 @@ Só a build mais recente publicada em [Releases](https://github.com/Notgabxx/Ech
 
 ## Como relatar uma vulnerabilidade
 
-1. **Não abra uma issue pública** para falhas de segurança.
-2. Use o botão **Report a vulnerability** na aba [Security](https://github.com/Notgabxx/Echo-Music-Gabxversion-/security) do repositório. O relato fica privado entre você e os mantenedores.
-3. Conte o que acontece, como reproduzir, qual o impacto e, se tiver, uma sugestão de correção.
+1. **Não publique os detalhes da falha em uma issue pública.**
+2. Se a aba [Security](https://github.com/Notgabxx/Echo-Music-Gabxversion-/security) mostrar o botão **Report a vulnerability**, use-o: o relato fica privado entre você e os mantenedores.
+3. Se o botão não aparecer, abra uma [issue](https://github.com/Notgabxx/Echo-Music-Gabxversion-/issues) só pedindo um contato privado, sem descrever a falha.
+4. No relato, conte o que acontece, como reproduzir, qual o impacto e, se tiver, uma sugestão de correção.
 
 Você vai receber uma resposta assim que possível. Quando a correção for publicada, o crédito pelo relato pode ser dado a você, se quiser.
 

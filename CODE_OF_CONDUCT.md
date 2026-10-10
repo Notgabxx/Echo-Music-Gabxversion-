@@ -24,7 +24,7 @@ Este código vale em todos os espaços do projeto: issues, pull requests, discus
 
 ## Como relatar
 
-Se algo te incomodou, entre em contato com os mantenedores de forma privada pela aba [Security](https://github.com/Notgabxx/Echo-Music-Gabxversion-/security) (opção de relato privado) ou mencionando um mantenedor em uma issue sem expor detalhes. Todo relato é tratado com sigilo.
+Se algo te incomodou, abra uma [issue](https://github.com/Notgabxx/Echo-Music-Gabxversion-/issues) pedindo um contato privado com os mantenedores, sem expor detalhes nem nomes. Todo relato é tratado com sigilo.
 
 Quem descumprir estas regras pode receber um aviso, ter comentários removidos ou ser impedido de participar do projeto, conforme a gravidade.
 
