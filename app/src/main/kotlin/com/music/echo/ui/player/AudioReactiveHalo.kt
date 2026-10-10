@@ -81,6 +81,10 @@ class AudioReactiveState internal constructor() {
       return phaseValue
     }
 
+  /** Timestamp of the current frame ([System.nanoTime] clock). Read only from draw/layer lambdas. */
+  val frameNanos: Long
+    get() = frameTick.longValue
+
   internal val isAtRest: Boolean
     get() = bassValue < 0.003f && midValue < 0.003f && trebleValue < 0.003f && kickValue < 0.003f
 

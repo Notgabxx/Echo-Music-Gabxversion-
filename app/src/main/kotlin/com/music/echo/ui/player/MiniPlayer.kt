@@ -139,30 +139,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private data class PolygonCookieShape(val sides: Int, val indent: Float) : Shape {
-  override fun createOutline(
-    size: Size,
-    layoutDirection: LayoutDirection,
-    density: Density
-  ): Outline {
-    val path = Path()
-    val maxRadius = minOf(size.width, size.height) / 2f
-    val cx = size.width / 2f
-    val cy = size.height / 2f
-
-    val steps = 120
-    for (i in 0..steps) {
-      val angle = i * Math.PI * 2 / steps
-      val r = maxRadius * (1f - indent + indent * cos(sides * angle))
-      val x = cx + r * cos(angle)
-      val y = cy + r * sin(angle)
-      if (i == 0) path.moveTo(x.toFloat(), y.toFloat()) else path.lineTo(x.toFloat(), y.toFloat())
-    }
-    path.close()
-    return Outline.Generic(path)
-  }
-}
-
 @Stable
 class ProgressState(
   private val positionState: MutableLongState,
@@ -1259,7 +1235,6 @@ private fun MiniPlayerControls(
     castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
   val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
   val isMuted by playerConnection.isMuted.collectAsState()
-  val wavyPlayPause by echo.music.iad1tya.utils.rememberPreference(echo.music.iad1tya.constants.WavyPlayPauseKey, defaultValue = true)
   Row(verticalAlignment = Alignment.CenterVertically) {
     IconButton(
       enabled = canSkipPrevious && !isListenTogetherGuest,
@@ -1278,79 +1253,38 @@ private fun MiniPlayerControls(
 
     Spacer(modifier = Modifier.width(12.dp))
 
-    val cookieIndent by
-      androidx.compose.animation.core.animateFloatAsState(
-        targetValue = if (effectiveIsPlaying) 0.08f else 0f,
-        animationSpec =
-          androidx.compose.animation.core.tween(
-            durationMillis = 300,
-            easing = androidx.compose.animation.core.LinearEasing
-          ),
-        label = "cookieIndent",
-      )
-
-    val infiniteTransition =
-      androidx.compose.animation.core.rememberInfiniteTransition(label = "rotation")
-    val rotation by
-      infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec =
-          androidx.compose.animation.core.infiniteRepeatable(
-            animation =
-              androidx.compose.animation.core.tween(
-                8000,
-                easing = androidx.compose.animation.core.LinearEasing
-              ),
-            repeatMode = androidx.compose.animation.core.RepeatMode.Restart
-          ),
-        label = "rotation"
-      )
-
-    Box(
-      contentAlignment = Alignment.Center,
-      modifier =
-        Modifier.size(48.dp).clip(CircleShape).clickable {
-          if (isListenTogetherGuest) {
-            playerConnection.toggleMute()
-            return@clickable
-          }
-          if (isCasting) {
-            if (castIsPlaying) castHandler?.pause() else castHandler?.play()
-          } else if (playbackState == Player.STATE_ENDED) {
-            playerConnection.player.seekTo(0, 0)
-            playerConnection.player.playWhenReady = true
-          } else {
-            playerConnection.togglePlayPause()
-          }
+    // Same living button as the full player, kept calm here (no per-frame motion in the mini
+    // player): the glyph still morphs between play and pause.
+    LivingPlayButton(
+      isPlaying = effectiveIsPlaying,
+      onClick = {
+        if (isListenTogetherGuest) {
+          playerConnection.toggleMute()
+          return@LivingPlayButton
         }
-    ) {
-      Box(
-        modifier =
-          Modifier.matchParentSize()
-            .graphicsLayer {
-              rotationZ = rotation
-              clip = true
-              shape = if (wavyPlayPause) PolygonCookieShape(sides = 9, indent = cookieIndent) else androidx.compose.foundation.shape.CircleShape
-            }
-            .background(primaryColor)
-      )
-
-      Icon(
-        painter =
-          painterResource(
-            when {
-              isListenTogetherGuest -> if (isMuted) R.drawable.volume_off else R.drawable.volume_up
-              playbackState == Player.STATE_ENDED -> R.drawable.replay
-              effectiveIsPlaying -> R.drawable.pause
-              else -> R.drawable.play
-            }
-          ),
-        contentDescription = null,
-        tint = onPrimaryColor,
-        modifier = Modifier.size(24.dp)
-      )
-    }
+        if (isCasting) {
+          if (castIsPlaying) castHandler?.pause() else castHandler?.play()
+        } else if (playbackState == Player.STATE_ENDED) {
+          playerConnection.player.seekTo(0, 0)
+          playerConnection.player.playWhenReady = true
+        } else {
+          playerConnection.togglePlayPause()
+        }
+      },
+      containerColor = primaryColor,
+      contentColor = onPrimaryColor,
+      living = false,
+      beatRings = false,
+      glyphSize = 24.dp,
+      overrideIcon =
+        when {
+          isListenTogetherGuest ->
+            painterResource(if (isMuted) R.drawable.volume_off else R.drawable.volume_up)
+          playbackState == Player.STATE_ENDED -> painterResource(R.drawable.replay)
+          else -> null
+        },
+      modifier = Modifier.size(48.dp),
+    )
 
     Spacer(modifier = Modifier.width(12.dp))
 

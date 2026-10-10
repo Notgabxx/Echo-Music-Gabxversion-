@@ -14,6 +14,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <!-- Song recognition from the phone's own audio (playback capture via MediaProjection). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
@@ -633,12 +635,22 @@
             </intent-filter>
         </activity>
 
+        <!-- Quick-settings trampolines run in their own task (empty affinity) so the app the
+             user is listening to stays on screen instead of Flux being brought to the front. -->
         <activity
             android:name=".recognition.RecognitionLaunchActivity"
             android:excludeFromRecents="true"
             android:exported="false"
             android:launchMode="singleTask"
             android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Metrolist.Transparent" />
+
+        <activity
+            android:name=".recognition.DeviceAudioConsentActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:taskAffinity=""
             android:theme="@style/Theme.Metrolist.Transparent" />
 
         <!-- Music Recognizer Widget -->
@@ -666,7 +678,7 @@
         <service
             android:name=".recognition.RecognitionForegroundService"
             android:exported="false"
-            android:foregroundServiceType="microphone" />
+            android:foregroundServiceType="microphone|mediaProjection" />
 
         <!-- Music Recognizer Quick Settings Tile -->
         <service

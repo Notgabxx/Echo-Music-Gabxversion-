@@ -171,7 +171,8 @@ class MusicRecognizerWidgetService : Service() {
                       RecognizerWidgetEntryPoint::class.java
                     )
                     .databaseDao()
-                dao.insert(
+                // Once per result: the recognition screen may be showing (and saving) it too.
+                if (MusicRecognitionService.claimHistorySave(result.result)) dao.insert(
                   RecognitionHistory(
                     trackId = result.result.trackId,
                     title = result.result.title,
@@ -190,8 +191,6 @@ class MusicRecognizerWidgetService : Service() {
                     recognizedAt = LocalDateTime.now()
                   )
                 )
-                // Tell RecognitionScreen not to save again (avoid duplicate entry)
-                // MusicRecognitionService.resultSavedExternally = true
               } catch (_: Exception) {
                 // Non-fatal – widget result is still displayed
               }

@@ -1847,6 +1847,14 @@ class MainActivity : ComponentActivity() {
   ) {
     if (intent.action != ACTION_RECOGNITION) return
     val autoStart = intent.getBooleanExtra(EXTRA_AUTO_START_RECOGNITION, false)
+    if (
+      intent.hasExtra(
+        echo.music.iad1tya.recognition.RecognitionForegroundService.EXTRA_RECOGNITION_TRACK_ID
+      )
+    ) {
+      // Opened from a "song found" notification: show that result instead of a fresh screen.
+      echo.music.iad1tya.recognition.MusicRecognitionService.requestShowLastResult()
+    }
 
     intent.removeExtra(EXTRA_AUTO_START_RECOGNITION)
     navController.navigate(if (autoStart) "recognition?autoStart=true" else "recognition") {

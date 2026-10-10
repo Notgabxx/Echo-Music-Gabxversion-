@@ -72,6 +72,10 @@ val WavyPlayPauseKey = booleanPreferencesKey("wavyPlayPause")
 val FluidPlayerTransitionKey = booleanPreferencesKey("fluidPlayerTransition")
 val AudioReactiveHaloKey = booleanPreferencesKey("audioReactiveHalo")
 val AmbientBackdropKey = booleanPreferencesKey("ambientBackdrop")
+
+/** Where song recognition listens: "MICROPHONE" (around you) or "DEVICE_AUDIO" (this phone). */
+val RecognitionSourceKey = stringPreferencesKey("recognitionSource")
+
 val SwipeToSongKey = booleanPreferencesKey("SwipeToSong")
 val SwipeToRemoveSongKey = booleanPreferencesKey("SwipeToRemoveSong")
 val UseNewPlayerDesignKey = booleanPreferencesKey("useNewPlayerDesign")

@@ -249,34 +249,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-private data class WavyShape(val sides: Int, val indent: Float, val rotationDegrees: Float) :
-  Shape {
-  override fun createOutline(
-    size: Size,
-    layoutDirection: LayoutDirection,
-    density: Density
-  ): Outline {
-    val path = Path()
-    val maxRadiusX = size.width / 2f
-    val maxRadiusY = size.height / 2f
-    val cx = size.width / 2f
-    val cy = size.height / 2f
-
-    val steps = 120
-    val rotationRad = rotationDegrees * Math.PI / 180.0
-    for (i in 0..steps) {
-      val angle = i * Math.PI * 2 / steps
-      val bumpAngle = angle - rotationRad
-      val r = 1f - indent + indent * cos(sides * bumpAngle)
-      val x = cx + maxRadiusX * r * cos(angle)
-      val y = cy + maxRadiusY * r * sin(angle)
-      if (i == 0) path.moveTo(x.toFloat(), y.toFloat()) else path.lineTo(x.toFloat(), y.toFloat())
-    }
-    path.close()
-    return Outline.Generic(path)
-  }
-}
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BottomSheetPlayer(
@@ -2391,16 +2363,8 @@ fun BottomSheetPlayer(
               val nextInteractionSource = remember { MutableInteractionSource() }
               val playPauseInteractionSource = remember { MutableInteractionSource() }
 
-              val isPlayPausePressed by playPauseInteractionSource.collectIsPressedAsState()
               val isBackPressed by backInteractionSource.collectIsPressedAsState()
               val isNextPressed by nextInteractionSource.collectIsPressedAsState()
-
-              val playPauseScale by
-                animateFloatAsState(
-                  targetValue = if (isPlayPausePressed) 0.9f else 1f,
-                  animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
-                  label = "playPauseScale"
-                )
 
               val backButtonScale by
                 animateFloatAsState(
@@ -2441,35 +2405,14 @@ fun BottomSheetPlayer(
 
               Spacer(modifier = Modifier.width(24.dp))
 
-              val cookieIndent by
-                animateFloatAsState(
-                  targetValue = if (effectiveIsPlaying) 0.08f else 0f,
-                  animationSpec = tween(durationMillis = 300, easing = LinearEasing),
-                  label = "cookieIndent",
-                )
-
-              val infiniteTransition = rememberInfiniteTransition(label = "rotation")
-              // The wavy outline used to be rebuilt with a new rotation every frame, recomposing
-              // the whole controls row at display refresh rate. Rotating the button layer on the
-              // GPU (and counter-rotating the glyph) gives the identical look with zero
-              // recomposition while playing.
-              val rotationState =
-                infiniteTransition.animateFloat(
-                  initialValue = 0f,
-                  targetValue = 360f,
-                  animationSpec =
-                    infiniteRepeatable(
-                      animation = tween(8000, easing = LinearEasing),
-                      repeatMode = RepeatMode.Restart
-                    ),
-                  label = "rotation"
-                )
-
-              FilledIconButton(
+              // "Living" play button: the body flows and pulses with the music, beats send out
+              // rings and the glyph morphs between play and pause (see LivingPlayButton).
+              LivingPlayButton(
+                isPlaying = effectiveIsPlaying,
                 onClick = {
                   if (isListenTogetherGuest) {
                     playerConnection.toggleMute()
-                    return@FilledIconButton
+                    return@LivingPlayButton
                   }
                   if (isCasting) {
                     if (castIsPlaying) {
@@ -2484,50 +2427,26 @@ fun BottomSheetPlayer(
                     playerConnection.togglePlayPause()
                   }
                 },
-                shape =
-                  if (wavyPlayPause && cookieIndent > 0f) WavyShape(9, cookieIndent, 0f) else CircleShape,
+                containerColor = textButtonColor,
+                contentColor = iconButtonColor,
+                living = wavyPlayPause && state.isExpanded,
+                glyphSize = 36.dp,
+                overrideIcon =
+                  if (isListenTogetherGuest) {
+                    painterResource(if (isMuted) R.drawable.volume_off else R.drawable.volume_up)
+                  } else {
+                    null
+                  },
+                contentDescription =
+                  if (isListenTogetherGuest) {
+                    if (isMuted) stringResource(R.string.unmute) else stringResource(R.string.mute)
+                  } else {
+                    if (effectiveIsPlaying) stringResource(R.string.pause)
+                    else stringResource(R.string.play)
+                  },
                 interactionSource = playPauseInteractionSource,
-                colors =
-                  IconButtonDefaults.filledIconButtonColors(
-                    containerColor = textButtonColor,
-                    contentColor = iconButtonColor,
-                  ),
-                modifier =
-                  Modifier.size(84.dp).graphicsLayer {
-                    scaleX = playPauseScale
-                    scaleY = playPauseScale
-                    rotationZ = if (wavyPlayPause) rotationState.value else 0f
-                  }
-              ) {
-                Row(
-                  verticalAlignment = Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.Center,
-                  modifier =
-                    Modifier.graphicsLayer {
-                      rotationZ = if (wavyPlayPause) -rotationState.value else 0f
-                    }
-                ) {
-                  Icon(
-                    painter =
-                      painterResource(
-                        if (isListenTogetherGuest) {
-                          if (isMuted) R.drawable.volume_off else R.drawable.volume_up
-                        } else {
-                          if (effectiveIsPlaying) R.drawable.pause else R.drawable.play
-                        }
-                      ),
-                    contentDescription =
-                      if (isListenTogetherGuest) {
-                        if (isMuted) stringResource(R.string.unmute)
-                        else stringResource(R.string.mute)
-                      } else {
-                        if (effectiveIsPlaying) stringResource(R.string.pause)
-                        else stringResource(R.string.play)
-                      },
-                    modifier = Modifier.size(36.dp)
-                  )
-                }
-              }
+                modifier = Modifier.size(84.dp),
+              )
 
               Spacer(modifier = Modifier.width(24.dp))
 

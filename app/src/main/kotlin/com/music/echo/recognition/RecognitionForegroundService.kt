@@ -1,5 +1,6 @@
 package echo.music.iad1tya.recognition
 
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -8,8 +9,13 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.music.shazamkit.models.RecognitionResult
@@ -35,6 +41,24 @@ class RecognitionForegroundService : Service() {
   private var keepNotificationOnStop = false
   private var terminalStateHandled = false
 
+  /** Listening to the phone's own audio (playback capture) instead of the microphone. */
+  private var deviceAudio = false
+
+  /** Started from the recognition screen (see [DeviceAudioCapture.start]). */
+  private var fromApp = false
+  private var projection: MediaProjection? = null
+  private val projectionCallback =
+    object : MediaProjection.Callback() {
+      override fun onStop() {
+        // The user revoked the capture (e.g. from the status bar) while we were still listening.
+        if (recognitionJob?.isActive == true) {
+          Timber.tag(TAG).i("Audio capture stopped by the system/user")
+          recognitionJob?.cancel()
+          MusicRecognitionService.reportError(getString(R.string.recognition_device_capture_stopped))
+        }
+      }
+    }
+
   override fun onBind(intent: Intent?): IBinder? = null
 
   override fun onCreate() {
@@ -45,10 +69,65 @@ class RecognitionForegroundService : Service() {
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-    Timber.tag(TAG).d("onStartCommand: flags=%d, startId=%d", flags, startId)
+    Timber.tag(TAG).d("onStartCommand: action=%s, flags=%d, startId=%d", intent?.action, flags, startId)
+    val busy = recognitionJob?.isActive == true
+    val wantsDeviceAudio =
+      intent?.action == ACTION_RECOGNIZE_DEVICE_AUDIO && DeviceAudioCapture.isSupported
+    if (!busy) {
+      deviceAudio = wantsDeviceAudio
+      fromApp = intent?.getBooleanExtra(EXTRA_FROM_APP, false) == true
+    }
+
     if (!startInForeground()) return START_NOT_STICKY
-    startRecognitionIfNeeded()
+    if (busy) return START_NOT_STICKY
+
+    val mediaProjection =
+      if (deviceAudio && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        obtainProjection(intent)
+          ?: run {
+            MusicRecognitionService.reportError(
+              getString(R.string.recognition_device_capture_unavailable)
+            )
+            renderStatus(MusicRecognitionService.recognitionStatus.value)
+            return START_NOT_STICKY
+          }
+      } else {
+        null
+      }
+
+    startRecognitionIfNeeded(mediaProjection)
     return START_NOT_STICKY
+  }
+
+  /** Turns the consent returned by the system dialog into a live MediaProjection. */
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private fun obtainProjection(intent: Intent?): MediaProjection? {
+    if (intent == null) return null
+    val resultCode = intent.getIntExtra(EXTRA_PROJECTION_RESULT_CODE, Activity.RESULT_CANCELED)
+    val data =
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        intent.getParcelableExtra(EXTRA_PROJECTION_DATA, Intent::class.java)
+      } else {
+        @Suppress("DEPRECATION") intent.getParcelableExtra<Intent>(EXTRA_PROJECTION_DATA)
+      } ?: return null
+
+    return try {
+      getSystemService(MediaProjectionManager::class.java)
+        .getMediaProjection(resultCode, data)
+        ?.also { it.registerCallback(projectionCallback, Handler(Looper.getMainLooper())) }
+        .also { projection = it }
+    } catch (e: Exception) {
+      Timber.tag(TAG).w(e, "Unable to obtain MediaProjection")
+      null
+    }
+  }
+
+  private fun releaseProjection() {
+    projection?.let {
+      runCatching { it.unregisterCallback(projectionCallback) }
+      runCatching { it.stop() }
+    }
+    projection = null
   }
 
   override fun onDestroy() {
@@ -56,6 +135,7 @@ class RecognitionForegroundService : Service() {
     recognitionJob?.cancel()
     statusJob?.cancel()
     serviceScope.cancel()
+    releaseProjection()
     if (!keepNotificationOnStop) {
       stopForeground(STOP_FOREGROUND_REMOVE)
     }
@@ -66,7 +146,7 @@ class RecognitionForegroundService : Service() {
     val notification =
       buildNotification(
         title = getString(R.string.recognize_music),
-        contentText = getString(R.string.recognition_notification_listening),
+        contentText = listeningText(),
         isTerminal = false,
         contentIntent = null,
         largeIcon = null,
@@ -76,11 +156,7 @@ class RecognitionForegroundService : Service() {
 
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        startForeground(
-          NOTIFICATION_ID,
-          notification,
-          ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE,
-        )
+        startForeground(NOTIFICATION_ID, notification, foregroundServiceType())
       } else {
         startForeground(NOTIFICATION_ID, notification)
       }
@@ -103,7 +179,32 @@ class RecognitionForegroundService : Service() {
     }
   }
 
-  private fun startRecognitionIfNeeded() {
+  /**
+   * Playback capture needs the `mediaProjection` type; the `microphone` type is kept as well so
+   * the app may record while in the background (Android 11+ silences recording otherwise).
+   */
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private fun foregroundServiceType(): Int {
+    val microphone =
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+      } else {
+        0
+      }
+    return if (deviceAudio) {
+      ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION or microphone
+    } else {
+      ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+    }
+  }
+
+  private fun listeningText(): String =
+    getString(
+      if (deviceAudio) R.string.recognition_notification_listening_device
+      else R.string.recognition_notification_listening
+    )
+
+  private fun startRecognitionIfNeeded(mediaProjection: MediaProjection?) {
     if (recognitionJob?.isActive == true) return
     Timber.tag(TAG).d("Starting recognition flow")
 
@@ -125,12 +226,18 @@ class RecognitionForegroundService : Service() {
 
     recognitionJob =
       serviceScope.launch {
-        val result = MusicRecognitionService.recognize(this@RecognitionForegroundService)
-        if (
-          result is RecognitionStatus.Error &&
-            MusicRecognitionService.recognitionStatus.value !is RecognitionStatus.Error
-        ) {
-          renderStatus(result)
+        try {
+          val result =
+            MusicRecognitionService.recognize(this@RecognitionForegroundService, mediaProjection)
+          if (
+            result is RecognitionStatus.Error &&
+              MusicRecognitionService.recognitionStatus.value !is RecognitionStatus.Error
+          ) {
+            renderStatus(result)
+          }
+        } finally {
+          // One consent per recognition: stop capturing as soon as we are done listening.
+          releaseProjection()
         }
       }
   }
@@ -141,7 +248,7 @@ class RecognitionForegroundService : Service() {
         Timber.tag(TAG).d("Status: Listening")
         updateNotification(
           title = getString(R.string.recognize_music),
-          contentText = getString(R.string.recognition_notification_listening),
+          contentText = listeningText(),
           isTerminal = false,
           contentIntent = null,
           largeIcon = null,
@@ -169,30 +276,34 @@ class RecognitionForegroundService : Service() {
         if (terminalStateHandled) return
         terminalStateHandled = true
         Timber.tag(TAG).i("Status: No match")
-        updateNotification(
-          title = getString(R.string.recognize_music),
-          contentText = getString(R.string.recognition_notification_no_match),
-          isTerminal = true,
-          contentIntent = null,
-          largeIcon = null,
-          actionIntent = null,
-          actionTitle = null,
-        )
+        if (!resultShownInApp()) {
+          updateNotification(
+            title = getString(R.string.recognize_music),
+            contentText = getString(R.string.recognition_notification_no_match),
+            isTerminal = true,
+            contentIntent = null,
+            largeIcon = null,
+            actionIntent = null,
+            actionTitle = null,
+          )
+        }
         finishWithPersistentResult()
       }
       is RecognitionStatus.Error -> {
         if (terminalStateHandled) return
         terminalStateHandled = true
         Timber.tag(TAG).w("Status: Error — %s", status.message)
-        updateNotification(
-          title = getString(R.string.recognize_music),
-          contentText = getString(R.string.recognition_notification_failed),
-          isTerminal = true,
-          contentIntent = null,
-          largeIcon = null,
-          actionIntent = null,
-          actionTitle = null,
-        )
+        if (!resultShownInApp()) {
+          updateNotification(
+            title = getString(R.string.recognition_notification_failed),
+            contentText = status.message,
+            isTerminal = true,
+            contentIntent = null,
+            largeIcon = null,
+            actionIntent = null,
+            actionTitle = null,
+          )
+        }
         finishWithPersistentResult()
       }
       is RecognitionStatus.Ready -> Unit
@@ -233,7 +344,7 @@ class RecognitionForegroundService : Service() {
     actionTitle: String?,
   ) =
     NotificationCompat.Builder(this, CHANNEL_ID)
-      .setSmallIcon(R.drawable.ic_widget_mic)
+      .setSmallIcon(if (deviceAudio) R.drawable.headphones else R.drawable.ic_widget_mic)
       .setContentTitle(title)
       .setContentText(contentText)
       .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -252,6 +363,11 @@ class RecognitionForegroundService : Service() {
   private fun handleSuccess(result: RecognitionResult) {
     if (terminalStateHandled) return
     terminalStateHandled = true
+    serviceScope.launch { saveRecognitionToHistory(this@RecognitionForegroundService, result) }
+    if (resultShownInApp()) {
+      finishWithPersistentResult()
+      return
+    }
 
     val pendingIntent = createResultPendingIntent(result)
     updateNotification(
@@ -326,7 +442,18 @@ class RecognitionForegroundService : Service() {
     )
   }
 
+  /** The user started this from the recognition screen and is still looking at it. */
+  private fun resultShownInApp(): Boolean = fromApp && MusicRecognitionService.isScreenVisible
+
   private fun finishWithPersistentResult() {
+    if (resultShownInApp()) {
+      // The result is already on screen: no need for a leftover notification.
+      Timber.tag(TAG).d("Finishing without notification (result shown in app)")
+      keepNotificationOnStop = false
+      stopForeground(STOP_FOREGROUND_REMOVE)
+      stopSelf()
+      return
+    }
     Timber.tag(TAG).d("Finishing with persistent notification")
     keepNotificationOnStop = true
     stopForeground(STOP_FOREGROUND_DETACH)
@@ -351,6 +478,12 @@ class RecognitionForegroundService : Service() {
   }
 
   companion object {
+    /** Listen to the phone's own audio; needs [EXTRA_PROJECTION_RESULT_CODE] + [EXTRA_PROJECTION_DATA]. */
+    const val ACTION_RECOGNIZE_DEVICE_AUDIO = "echo.music.iad1tya.recognition.DEVICE_AUDIO"
+    const val EXTRA_PROJECTION_RESULT_CODE = "projection_result_code"
+    const val EXTRA_PROJECTION_DATA = "projection_data"
+    const val EXTRA_FROM_APP = "from_app"
+
     const val EXTRA_RECOGNITION_TRACK_ID = "recognition_track_id"
     const val EXTRA_RECOGNITION_TITLE = "recognition_title"
     const val EXTRA_RECOGNITION_ARTIST = "recognition_artist"

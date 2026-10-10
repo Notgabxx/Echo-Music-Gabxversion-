@@ -408,7 +408,7 @@
     <string name="banner_listen_open">Abrir sala</string>
     <string name="banner_find_label">DESCUBRA</string>
     <string name="banner_find_title">Que música é essa?</string>
-    <string name="banner_find_subtitle">Toque e o Flux identifica o que está tocando ao seu redor.</string>
+    <string name="banner_find_subtitle">Descubra músicas de outras apps ou à sua volta — mesmo com auscultadores.</string>
     <string name="banner_find_action">Reconhecer</string>
     <string name="banner_mix_label">PLAYLISTS INTELIGENTES</string>
     <string name="banner_mix_title">Um mix do seu jeito</string>
@@ -424,4 +424,23 @@
     <string name="about_based_on_desc">O Flux é um fork do Echo Music e é distribuído sob a mesma licença.</string>
     <string name="about_license">Licença</string>
     <string name="about_license_desc">%1$s · fornecido sem garantia</string>
+    <string name="wavy_play_pause">Botão de reprodução vivo</string>
+    <string name="wavy_play_pause_desc">O botão de reprodução flui com a música, pulsa na batida e transforma-se entre reproduzir e pausa</string>
+    <string name="recognition_permission_missing">Permita o acesso ao microfone para reconhecer músicas.</string>
+    <string name="recognition_failed_generic">Não foi possível reconhecer. Tente novamente.</string>
+    <string name="recognition_network_error">Sem ligação ao serviço de reconhecimento. Verifique a internet e tente novamente.</string>
+    <string name="recognition_no_match_hint">Não encontrámos esta música. Tente novamente num trecho em que esteja mais nítida.</string>
+    <string name="recognition_mic_unavailable">O microfone está ocupado ou indisponível de momento.</string>
+    <string name="recognition_mic_silent">O microfone não captou nenhum som. Verifique se o acesso ao microfone está ativo.</string>
+    <string name="recognition_device_capture_unavailable">Não foi possível captar o áudio do telemóvel.</string>
+    <string name="recognition_device_capture_stopped">A captura de áudio foi interrompida.</string>
+    <string name="recognition_device_permission_denied">Permita a captura para ouvir o áudio do telemóvel.</string>
+    <string name="recognition_device_silent">Não foi captado som de outras apps. Carregue em reproduzir na outra app e tente novamente — algumas apps (conteúdo protegido) bloqueiam a captura de áudio.</string>
+    <string name="recognition_source_mic">À sua volta</string>
+    <string name="recognition_source_device">Neste telemóvel</string>
+    <string name="recognition_source_mic_desc">Ouve pelo microfone a música que toca perto de si.</string>
+    <string name="recognition_source_device_desc">Identifica o que toca noutras apps — vídeos, reels, jogos — mesmo com auscultadores. O Android vai pedir autorização para captar o áudio.</string>
+    <string name="recognition_listening_device">A ouvir o telemóvel…</string>
+    <string name="recognition_listening_device_hint">Pode ir para a outra app e reproduzir — o resultado chega por notificação.</string>
+    <string name="recognition_notification_listening_device">A ouvir o áudio do telemóvel…</string>
 </resources>

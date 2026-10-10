@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -46,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -102,7 +102,7 @@ fun FeatureBanners(
     maxItemWidth = heroWidth,
     itemSpacing = 8.dp,
     contentPadding = PaddingValues(horizontal = 16.dp),
-    modifier = modifier.fillMaxWidth().height(208.dp)
+    modifier = modifier.fillMaxWidth().height(BannerHeight)
   ) { index ->
     Box(
       modifier =
@@ -127,7 +127,7 @@ fun FeatureBanners(
                   activeRoom.roomCode,
                   activeRoom.users.count { it.isConnected }
                 ),
-              decoration = { TogetherDecoration(live = true) },
+              badge = { TogetherBadge(live = true) },
               primaryAction =
                 BannerAction(stringResource(R.string.banner_listen_open), R.drawable.group_filled) {
                   navController.navigate(LISTEN_TOGETHER_ROUTE)
@@ -140,7 +140,7 @@ fun FeatureBanners(
               label = stringResource(R.string.banner_listen_label),
               title = stringResource(R.string.banner_listen_title),
               subtitle = stringResource(R.string.banner_listen_subtitle),
-              decoration = { TogetherDecoration(live = false) },
+              badge = { TogetherBadge(live = false) },
               primaryAction =
                 BannerAction(stringResource(R.string.banner_listen_create), R.drawable.group_filled) {
                   navController.navigate(LISTEN_TOGETHER_ROUTE)
@@ -160,7 +160,7 @@ fun FeatureBanners(
             label = stringResource(R.string.banner_find_label),
             title = stringResource(R.string.banner_find_title),
             subtitle = stringResource(R.string.banner_find_subtitle),
-            decoration = { RingsDecoration(R.drawable.mic) },
+            badge = { IconBadge(R.drawable.mic) },
             primaryAction =
               BannerAction(stringResource(R.string.banner_find_action), R.drawable.mic) {
                 navController.navigate("recognition")
@@ -174,7 +174,7 @@ fun FeatureBanners(
             label = stringResource(R.string.banner_mix_label),
             title = stringResource(R.string.banner_mix_title),
             subtitle = stringResource(R.string.banner_mix_subtitle),
-            decoration = { RingsDecoration(R.drawable.sparks) },
+            badge = { IconBadge(R.drawable.sparks) },
             primaryAction =
               BannerAction(stringResource(R.string.banner_mix_action), R.drawable.sparks) {
                 navController.navigate("generate")
@@ -208,7 +208,7 @@ private fun FeatureBanner(
   label: String,
   title: String,
   subtitle: String,
-  decoration: @Composable () -> Unit,
+  badge: @Composable () -> Unit,
   primaryAction: BannerAction,
   onClick: () -> Unit,
   secondaryAction: BannerAction? = null,
@@ -238,6 +238,25 @@ private fun FeatureBanner(
             radius = size.height * 0.95f,
             center = Offset(size.width * 0.82f, size.height * 0.18f),
           )
+          // Soft "sound waves" radiating from the badge in the top-end corner.
+          val waveCenter =
+            Offset(
+              size.width - BannerPadding.toPx() - BadgeSize.toPx() / 2f,
+              BannerPadding.toPx() + BadgeSize.toPx() / 2f,
+            )
+          drawCircle(
+            color = Color.White.copy(alpha = 0.08f),
+            radius = 30.dp.toPx(),
+            center = waveCenter,
+          )
+          WaveRings.forEach { (radius, alpha) ->
+            drawCircle(
+              color = Color.White.copy(alpha = alpha),
+              radius = radius.toPx(),
+              center = waveCenter,
+              style = Stroke(width = 1.5.dp.toPx()),
+            )
+          }
           // Soft shade behind the text block for extra legibility.
           drawRect(
             brush =
@@ -248,41 +267,55 @@ private fun FeatureBanner(
               )
           )
         }
-    ) {
-      Box(modifier = Modifier.align(Alignment.TopEnd).padding(top = 18.dp, end = 18.dp)) {
-        decoration()
-      }
-    }
+    )
 
-    Column(
-      modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().padding(18.dp),
-      verticalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-      Text(
-        text = label,
-        style = MaterialTheme.typography.labelMedium,
-        fontWeight = FontWeight.SemiBold,
-        letterSpacing = 1.2.sp,
-        color = Color.White.copy(alpha = 0.82f),
-        maxLines = 1,
-      )
-      Text(
-        text = title,
-        style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.Bold,
-        color = Color.White,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.fillMaxWidth(0.78f),
-      )
-      Text(
-        text = subtitle,
-        style = MaterialTheme.typography.bodySmall,
-        color = Color.White.copy(alpha = 0.82f),
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.fillMaxWidth(0.85f),
-      )
+    Column(modifier = Modifier.fillMaxSize().padding(BannerPadding)) {
+      // Header: eyebrow label + badge. The badge has its own slot in the layout, so it can never
+      // run into the title, whatever the text length, language or font scale.
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().height(BadgeSize),
+      ) {
+        Text(
+          text = label,
+          style = MaterialTheme.typography.labelMedium,
+          fontWeight = FontWeight.SemiBold,
+          letterSpacing = 1.2.sp,
+          color = Color.White.copy(alpha = 0.86f),
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+          modifier = Modifier.weight(1f),
+        )
+        Spacer(Modifier.width(12.dp))
+        badge()
+      }
+
+      Spacer(Modifier.height(6.dp))
+
+      // Title and subtitle share the space left above the buttons; if it runs short (large font
+      // scale) the subtitle gives up lines first, with an ellipsis.
+      Column(
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = Modifier.fillMaxWidth().weight(1f),
+      ) {
+        Text(
+          text = title,
+          style = MaterialTheme.typography.titleLarge,
+          fontWeight = FontWeight.Bold,
+          color = Color.White,
+          maxLines = 2,
+          overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+          text = subtitle,
+          style = MaterialTheme.typography.bodySmall,
+          color = Color.White.copy(alpha = 0.86f),
+          maxLines = 2,
+          overflow = TextOverflow.Ellipsis,
+          modifier = Modifier.fillMaxWidth(0.92f),
+        )
+      }
+
       Spacer(Modifier.height(10.dp))
       CompositionLocalProvider(LocalAppBackdrop provides bannerBackdrop) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -340,36 +373,19 @@ private fun GlassPillButton(action: BannerAction, emphasized: Boolean) {
   }
 }
 
-/** Overlapping "friends" avatars — reads as people listening together. */
+/** Three side-by-side "friends" bubbles — reads as people listening together. */
 @Composable
-private fun TogetherDecoration(live: Boolean) {
+private fun TogetherBadge(live: Boolean) {
   val icons = listOf(R.drawable.group_filled, R.drawable.music_note, R.drawable.favorite)
-  Box(contentAlignment = Alignment.CenterEnd) {
-    Row(horizontalArrangement = Arrangement.spacedBy((-14).dp)) {
-      icons.forEachIndexed { index, icon ->
-        Box(
-          contentAlignment = Alignment.Center,
-          modifier =
-            Modifier.size(46.dp)
-              .clip(CircleShape)
-              .background(Color.White.copy(alpha = 0.16f + 0.08f * index))
-              .border(2.dp, Color.White.copy(alpha = 0.55f), CircleShape),
-        ) {
-          Icon(
-            painter = painterResource(icon),
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier.size(22.dp),
-          )
-        }
-      }
+  Box {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+      icons.forEach { icon -> BadgeBubble(icon = icon, size = BadgeSize - 2.dp) }
     }
     if (live) {
       Box(
         modifier =
           Modifier.align(Alignment.TopEnd)
-            .offset(x = 2.dp, y = (-2).dp)
-            .size(12.dp)
+            .size(11.dp)
             .clip(CircleShape)
             .background(Color(0xFF34E37A))
             .border(2.dp, Color.White, CircleShape)
@@ -378,38 +394,34 @@ private fun TogetherDecoration(live: Boolean) {
   }
 }
 
-/** An icon inside soft concentric rings (sound waves). */
+/** A single icon bubble; the banner draws sound-wave rings radiating from it. */
 @Composable
-private fun RingsDecoration(@DrawableRes icon: Int) {
+private fun IconBadge(@DrawableRes icon: Int) {
+  BadgeBubble(icon = icon, size = BadgeSize)
+}
+
+@Composable
+private fun BadgeBubble(@DrawableRes icon: Int, size: Dp) {
   Box(
     contentAlignment = Alignment.Center,
     modifier =
-      Modifier.size(84.dp).drawBehind {
-        val center = Offset(size.width / 2f, size.height / 2f)
-        val base = size.minDimension / 2f
-        drawCircle(
-          color = Color.White.copy(alpha = 0.10f),
-          radius = base,
-          center = center,
-        )
-        drawCircle(
-          color = Color.White.copy(alpha = 0.22f),
-          radius = base * 0.78f,
-          center = center,
-          style = Stroke(width = 2.dp.toPx()),
-        )
-        drawCircle(
-          color = Color.White.copy(alpha = 0.18f),
-          radius = base * 0.56f,
-          center = center,
-        )
-      },
+      Modifier.size(size)
+        .clip(CircleShape)
+        .background(Color.White.copy(alpha = 0.20f))
+        .border(1.dp, Color.White.copy(alpha = 0.50f), CircleShape),
   ) {
     Icon(
       painter = painterResource(icon),
       contentDescription = null,
       tint = Color.White,
-      modifier = Modifier.size(28.dp),
+      modifier = Modifier.size(size * 0.5f),
     )
   }
 }
+
+private val BannerHeight = 224.dp
+private val BannerPadding = 16.dp
+private val BadgeSize = 36.dp
+
+/** Radius and opacity of each sound-wave ring drawn behind the badge. */
+private val WaveRings = listOf(50.dp to 0.16f, 74.dp to 0.10f, 100.dp to 0.06f)
