@@ -143,9 +143,22 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="flux-build-${GITHUB_RUN_NUMBER}"
-          gh release create "$TAG" dist/*.apk \
-            --repo "$GITHUB_REPOSITORY" \
-            --target "$GITHUB_SHA" \
-            --title "Flux (build ${GITHUB_RUN_NUMBER})" \
-            --notes "Optimized release build of Flux (commit ${GITHUB_SHA::7}). Flux is a fork of Echo Music, licensed under GPL-3.0." \
-            --prerelease
+          NOTES="Optimized release build of Flux (commit ${GITHUB_SHA::7}). Flux is a fork of Echo Music, licensed under GPL-3.0."
+          # The 80 MB upload occasionally fails transiently: retry, cleaning up any half-made release.
+          for attempt in 1 2 3; do
+            if out=$(gh release create "$TAG" dist/*.apk \
+                --repo "$GITHUB_REPOSITORY" \
+                --target "$GITHUB_SHA" \
+                --title "Flux (build ${GITHUB_RUN_NUMBER})" \
+                --notes "$NOTES" \
+                --prerelease 2>&1); then
+              echo "$out"
+              exit 0
+            fi
+            echo "$out"
+            echo "::warning title=Release attempt ${attempt} failed::$(echo "$out" | tail -n 3 | tr '\n' ' ')"
+            gh release delete "$TAG" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag > /dev/null 2>&1 || true
+            sleep 20
+          done
+          echo "::error title=Release::Could not publish the release after 3 attempts"
+          exit 1
