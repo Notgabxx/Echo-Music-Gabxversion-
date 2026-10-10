@@ -1,0 +1,15 @@
+O Flux é um player de música open source para Android que toca o catálogo do YouTube Music sem anúncios, com uma interface fluida que reage à música.
+
+Destaques:
+* Ouvir junto — crie uma sala e escute a mesma música, em sincronia, com os amigos.
+* Descobrir música — identifique o que está tocando ao seu redor ou em outros apps do celular (vídeos, reels, jogos), até com fone, e abra no Flux com um toque.
+* Player vivo — o botão de play flui e pulsa na batida, a capa ganha uma aura que reage a graves, médios e agudos, e o mini player vira o player completo.
+* Cores da capa — o tema acompanha a música, com contraste automático para o texto continuar legível.
+* Liquid glass — barras e botões de vidro fosco.
+* Letras sincronizadas — palavra por palavra, de várias fontes, com tradução opcional.
+* Offline — baixe músicas, álbuns e playlists.
+* Mixes inteligentes — mixes pessoais montados no próprio aparelho a partir do que você mais escuta.
+
+Sem contas, sem anúncios e sem rastreamento: sua biblioteca e suas configurações ficam no seu aparelho.
+
+O Flux é um fork do Echo Music e é licenciado sob a GNU GPL v3.0.

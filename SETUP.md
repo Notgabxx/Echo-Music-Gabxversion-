@@ -1,160 +1,100 @@
-# Setup Instructions
+# Configuração do ambiente
 
-This document provides instructions for setting up the Echo Music project for development.
+Este guia mostra como compilar o Flux no seu computador.
 
-## Prerequisites
+## Requisitos
 
-- Android Studio (latest version recommended)
-- Android SDK (API level as specified in `build.gradle.kts`)
+- Android Studio atualizado (ou só a linha de comando)
 - JDK 21
+- Android SDK 37, NDK `28.2.13676358` e CMake `3.22.1` (instale pelo SDK Manager)
 - Git
 
-## Initial Setup
-
-### 1. Clone the Repository
+## 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/iad1tya/Echo-Music.git
-cd Echo-Music
+git clone https://github.com/Notgabxx/Echo-Music-Gabxversion-.git Flux
+cd Flux
 ```
 
-### 2. Configure Local Properties
+## 2. Apontar o SDK
 
-Create a `local.properties` file from the template:
+Crie o `local.properties` a partir do modelo e informe o caminho do Android SDK:
 
 ```bash
 cp local.properties.template local.properties
 ```
 
-Edit `local.properties` and set your Android SDK path:
-
 ```properties
-sdk.dir=/path/to/your/android/sdk
+sdk.dir=/caminho/para/o/Android/sdk
 ```
 
-**Example paths:**
+## 3. Compilar
 
-- macOS: `/Users/username/Library/Android/sdk`
-- Linux: `/home/username/Android/sdk`
-- Windows: `C:\\Users\\username\\AppData\\Local\\Android\\sdk`
-
-### 3. Configure Firebase (Optional)
-
-Firebase is used for analytics and crash reporting. If you want to use these features:
-
-1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Add an Android app to your Firebase project
-3. Download the `google-services.json` file
-4. Place it in the `app/` directory
-
-**Note:** If you skip Firebase setup, the app will still build and run, but analytics and crash reporting will be disabled.
-
-### 4. Configure Release Signing (Optional)
-
-For release builds, you need to configure signing credentials. Set these as environment variables or in `gradle.properties`:
+O Flux tem duas variantes: **FOSS** (sem Google Play Services) e **GMS** (com transmissão para Chromecast).
 
 ```bash
-# Environment variables
-export KEYSTORE_PATH=/path/to/your/keystore.jks
-export STORE_PASSWORD=your_store_password
-export KEY_ALIAS=your_key_alias
-export KEY_PASSWORD=your_key_password
-```
-
-Or add to `gradle.properties` (never commit this file):
-
-```properties
-KEYSTORE_PATH=/path/to/your/keystore.jks
-STORE_PASSWORD=your_store_password
-KEY_ALIAS=your_key_alias
-KEY_PASSWORD=your_key_password
-```
-
-### 5. Build the Project
-
-Open the project in Android Studio or build from the command line.
-
-Echo Music has two build variants: **FOSS** (without Google Play Services / Cast) and **GMS** (with Cast support).
-
-```bash
-# FOSS Debug build
+# Debug
 ./gradlew assembleUniversalFossDebug
-
-# GMS Debug build
 ./gradlew assembleUniversalGmsDebug
 
-# Release builds (requires signing configuration)
+# Release (precisa de assinatura, veja abaixo)
 ./gradlew assembleUniversalFossRelease
 ./gradlew assembleUniversalGmsRelease
 ```
 
-*(On Windows, use `.\gradlew.bat` instead of `./gradlew`)*
+No Windows, use `.\gradlew.bat` no lugar de `./gradlew`.
 
-### 6. Configure AI Translation (Optional)
+## 4. Assinatura das builds de release
 
-Echo Music supports AI-powered lyrics translation. You can configure this in **Settings -> AI Settings**.
-
-#### Option A: Using OpenRouter (Default)
-
-This is the recommended setup for most users.
-
-1. Get an API Key from [OpenRouter](https://openrouter.ai/).
-2. In the app, go to **Settings -> AI Settings**.
-3. Ensure **Provider** is set to **OpenRouter**.
-4. Enter your **API Key**.
-
-#### Option B: Using Custom Provider
-
-Use this for other services like OpenAI, Anthropic, or local LLMs.
-
-1. In the app, go to **Settings -> AI Settings**.
-2. Select your **Provider** (e.g., ChatGPT, Gemini, or Custom).
-3. If using **Custom**, enter your provider's **Base URL**.
-4. Enter your **API Key**.
-
-## Important Files
-
-### Confidential Files (Never commit these)
-
-- `local.properties` - Contains your local SDK path
-- `app/google-services.json` - Contains Firebase credentials
-- `*.keystore` - Contains signing keys for release builds
-- `gradle.properties` - May contain signing credentials
-
-These files are already listed in `.gitignore` and should never be committed to version control.
-
-### Template Files (Safe to commit)
-
-- `local.properties.template` - Template for local properties
-- `app/google-services.json` - Optional Firebase configuration
-
-## Troubleshooting
-
-### Build Fails with "SDK location not found"
-
-Make sure you've created `local.properties` with the correct SDK path.
-
-### Firebase-related Build Errors
-
-If you're not using Firebase, you can still build the standard debug variant without `app/google-services.json` — Firebase features will simply be disabled:
+A build de release procura a chave em `keystore.jks`, na raiz do projeto, e lê as senhas das variáveis de ambiente:
 
 ```bash
-./gradlew assembleUniversalGmsDebug
+export STORE_PASSWORD=sua_senha_do_keystore
+export KEY_ALIAS=seu_alias
+export KEY_PASSWORD=sua_senha_da_chave
 ```
 
-### Gradle Sync Issues
+Para criar uma chave nova:
 
-Try cleaning and rebuilding:
+```bash
+keytool -genkeypair -keystore keystore.jks -alias flux -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Guarde essa chave em um lugar seguro e **nunca** faça commit dela. Builds assinadas com chaves diferentes não instalam por cima umas das outras.
+
+### Assinatura fixa no GitHub Actions
+
+O workflow [`flux-apk.yml`](.github/workflows/flux-apk.yml) usa uma chave fixa quando o repositório tem estes secrets (em **Settings → Secrets and variables → Actions**):
+
+| Secret | Conteúdo |
+| :-- | :-- |
+| `FLUX_KEYSTORE_BASE64` | O arquivo `keystore.jks` em base64 (`base64 -w0 keystore.jks`) |
+| `FLUX_KEYSTORE_PASSWORD` | A senha do keystore e da chave |
+| `FLUX_KEY_ALIAS` | O alias da chave (opcional, padrão `flux`) |
+
+Sem esses secrets, cada build é assinada com uma chave temporária.
+
+## 5. Recursos opcionais
+
+- **Tradução de letras e outros recursos de IA:** nas configurações de IA do app, escolha o provedor e informe a sua chave de API.
+- **Firebase:** o Flux não usa Firebase. Se você colocar um `app/google-services.json` no projeto, os plugins do Firebase são aplicados automaticamente, mas isso não é necessário.
+
+## Arquivos que nunca devem ir para o Git
+
+- `local.properties`
+- `gradle.properties` com dados pessoais
+- `*.keystore` / `*.jks`
+- `app/google-services.json`
+
+## Problemas comuns
+
+**"SDK location not found":** confira o `sdk.dir` no `local.properties`.
+
+**Erros estranhos depois de atualizar o projeto:** limpe e compile de novo.
 
 ```bash
 ./gradlew clean
-./gradlew build
+./gradlew assembleUniversalGmsDebug
 ```
 
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
-## License
-
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+Mais detalhes sobre como contribuir estão no [CONTRIBUTING.md](CONTRIBUTING.md).

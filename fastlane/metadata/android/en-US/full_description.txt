@@ -1,11 +1,15 @@
-Echo Music delivers a seamless, premium listening experience by leveraging YouTube Music's vast library — without the ads. It adds powerful extras including offline downloads, real-time synchronized lyrics, and environment-aware music recognition.
+Flux is an open-source music player for Android that streams the YouTube Music catalog without ads, with a fluid interface that reacts to the music.
 
-Features:
-* Ad-Free — Stream without any interruptions.
-* Seamless Playback — Switch effortlessly between audio-only and video modes.
-* Background Playback — Listen while using other apps or with the screen off.
-* Offline Mode — Download tracks, albums, and playlists via a dedicated download manager.
-* Echo Find — Identify songs playing around you using advanced audio recognition.
-* Multiple Lyric Animations — Choose from various lyric display styles with word-by-word synchronization.
-* Smart Recommendations — Personalized suggestions based on your listening history.
-* Echo Brain — An intelligent, on-device engine that analyzes your listening momentum and auto-injects perfectly aligned tracks into your queue.
+Highlights:
+* Listen Together — create a room and play the same song, in sync, with your friends.
+* Find songs — identify music playing around you or in other apps on your phone (videos, reels, games), even with headphones on, and open it in Flux with one tap.
+* Living player — the play button flows and pulses with the beat, the cover gets an aura that reacts to bass, mids and treble, and the mini player morphs into the full player.
+* Album colors — the theme follows the song that is playing, with automatic contrast so text stays readable.
+* Liquid glass — frosted-glass bars and buttons.
+* Synced lyrics — word-by-word lyrics from several providers, with optional translation.
+* Offline — download songs, albums and playlists.
+* Smart mixes — personal mixes built on your device from what you listen to most.
+
+No accounts, no ads, no tracking: your library and settings stay on your device.
+
+Flux is a fork of Echo Music and is licensed under the GNU GPL v3.0.

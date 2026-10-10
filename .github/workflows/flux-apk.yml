@@ -2,14 +2,19 @@ name: Flux APK
 
 # Builds an optimized (R8, release) APK of Flux and publishes it as a GitHub pre-release, so it can
 # be downloaded and installed straight from a phone.
-# The signing key is generated per run (throwaway) until a permanent key is configured in the
-# repository secrets: uninstall a previous build before installing a newer one if Android reports a
-# signature conflict.
+# Signing: when the FLUX_KEYSTORE_BASE64 / FLUX_KEYSTORE_PASSWORD (and optional FLUX_KEY_ALIAS)
+# secrets exist, every build is signed with that permanent key, so new builds install over old ones.
+# Without them a throwaway key is generated per run (uninstall the previous build before installing).
 
 on:
   workflow_dispatch:
   push:
-    branches: ["premium-ui", "main"]
+    branches: ["main"]
+    paths-ignore:
+      - "**.md"
+      - "assets/**"
+      - "fastlane/**"
+      - "LICENSE"
 
 permissions:
   contents: write
@@ -25,9 +30,9 @@ jobs:
     timeout-minutes: 120
 
     env:
-      STORE_PASSWORD: flux-ci-store
-      KEY_PASSWORD: flux-ci-store
-      KEY_ALIAS: flux
+      STORE_PASSWORD: ${{ secrets.FLUX_KEYSTORE_PASSWORD || 'flux-ci-store' }}
+      KEY_PASSWORD: ${{ secrets.FLUX_KEYSTORE_PASSWORD || 'flux-ci-store' }}
+      KEY_ALIAS: ${{ secrets.FLUX_KEY_ALIAS || 'flux' }}
 
     steps:
       - name: Checkout
@@ -52,14 +57,22 @@ jobs:
           "$SDKM" --install "ndk;28.2.13676358" "cmake;3.22.1" > /dev/null || true
           "$SDKM" --install "platforms;android-37" > /dev/null || true
 
-      - name: Create signing key
+      - name: Prepare signing key
         shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.FLUX_KEYSTORE_BASE64 }}
         run: |
-          keytool -genkeypair -noprompt \
-            -keystore keystore.jks \
-            -storepass "$STORE_PASSWORD" -keypass "$KEY_PASSWORD" \
-            -alias "$KEY_ALIAS" -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=Flux, O=Flux, C=BR"
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Using the permanent signing key from the repository secrets."
+            echo "$KEYSTORE_BASE64" | base64 -d > keystore.jks
+          else
+            echo "::warning title=Signing::No FLUX_KEYSTORE_BASE64 secret: signing with a throwaway key."
+            keytool -genkeypair -noprompt \
+              -keystore keystore.jks \
+              -storepass "$STORE_PASSWORD" -keypass "$KEY_PASSWORD" \
+              -alias "$KEY_ALIAS" -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Flux, O=Flux, C=BR"
+          fi
 
       - name: Build release APK
         shell: bash

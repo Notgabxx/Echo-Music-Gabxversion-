@@ -1,145 +1,68 @@
-# Privacy Policy for Echo Music App
+# Política de privacidade do Flux
 
-## Introduction
+_Última atualização: outubro de 2026_
 
-Echo Music ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application (the "App").
+O Flux é um app open source, gratuito e sem fins comerciais. Esta política explica, de forma direta, quais dados o app usa e com quem ele conversa para funcionar.
 
-## Information We Collect
+## Em resumo
 
-### 1. Personal Information
-- **Account Information**: When you log in to Spotify or YouTube, we may collect your username and basic profile information
-- **Usage Data**: We collect information about how you use the App, including:
-  - Songs played, paused, and skipped
-  - Playlists created and modified
-  - Search queries
-  - App settings and preferences
-  - Screen views and user interactions
+- O Flux **não tem contas próprias, anúncios, rastreamento nem telemetria**. Ele não envia estatísticas de uso nem relatórios de falhas para os mantenedores.
+- Seu histórico, suas playlists, seus downloads e suas configurações ficam **no seu aparelho**.
+- Para tocar músicas, buscar letras e usar alguns recursos, o app se conecta **diretamente** a serviços de terceiros. Cada serviço tem a própria política de privacidade.
+- Nenhum dado é vendido ou compartilhado com anunciantes.
 
-### 2. Device Information
-- **Device Details**: Device model, operating system version, and unique device identifiers
-- **App Performance**: Crash reports and performance metrics to improve app stability
-- **Network Information**: IP address and network type for analytics purposes
+## Dados guardados no aparelho
 
-### 3. Music Data
-- **Local Music Library**: Access to your device's music files for playback
-- **Streaming Data**: Information about songs streamed from YouTube Music and Spotify
-- **Playlist Data**: Your created playlists and song collections
+- Histórico de reprodução, curtidas, playlists, fila e estatísticas de escuta (usadas, por exemplo, para montar os mixes inteligentes, que são calculados no próprio aparelho).
+- Músicas baixadas e cache de áudio, capas e letras.
+- Preferências do app e, se você fizer login, os dados de sessão dos serviços conectados.
 
-## How We Use Your Information
+Esses dados só saem do aparelho se você exportar um backup. Desinstalar o app ou limpar os dados dele apaga tudo.
 
-### 1. App Functionality
-- Provide music streaming and playback services
-- Manage your playlists and music library
-- Sync your preferences across devices
-- Enable search and discovery features
+## Serviços de terceiros usados pelo app
 
-### 2. Analytics and Improvement
-- **Google Analytics Firebase**: We use Firebase Analytics to understand app usage patterns and improve user experience
-- **Crash Reporting**: We collect crash reports to identify and fix bugs
-- **Performance Monitoring**: We monitor app performance to ensure smooth operation
+**Reprodução e catálogo.** As buscas, recomendações e o áudio vêm do YouTube e do YouTube Music. Em caso de falha, o app pode usar instâncias públicas alternativas (como o Piped). Recursos opcionais consultam o SponsorBlock (para pular trechos) e o Return YouTube Dislike.
 
-### 3. Personalization
-- Recommend music based on your listening habits
-- Customize the app interface according to your preferences
-- Remember your settings and preferences
+**Letras.** As letras são buscadas em provedores públicos, como LRCLIB, KuGou, Better Lyrics/Unison, Paxsenix, SimpMusic e espelhos do LyricsPlus. O app envia só dados da música, como título, artista e duração.
 
-## Data Sharing and Disclosure
+**Capas e vídeos de fundo.** Capas em alta resolução e vídeos curtos de fundo podem ser buscados no Apple Music, no Tidal e em arquivos públicos de artes. Informações de artistas podem vir da Wikipédia.
 
-### 1. Third-Party Services
-- **YouTube Music**: We integrate with YouTube Music for streaming content
-- **Spotify**: We integrate with Spotify for music streaming and lyrics
-- **Google Analytics**: We share anonymized usage data with Google Analytics Firebase
+**Descobrir música (reconhecimento).** O áudio é transformado no próprio aparelho em uma "impressão digital" e só essa impressão digital é enviada ao serviço de reconhecimento da Shazam. A gravação em si não é enviada nem guardada. No modo **Neste celular**, o Flux capta o som tocado por outros apps somente depois que você inicia o reconhecimento e aprova o aviso do Android, e para de captar assim que termina. O som do próprio Flux não é captado.
 
-### 2. No Sale of Personal Data
-We do not sell, trade, or rent your personal information to third parties for marketing purposes.
+**Ouvir junto.** Quando você cria ou entra em uma sala, o código da sala, o nome que você escolher e o estado da reprodução (música, posição, play/pausa) passam por um servidor comunitário e ficam visíveis para quem está na sala.
 
-### 3. Legal Requirements
-We may disclose your information if required by law or to protect our rights and safety.
+**Clima.** Recursos que levam o clima em conta consultam a previsão no Open-Meteo usando uma localização aproximada, obtida pelo seu IP (via ipapi.co ou ipwho.is) ou, se você permitir, pela localização do aparelho.
 
-## Data Storage and Security
+**Atualizações.** O app consulta a API do GitHub para saber se existe uma versão nova.
 
-### 1. Local Storage
-- Your music playlists and preferences are stored locally on your device
-- We use secure local storage to protect your data
+## Integrações opcionais
 
-### 2. Cloud Storage
-- Some data may be synced to cloud services (Spotify, YouTube) as per their privacy policies
-- We use industry-standard security measures to protect your data
+Estas integrações só funcionam se você ativá-las ou fizer login:
 
-### 3. Data Retention
-- We retain analytics data for up to 2 years
-- Local app data is retained until you uninstall the app or clear app data
+- **YouTube Music**, para sincronizar sua biblioteca.
+- **Spotify**, para importar playlists.
+- **Last.fm** e **ListenBrainz**, para registrar o que você ouve.
+- **Discord**, para mostrar a música atual no seu status.
+- **Provedores de IA**, como OpenRouter, OpenAI, Anthropic, Google Gemini, Mistral, Groq, xAI, Perplexity e NVIDIA, além do **DeepL**, para tradução de letras e outros recursos de IA. Eles usam a chave de API que você mesmo cadastrar, e o texto enviado (como a letra a traduzir) é processado pelo provedor escolhido.
 
-## Your Rights and Choices
+## Permissões do Android
 
-### 1. Data Access
-- You can view your data through the app settings
-- You can export your playlists and preferences
+- **Microfone:** usado só durante o reconhecimento de música. No modo Neste celular, o Android também pede autorização para captar o áudio do aparelho.
+- **Notificações:** controles de reprodução, downloads e resultados do reconhecimento.
+- **Localização (opcional):** recursos baseados no clima.
+- **Armazenamento e mídia:** tocar músicas salvas no aparelho e exportar arquivos.
+- **Bluetooth e dispositivos próximos:** saída de áudio e transmissão para outros aparelhos.
 
-### 2. Data Deletion
-- Uninstalling the app will remove all local data
-- You can clear app data through device settings
-- Contact us to request deletion of any stored data
+Você pode revogar qualquer permissão nas configurações do Android.
 
-### 3. Privacy Controls
-- You can disable analytics in app settings
-- You can control which services you connect to
-- You can manage permissions through your device settings
+## Crianças
 
-## Third-Party Services
+O Flux não coleta dados pessoais de ninguém, incluindo crianças. O uso dos serviços de terceiros segue as regras de idade de cada um deles.
 
-### 1. YouTube Music
-- **Privacy Policy**: [YouTube Privacy Policy](https://policies.google.com/privacy)
-- **Data Collection**: YouTube may collect data about your music preferences and usage
+## Mudanças nesta política
 
-### 2. Spotify
-- **Privacy Policy**: [Spotify Privacy Policy](https://www.spotify.com/legal/privacy-policy/)
-- **Data Collection**: Spotify may collect data about your listening habits
+Quando a política mudar, a nova versão será publicada neste arquivo, com a data atualizada no topo.
 
-### 3. Google Analytics Firebase
-- **Privacy Policy**: [Google Privacy Policy](https://policies.google.com/privacy)
-- **Data Collection**: Google collects anonymized usage analytics
+## Contato
 
-## Children's Privacy
-
-Our App is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13.
-
-## International Users
-
-If you are using our App from outside the United States, please note that your information may be transferred to, stored, and processed in the United States where our servers are located.
-
-## Changes to This Privacy Policy
-
-We may update this Privacy Policy from time to time. We will notify you of any changes by:
-- Posting the new Privacy Policy in the App
-- Updating the "Last Updated" date
-- Sending you a notification if significant changes are made
-
-## Contact Us
-
-If you have any questions about this Privacy Policy or our data practices, please contact us:
-
-- **GitHub**: [https://github.com/iad1tya/Echo-Music](https://github.com/iad1tya/Echo-Music)
-- **Issues**: [https://github.com/iad1tya/Echo-Music/issues](https://github.com/iad1tya/Echo-Music/issues)
-- **Discussions**: [https://github.com/iad1tya/Echo-Music/discussions](https://github.com/iad1tya/Echo-Music/discussions)
-
-## Data Protection Compliance
-
-This Privacy Policy complies with:
-- **GDPR** (General Data Protection Regulation) for EU users
-- **CCPA** (California Consumer Privacy Act) for California users
-- **PIPEDA** (Personal Information Protection and Electronic Documents Act) for Canadian users
-
-## Summary
-
-- We collect minimal personal information necessary for app functionality
-- We use Google Analytics Firebase for app improvement
-- We integrate with YouTube Music and Spotify for music streaming
-- We do not sell your personal data
-- You have control over your data and privacy settings
-- We are committed to protecting your privacy and being transparent about our practices
-
----
-
-**By using Echo Music, you agree to the collection and use of information in accordance with this Privacy Policy.**
-
+Dúvidas e pedidos podem ser enviados pelas [Issues do repositório](https://github.com/Notgabxx/Echo-Music-Gabxversion-/issues).

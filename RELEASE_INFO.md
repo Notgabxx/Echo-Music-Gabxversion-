@@ -1,39 +1,20 @@
-# Echo Music Releases
+# Versões do Flux
 
-This document tracks all available releases for Echo Music. 
+As builds do Flux são geradas automaticamente pelo GitHub Actions a cada push na branch `main` e publicadas como **pre-release** em [Releases](https://github.com/Notgabxx/Echo-Music-Gabxversion-/releases), com o nome `flux-build-N`.
 
-## [v1.2.2] - 2026-08-28 (Latest)
-[Download on GitHub](https://github.com/EchoMusicApp/Echo-Music/releases/tag/v1.2.2)
+## Como instalar uma build
 
-**Bug Fixes**
-- Fixed a crash that occurred when adding a song to a playlist, album, or artist before it was fully loaded.
-- Fixed a crash caused by outdated saved settings after an app update; the app now falls back to a safe default instead of crashing.
-- Fixed Spotify login issues where signing in with Google, Apple, or Facebook could show a black screen or fail to complete.
-- Fixed the "Update Available" dialog not matching the app's overall theme and styling.
+1. Abra a release mais recente no celular.
+2. Baixe o arquivo `Flux-buildN.apk`.
+3. Abra o arquivo e permita a instalação quando o Android pedir.
 
-**Design Improvements**
-- Updated input fields and dialog buttons (including in Spotify Import) to use a more rounded, modern look consistent with Material You design.
+Enquanto o projeto não usar uma chave de assinatura fixa, o Android pode recusar a instalação por cima da versão anterior. Nesse caso, desinstale o Flux e instale a nova build.
 
-**Other Changes**
-- Updated select app components to their latest stable versions for improved reliability.
+## Notas das versões
 
-## [v1.2.1] - 2026-08-28
-[Download on GitHub](https://github.com/EchoMusicApp/Echo-Music/releases/tag/v1.2.1)
+As mudanças de cada build estão descritas nos commits e na própria página da release. Para pull requests, use títulos no padrão [Conventional Commits](https://www.conventionalcommits.org/pt-br/), por exemplo:
 
-I am pleased to announce the initial release of the updated Echo Music repository.
-
-Recently, the project was subjected to a legal takedown notice. Since then, I have taken all necessary actions and made the required adjustments to the codebase and documentation to ensure full legal compliance. 
-
-With these changes complete, I am excited to restore access to the project. I would like to extend my deepest gratitude to all of you for your unwavering support and patience during this period. Thank you for standing by me.
-
----
-
-## Pull Request & Release Note Guidelines
-
-**ATTENTION CONTRIBUTORS:** To maintain a clean and standardized changelog, all community contributions added to this file MUST strictly follow this format:
-
-`- \`<type>(<scope>): <summary>\` ([#PR_NUMBER](URL)) by @username`
-
-- **PR Titles** must follow [Conventional Commits](https://www.conventionalcommits.org/).
-- **Descriptions** must be clear, concise, and professional.
-- PRs that do not follow this strict formatting will **not** be merged.
+```
+feat(player): botão de play que reage à música
+fix(home): ícones do banner sobrepostos
+```

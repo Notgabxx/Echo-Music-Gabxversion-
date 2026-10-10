@@ -1,66 +1,34 @@
-# Security Policy
+# Política de segurança
 
-## Supported Versions
+## Versões com suporte
 
-We release patches for security vulnerabilities in the following versions:
+Só a build mais recente publicada em [Releases](https://github.com/Notgabxx/Echo-Music-Gabxversion-/releases) recebe correções. Se você encontrar um problema, confirme primeiro que ele acontece nessa versão.
 
-| Version | Supported |
-| ------- | --------- |
-| 1.3.x   | Yes       |
-| 1.4.x   | Yes       |
-| < 1.3   | No        |
+## Como relatar uma vulnerabilidade
 
-## Reporting a Vulnerability
+1. **Não abra uma issue pública** para falhas de segurança.
+2. Use o botão **Report a vulnerability** na aba [Security](https://github.com/Notgabxx/Echo-Music-Gabxversion-/security) do repositório. O relato fica privado entre você e os mantenedores.
+3. Conte o que acontece, como reproduzir, qual o impacto e, se tiver, uma sugestão de correção.
 
-If you discover a security vulnerability in Echo Music, please report it responsibly:
+Você vai receber uma resposta assim que possível. Quando a correção for publicada, o crédito pelo relato pode ser dado a você, se quiser.
 
-1. **Do NOT** create a public GitHub issue
-2. Email us at: [security@echomusic.fun](mailto:security@echomusic.fun)
-3. Include the following information:
-   - Description of the vulnerability
-   - Steps to reproduce
-   - Potential impact
-   - Any suggested fixes
+## Boas práticas para quem contribui
 
-## Security Best Practices
+- Nunca faça commit de chaves, tokens, senhas ou arquivos de assinatura.
+- Guarde configurações sensíveis em variáveis de ambiente ou em arquivos ignorados pelo Git.
+- Mantenha as dependências atualizadas.
+- Todo código passa por revisão antes de entrar na `main`.
 
-### For Developers
+Arquivos que nunca devem ir para o repositório:
 
-- **Never commit sensitive files**: API keys, tokens, and credentials should never be committed to version control
-- **Use environment variables**: Store sensitive configuration in environment variables or secure properties files
-- **Regular updates**: Keep dependencies updated to patch security vulnerabilities
-- **Code review**: All code changes should be reviewed before merging
+- `local.properties` e `gradle.properties` com dados pessoais
+- `*.keystore` / `*.jks` (chaves de assinatura)
+- `secrets.properties` e qualquer arquivo com chaves de API
+- `app/google-services.json`
+- `**/assets/po_token.html`
 
-### For Users
+## Boas práticas para quem usa
 
-- **Download from official sources**: Only download APKs from official releases or trusted sources
-- **Keep the app updated**: Install updates promptly to receive security patches
-- **Review permissions**: Be aware of the permissions the app requests
-
-## Sensitive Information
-
-The following files contain sensitive information and should never be committed:
-
-- `google-services.json` - Firebase configuration with API keys
-- `local.properties` - Local development configuration
-- `*.keystore` / `*.jks` - App signing keys
-- `secrets.properties` - API keys and secrets
-- `**/assets/po_token.html` - YouTube authentication tokens
-
-## Data Privacy
-
-Echo Music is committed to user privacy:
-
-- **No personal data collection**: We do not collect personal information
-- **Local storage**: User data is stored locally on the device
-- **Analytics**: We collect minimal usage data and crash reports through Firebase Analytics to improve app stability and enhance the overall user experience
-- **Open source**: All code is available for review
-
-## Contact
-
-For security-related questions or to report vulnerabilities:
-
-- Email: [security@echomusic.fun](mailto:security@echomusic.fun)
-- GitHub: Create a private security advisory
-
-Thank you for helping keep Echo Music secure!
+- Baixe o APK só pela página oficial de [Releases](https://github.com/Notgabxx/Echo-Music-Gabxversion-/releases).
+- Instale as atualizações assim que saírem.
+- Confira as permissões que o app pede e revogue o que não usar.

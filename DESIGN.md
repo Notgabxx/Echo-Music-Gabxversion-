@@ -1,8 +1,8 @@
-# Echo Music Design Guidelines
+# Flux Design Guidelines
 
-Echo Music follows a **custom, modern aesthetic** that blends some Material Design principles with unique, iOS-inspired patterns. 
+Flux follows a **custom, modern aesthetic** that blends some Material Design principles with unique, iOS-inspired patterns. 
 
-This document is the definitive guide for designing and implementing UI in the Echo Music codebase. All new UI work and refactors must follow these custom principles rather than strictly adhering to Google's Material Design 3 spec.
+This document is the definitive guide for designing and implementing UI in the Flux codebase. All new UI work and refactors must follow these custom principles rather than strictly adhering to Google's Material Design 3 spec.
 
 ---
 
@@ -12,7 +12,7 @@ We use a dynamic color system, but apply it in a custom way to achieve a unique 
 
 ### Dynamic Color & Seed
 *   **Dynamic First:** Colors must come from `MaterialTheme.colorScheme`. For devices running Android 12+, dynamic system colors are extracted. On older devices, the default theme seed `0xFFED5564` is used to generate the palette using `materialKolor`.
-*   **Translucency:** A core part of the Echo Music look is translucent surfaces. For example, cards often use `surfaceVariant.copy(alpha = 0.3f)` rather than solid M3 container colors.
+*   **Translucency:** A core part of the Flux look is translucent surfaces. For example, cards often use `surfaceVariant.copy(alpha = 0.3f)` rather than solid M3 container colors.
 
 ### Semantic Color Roles
 Use the correct semantic color roles as defined by our theme:
@@ -24,7 +24,7 @@ Use the correct semantic color roles as defined by our theme:
 
 ## 2. Liquid Glass System (Glassmorphism)
 
-A signature part of Echo Music's design is the **Liquid Glass** effect, which provides high-quality blur, refraction, and translucency to navigation bars, headers, and media players.
+A signature part of Flux's design is the **Liquid Glass** effect, which provides high-quality blur, refraction, and translucency to navigation bars, headers, and media players.
 
 ### Core Implementation
 The Liquid Glass effect is driven by a custom `Modifier.liquidGlass()` extension found in `GlassEffect.kt`. It utilizes a heavily customized RenderEffect pipeline (available on Android 12 / API 31+) over a recorded `Backdrop`.
@@ -62,7 +62,7 @@ Do NOT strictly force Material 3 components if they break the app's custom aesth
 *   **Settings Groups:** We use a grouped-list style (similar to iOS Settings) by encapsulating lists within a `surfaceContainerHighest` card with `24.dp` corners, rather than separate pill cards.
 
 ### Cards & Surfaces
-*   **Custom Cards:** Unlike standard M3 cards (which use solid `surfaceContainer` colors), Echo Music cards typically use:
+*   **Custom Cards:** Unlike standard M3 cards (which use solid `surfaceContainer` colors), Flux cards typically use:
     *   *Container:* `surfaceVariant.copy(alpha = 0.3f)`
     *   *Shape:* `RoundedCornerShape(24.dp)` or `28.dp`
     *   *Elevation:* 0.dp (flat, translucent look).
@@ -76,7 +76,7 @@ Do NOT strictly force Material 3 components if they break the app's custom aesth
 
 ## 4. Typography & Iconography
 
-*   **Typography:** Always use `MaterialTheme.typography` but respect the app's established font weights and sizes. Echo Music leans towards bold, expressive headers and softer, highly legible body text.
+*   **Typography:** Always use `MaterialTheme.typography` but respect the app's established font weights and sizes. Flux leans towards bold, expressive headers and softer, highly legible body text.
 *   **Iconography:** We use a mix of Material Symbols/Icons Extended (`androidx.compose.material.material-icons-extended`) and custom SVG drawables. Check `scripts/compose_svg_drawable.py` and existing drawables before importing new vector assets to avoid duplication.
 
 ---
