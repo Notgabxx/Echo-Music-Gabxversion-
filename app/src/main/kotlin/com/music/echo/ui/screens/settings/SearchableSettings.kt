@@ -2313,22 +2313,9 @@ fun getAllSearchableSettings(): List<SearchableSetting> {
     SearchableSetting(stringResource(R.string.preview), null, "Discord", "settings/discord"),
     SearchableSetting(stringResource(R.string.not_logged_in), null, "LastFM", "settings/lastfm"),
 
-    // App Icon Settings
-    SearchableSetting(
-      "App Icon",
-      "Choose your launcher icon",
-      "Appearance",
-      "settings/appearance/app_icon"
-    ),
-
-    // About Screen - Social & Support Links
-    SearchableSetting("Website", "Visit the Echo Music website", "About", "settings/about"),
-    SearchableSetting("Instagram", "Follow Echo Music on Instagram", "About", "settings/about"),
-    SearchableSetting("X (Twitter)", "Follow Echo Music on X", "About", "settings/about"),
-    SearchableSetting("Buy Me a Coffee", "Support the developer", "About", "settings/about"),
-    SearchableSetting("Patreon", "Support the developer on Patreon", "About", "settings/about"),
-    SearchableSetting("UPI", "Support the developer via UPI", "About", "settings/about"),
-    SearchableSetting("Discord", "Join the Echo Music community", "About", "settings/about"),
+    // About Screen - Flux project & credits
+    SearchableSetting("Source code", "Flux on GitHub", "About", "settings/about"),
+    SearchableSetting("License", "GNU GPL v3.0 and credits", "About", "settings/about"),
   ) + listOf(
     SearchableSetting(
       "Show Button 1",

@@ -84,7 +84,7 @@ object ListenBrainzManager {
                     artistNames,
                 )}\",\"track_name\":\"${escapeJson(
                     title,
-                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"position_ms\":$positionMs,\"submission_client\":\"Echo Music\",\"submission_client_version\":\"5.2.89\"}}}"
+                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"position_ms\":$positionMs,\"submission_client\":\"Flux\",\"submission_client_version\":\"1.0.0\"}}}"
         val listensJson = "[$trackMetadata]"
         val bodyJson = "{\"listen_type\":\"playing_now\",\"payload\":$listensJson}"
         Timber.tag(logTag).d("submitPlayingNow JSON: %s", bodyJson)
@@ -96,7 +96,7 @@ object ListenBrainzManager {
             .post(body)
             .addHeader("Content-Type", "application/json")
             .addHeader("Authorization", "Token $token")
-            .addHeader("User-Agent", "EchoMusic/5.2.89")
+            .addHeader("User-Agent", "Flux/${echo.music.iad1tya.BuildConfig.VERSION_NAME}")
             .build()
 
         httpClient.newCall(request).execute().use { resp ->
@@ -153,7 +153,7 @@ object ListenBrainzManager {
                     artistNames,
                 )}\",\"track_name\":\"${escapeJson(
                     title,
-                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"start_ms\":$startMs,\"end_ms\":$endMs,\"submission_client\":\"Echo Music\",\"submission_client_version\":\"5.2.89\"}}}"
+                )}\",${releasePart}\"additional_info\":{\"duration_ms\":$durationMs,\"start_ms\":$startMs,\"end_ms\":$endMs,\"submission_client\":\"Flux\",\"submission_client_version\":\"1.0.0\"}}}"
         val listensJson = "[$trackMetadataSingle]"
         val bodyJson = "{\"listen_type\":\"single\",\"payload\":$listensJson}"
         Timber.tag(logTag).d("submitFinished JSON: %s", bodyJson)
@@ -165,7 +165,7 @@ object ListenBrainzManager {
             .post(body)
             .addHeader("Content-Type", "application/json")
             .addHeader("Authorization", "Token $token")
-            .addHeader("User-Agent", "EchoMusic/5.2.89")
+            .addHeader("User-Agent", "Flux/${echo.music.iad1tya.BuildConfig.VERSION_NAME}")
             .build()
 
         httpClient.newCall(request).execute().use { resp ->

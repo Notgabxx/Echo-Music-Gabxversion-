@@ -1,4 +1,10 @@
-# AGENT.md - Echo Music
+# AGENT.md - Flux
+
+> **Flux** is a fork of Echo Music (GPL-3.0). Brand constants and project links live in
+> `app/src/main/kotlin/com/music/echo/FluxBrand.kt` (app name, GitHub repo, releases, upstream
+> credit). Application id: `io.github.notgabxx.flux`. Kotlin packages/namespace remain
+> `echo.music.iad1tya` for now (internal only). The About screen must keep the upstream credit and
+> license notice (GPL-3.0 "Appropriate Legal Notices"). CI: `.github/workflows/flux-apk.yml`.
 
 Context file for AI agents (Antigravity, Claude Code, etc.) working in this repo.
 Keep this file up to date as the project evolves — it's the fastest way to give

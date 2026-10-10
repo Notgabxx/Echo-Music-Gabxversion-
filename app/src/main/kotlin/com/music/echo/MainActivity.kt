@@ -204,7 +204,6 @@ import echo.music.iad1tya.ui.menu.YouTubeSongMenu
 import echo.music.iad1tya.ui.player.BottomSheetPlayer
 import echo.music.iad1tya.ui.screens.Screens
 import echo.music.iad1tya.ui.screens.SettingDialoge
-import echo.music.iad1tya.ui.screens.WelcomeDialog
 import echo.music.iad1tya.ui.screens.navigationBuilder
 import echo.music.iad1tya.ui.screens.settings.DarkMode
 import echo.music.iad1tya.ui.screens.settings.NavigationTab
@@ -564,68 +563,6 @@ class MainActivity : ComponentActivity() {
           },
           onError = { Log.e("UpdateCheck", "Startup check failed") }
         )
-      }
-    }
-
-    val HasShownBirthdayNotificationKey = remember {
-      androidx.datastore.preferences.core.booleanPreferencesKey("has_shown_birthday_notification")
-    }
-    LaunchedEffect(Unit) {
-      val today = java.time.LocalDate.now()
-      if (today.month == java.time.Month.OCTOBER && today.dayOfMonth == 14) {
-        val prefs = context.dataStore.data.first()
-        val hasShown = prefs[HasShownBirthdayNotificationKey] ?: false
-        if (!hasShown) {
-          if (
-            android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU ||
-              androidx.core.content.ContextCompat.checkSelfPermission(
-                context,
-                android.Manifest.permission.POST_NOTIFICATIONS
-              ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-          ) {
-
-            val channelId = "birthday_channel"
-            val notificationManager =
-              context.getSystemService(android.app.NotificationManager::class.java)
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-              val channel =
-                android.app.NotificationChannel(
-                  channelId,
-                  "Birthday",
-                  android.app.NotificationManager.IMPORTANCE_HIGH
-                )
-              notificationManager.createNotificationChannel(channel)
-            }
-
-            val bitmap =
-              android.graphics.BitmapFactory.decodeResource(
-                context.resources,
-                R.drawable.birthday_image
-              )
-
-            val notification =
-              androidx.core.app.NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.echomusicnotification) // Use correct transparent echo icon
-                .setContentTitle("Happy Birthday Aditya!")
-                .setContentText("Today is the developer's birthday!")
-                .setLargeIcon(bitmap)
-                .setStyle(
-                  androidx.core.app.NotificationCompat.BigPictureStyle()
-                    .bigPicture(bitmap)
-                    .bigLargeIcon(null as android.graphics.Bitmap?)
-                )
-                .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .build()
-
-            notificationManager.notify(1014, notification)
-
-            context.dataStore.edit { preferences ->
-              preferences[HasShownBirthdayNotificationKey] = true
-            }
-          }
-        }
       }
     }
 
@@ -1061,15 +998,6 @@ class MainActivity : ComponentActivity() {
         val snackbarHostState = remember { SnackbarHostState() }
         var showSettingDialoge by remember { mutableStateOf(false) }
 
-        var showWelcomeDialog by remember { mutableStateOf(false) }
-
-        LaunchedEffect(Unit) {
-          val prefs = context.dataStore.data.first()
-          val lastOpened = prefs[echo.music.iad1tya.constants.LastOpenedVersionCodeKey] ?: -1
-          if (lastOpened < BuildConfig.VERSION_CODE) {
-            showWelcomeDialog = true
-          }
-        }
 
         LaunchedEffect(Unit) {
           val activeIntent = pendingIntent ?: intent
@@ -1117,7 +1045,7 @@ class MainActivity : ComponentActivity() {
 
         val currentTitle =
           when (navBackStackEntry?.destination?.route) {
-            Screens.Home.route -> "Echo Music"
+            Screens.Home.route -> FluxBrand.APP_NAME
             Screens.Search.route -> stringResource(R.string.search)
             Screens.Library.route -> stringResource(R.string.filter_library)
             Screens.ListenTogether.route -> stringResource(R.string.together)
@@ -1779,73 +1707,6 @@ class MainActivity : ComponentActivity() {
             )
           }
 
-          if (showWelcomeDialog) {
-            WelcomeDialog(
-              onDismissRequest = {
-                showWelcomeDialog = false
-                coroutineScope.launch {
-                  context.dataStore.edit {
-                    it[echo.music.iad1tya.constants.LastOpenedVersionCodeKey] =
-                      BuildConfig.VERSION_CODE
-                  }
-                }
-              }
-            )
-          }
-
-          var showPartyBomb by remember {
-            val today = java.time.LocalDate.now()
-            mutableStateOf(today.month == java.time.Month.OCTOBER && today.dayOfMonth == 14)
-          }
-          if (showPartyBomb) {
-            val parties = remember {
-              listOf(
-                Party(
-                  speed = 30f,
-                  maxSpeed = 70f,
-                  damping = 0.9f,
-                  angle = 270,
-                  spread = 60,
-                  colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-                  emitter = Emitter(duration = 300, TimeUnit.MILLISECONDS).max(300),
-                  position = Position.Relative(0.5, 1.0)
-                ),
-                Party(
-                  speed = 30f,
-                  maxSpeed = 70f,
-                  damping = 0.9f,
-                  angle = 315,
-                  spread = 45,
-                  colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-                  emitter = Emitter(duration = 300, TimeUnit.MILLISECONDS).max(300),
-                  position = Position.Relative(0.0, 1.0)
-                ),
-                Party(
-                  speed = 30f,
-                  maxSpeed = 70f,
-                  damping = 0.9f,
-                  angle = 225,
-                  spread = 45,
-                  colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-                  emitter = Emitter(duration = 300, TimeUnit.MILLISECONDS).max(300),
-                  position = Position.Relative(1.0, 1.0)
-                )
-              )
-            }
-            KonfettiView(
-              modifier = Modifier.fillMaxSize(),
-              parties = parties,
-              updateListener =
-                object : OnParticleSystemUpdateListener {
-                  override fun onParticleSystemEnded(
-                    system: nl.dionsegijn.konfetti.core.PartySystem,
-                    activeSystems: Int
-                  ) {
-                    if (activeSystems == 0) showPartyBomb = false
-                  }
-                }
-            )
-          }
         }
       }
     }
@@ -1911,7 +1772,7 @@ class MainActivity : ComponentActivity() {
         val videoId =
           when {
             path == "watch" -> uri.getQueryParameter("v")
-            uri.host == "youtu.be" || uri.host == "share.echomusic.fun" ->
+            uri.host == "youtu.be" ->
               uri.pathSegments.firstOrNull()
             else -> null
           }

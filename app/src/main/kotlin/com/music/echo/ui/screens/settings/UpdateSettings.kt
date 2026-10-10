@@ -86,7 +86,7 @@ fun UpdateSettings(
     kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
       try {
         val url =
-          java.net.URL("https://api.github.com/repos/EchoMusicApp/Echo-Music/releases/latest")
+          java.net.URL("${echo.music.iad1tya.FluxBrand.API_REPO_URL}/releases/latest")
         val json = url.openStream().bufferedReader().use { it.readText() }
         val targetRelease = JSONObject(json)
         releaseNotes = targetRelease.getString("body")
@@ -133,7 +133,7 @@ fun UpdateSettings(
               }
             },
             onClick = {
-              val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun"))
+              val intent = Intent(Intent.ACTION_VIEW, Uri.parse(echo.music.iad1tya.FluxBrand.RELEASES_URL))
               context.startActivity(intent)
             }
           )

@@ -19,7 +19,10 @@ data class echomusicCanvasManifest(val items: List<echomusicCanvasItem> = emptyL
 @Serializable data class echomusicCanvasItem(val song: String, val artist: String, val url: String)
 
 object echomusicCanvasProvider {
-  private const val BASE_URL = "https://canvas.echomusic.fun/canvas.json"
+  // The upstream canvas index was hosted by the original Echo Music project. Flux keeps the provider
+  // but leaves it disabled (empty URL) until it hosts its own index; the Tidal and Apple Music
+  // providers still supply animated artwork.
+  private val BASE_URL: String = ""
 
   private val json = Json {
     ignoreUnknownKeys = true
@@ -58,6 +61,8 @@ object echomusicCanvasProvider {
     if (currentCache != null && currentCache.expiresAtMs > System.currentTimeMillis()) {
       return currentCache.value
     }
+
+    if (BASE_URL.isEmpty()) return null
 
     return try {
       val manifest: echomusicCanvasManifest = client.get(BASE_URL).body()

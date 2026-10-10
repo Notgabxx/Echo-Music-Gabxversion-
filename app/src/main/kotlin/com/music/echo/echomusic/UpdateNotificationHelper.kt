@@ -31,7 +31,7 @@ object UpdateNotificationHelper {
       nm.createNotificationChannel(channel)
     }
 
-    val apkUrl = "https://echomusic.fun"
+    val apkUrl = echo.music.iad1tya.FluxBrand.RELEASES_URL
     val intent = Intent(Intent.ACTION_VIEW, apkUrl.toUri())
 
     val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

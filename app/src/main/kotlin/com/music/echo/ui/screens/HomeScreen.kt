@@ -930,6 +930,16 @@ fun HomeScreen(
           )
         }
 
+        // Feature banners (Listen Together first) — hidden while a mood chip filters the feed.
+        if (selectedChip == null) {
+          item(key = "feature_banners") {
+            echo.music.iad1tya.ui.component.FeatureBanners(
+              navController = navController,
+              modifier = Modifier.padding(top = 4.dp, bottom = 12.dp).animateItem()
+            )
+          }
+        }
+
         if (isLoading && homePage?.chips.isNullOrEmpty()) {
           item(key = "chips_shimmer") {
             ShimmerHost {

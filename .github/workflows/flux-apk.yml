@@ -1,20 +1,21 @@
-name: Premium UI APK
+name: Flux APK
 
-# Builds an optimized (R8, release) APK of the premium UI branch and publishes it as a GitHub
-# pre-release, so it can be downloaded and installed straight from a phone.
-# The signing key is generated per run (throwaway): uninstall a previous build of this fork before
-# installing a newer one if Android reports a signature conflict.
+# Builds an optimized (R8, release) APK of Flux and publishes it as a GitHub pre-release, so it can
+# be downloaded and installed straight from a phone.
+# The signing key is generated per run (throwaway) until a permanent key is configured in the
+# repository secrets: uninstall a previous build before installing a newer one if Android reports a
+# signature conflict.
 
 on:
   workflow_dispatch:
   push:
-    branches: ["premium-ui"]
+    branches: ["premium-ui", "main"]
 
 permissions:
   contents: write
 
 concurrency:
-  group: premium-ui-apk-${{ github.ref }}
+  group: flux-apk-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -24,9 +25,9 @@ jobs:
     timeout-minutes: 120
 
     env:
-      STORE_PASSWORD: premium-ui-store
-      KEY_PASSWORD: premium-ui-store
-      KEY_ALIAS: premiumui
+      STORE_PASSWORD: flux-ci-store
+      KEY_PASSWORD: flux-ci-store
+      KEY_ALIAS: flux
 
     steps:
       - name: Checkout
@@ -51,29 +52,20 @@ jobs:
           "$SDKM" --install "ndk;28.2.13676358" "cmake;3.22.1" > /dev/null || true
           "$SDKM" --install "platforms;android-37" > /dev/null || true
 
-      - name: Create throwaway signing key
+      - name: Create signing key
         shell: bash
         run: |
           keytool -genkeypair -noprompt \
             -keystore keystore.jks \
             -storepass "$STORE_PASSWORD" -keypass "$KEY_PASSWORD" \
             -alias "$KEY_ALIAS" -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=Echo Music Premium UI, O=Community fork, C=BR"
-
-      - name: Strip upstream Firebase config
-        shell: bash
-        run: |
-          # The committed google-services.json belongs to the upstream maintainer's Firebase
-          # project and only matches the official package name. Community builds must not send
-          # telemetry there, and without the file the Firebase/Crashlytics Gradle plugins are
-          # simply not applied (the app never calls Firebase APIs directly).
-          rm -f app/google-services.json
+            -dname "CN=Flux, O=Flux, C=BR"
 
       - name: Build release APK
         shell: bash
         run: |
           chmod +x gradlew
-          ./gradlew :app:assembleUniversalGmsRelease -PpremiumUiBuild=true --continue --stacktrace 2>&1 | tee build.log
+          ./gradlew :app:assembleUniversalGmsRelease --continue --stacktrace 2>&1 | tee build.log
 
       - name: Report build errors
         if: failure()
@@ -123,13 +115,13 @@ jobs:
           mkdir -p dist
           APK=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
           echo "Found $APK"
-          cp "$APK" "dist/EchoMusic-PremiumUI-${GITHUB_RUN_NUMBER}.apk"
+          cp "$APK" "dist/Flux-build${GITHUB_RUN_NUMBER}.apk"
           ls -la dist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: EchoMusic-PremiumUI-APK
+          name: Flux-APK
           path: dist/*.apk
 
       - name: Publish pre-release
@@ -137,10 +129,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="premium-ui-${GITHUB_RUN_NUMBER}"
+          TAG="flux-build-${GITHUB_RUN_NUMBER}"
           gh release create "$TAG" dist/*.apk \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "Echo Music – Premium UI (build ${GITHUB_RUN_NUMBER})" \
-            --notes "Optimized release build of the premium UI branch (commit ${GITHUB_SHA::7}). Signed with a throwaway key: uninstall older builds of this fork if Android reports a conflict." \
+            --title "Flux (build ${GITHUB_RUN_NUMBER})" \
+            --notes "Optimized release build of Flux (commit ${GITHUB_SHA::7}). Flux is a fork of Echo Music, licensed under GPL-3.0." \
             --prerelease

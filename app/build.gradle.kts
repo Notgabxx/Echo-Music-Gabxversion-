@@ -30,11 +30,12 @@ android {
   ndkVersion = "28.2.13676358"
 
   defaultConfig {
-    applicationId = "echo.music.iad1tya"
+    // Flux: own application id and versioning (fork of Echo Music, GPL-3.0).
+    applicationId = "io.github.notgabxx.flux"
     minSdk = 26
     targetSdk = 36
-    versionCode = 162
-    versionName = "1.4.1"
+    versionCode = 1
+    versionName = "1.0.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
@@ -157,11 +158,6 @@ android {
       signingConfig = signingConfigs.getByName("release")
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       buildConfigField("String", "ARCHITECTURE", "\"release\"")
-      // Community CI builds (premium UI fork) install side by side with the official app.
-      if (project.hasProperty("premiumUiBuild")) {
-        applicationIdSuffix = ".premium"
-        versionNameSuffix = "-premium-ui"
-      }
     }
     debug {
       applicationIdSuffix = ".debug"
@@ -252,10 +248,7 @@ dependencies {
   implementation(project(":dsp-core"))
   implementation(project(":usbaudio"))
 
-  // Firebase - GMS flavor only (excluded from F-Droid / FOSS builds)
-  "gmsImplementation"(platform("com.google.firebase:firebase-bom:34.19.0"))
-  "gmsImplementation"("com.google.firebase:firebase-analytics")
-  "gmsImplementation"("com.google.firebase:firebase-crashlytics")
+  // Flux ships without Firebase analytics/crash telemetry (the upstream Firebase project was removed).
 
   // GMS Location Services for high-accuracy weather AI context
   "gmsImplementation"(libs.play.services.location)

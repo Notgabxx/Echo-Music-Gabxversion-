@@ -341,7 +341,7 @@ fun UpdateScreen(navController: NavHostController) {
                     } else {
                       val urlToDownload =
                         currentStatus.apkUrl
-                          ?: "https://github.com/EchoMusicApp/Echo-Music/releases/download/${currentStatus.version}/echomusic.apk"
+                          ?: "${echo.music.iad1tya.FluxBrand.RELEASES_URL}/download/${currentStatus.version}/flux.apk"
 
                       val constraints =
                         Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
@@ -674,7 +674,7 @@ suspend fun checkForUpdate(
 ) {
   withContext(Dispatchers.IO) {
     try {
-      val url = URL("https://api.github.com/repos/EchoMusicApp/Echo-Music/releases/latest")
+      val url = URL("${echo.music.iad1tya.FluxBrand.API_REPO_URL}/releases/latest")
       val json = url.openStream().bufferedReader().use { it.readText() }
       val targetRelease = JSONObject(json)
 
@@ -682,7 +682,8 @@ suspend fun checkForUpdate(
       val targetTagName = targetRelease.getString("tag_name")
       val currentClean = currentVersion.removePrefix("b").removePrefix("v").trim()
       val targetClean = targetTagName.removePrefix("b").removePrefix("v").trim()
-      val shouldShow = currentClean != targetClean
+      // Only offer strictly newer Flux releases (never a sideways/older build).
+      val shouldShow = isNewerVersion(targetClean, currentClean)
 
       if (shouldShow) {
         val tagWithPrefix = targetRelease.getString("tag_name")
@@ -694,7 +695,7 @@ suspend fun checkForUpdate(
         try {
           val changelogUrl =
             URL(
-              "https://github.com/EchoMusicApp/Echo-Music/releases/download/$tagWithPrefix/changelog.json"
+              "${echo.music.iad1tya.FluxBrand.RELEASES_URL}/download/$tagWithPrefix/changelog.json"
             )
           val changelogJson = changelogUrl.openStream().bufferedReader().use { it.readText() }
           val changelogData = JSONObject(changelogJson)
@@ -814,7 +815,7 @@ suspend fun fetchChangelogForVersion(currentVersion: String): WhatsNewInfo? =
     try {
       val cleanCurrent = currentVersion.removePrefix("b").removePrefix("v").trim()
       val releasesJson =
-        openTimedStream("https://api.github.com/repos/EchoMusicApp/Echo-Music/releases")
+        openTimedStream("${echo.music.iad1tya.FluxBrand.API_REPO_URL}/releases")
           .bufferedReader()
           .use { it.readText() }
       val releases = JSONArray(releasesJson)
@@ -836,7 +837,7 @@ suspend fun fetchChangelogForVersion(currentVersion: String): WhatsNewInfo? =
       try {
         val changelogJson =
           openTimedStream(
-              "https://github.com/EchoMusicApp/Echo-Music/releases/download/$tag/changelog.json"
+              "${echo.music.iad1tya.FluxBrand.RELEASES_URL}/download/$tag/changelog.json"
             )
             .bufferedReader()
             .use { it.readText() }

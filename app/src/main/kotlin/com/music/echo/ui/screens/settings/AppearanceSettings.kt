@@ -937,15 +937,6 @@ fun AppearanceSettings(
         buildList {
           add(
             Material3SettingsItem(
-              isHighlighted = (highlightKey == stringResource(R.string.legacy_icon)),
-              icon = painterResource(R.drawable.grid_view),
-              title = { Text("App Icon") },
-              description = { Text("Choose your launcher icon") },
-              onClick = { navController.navigate("settings/appearance/app_icon") }
-            )
-          )
-          add(
-            Material3SettingsItem(
               icon = painterResource(echo.music.iad1tya.R.drawable.alphabet_cyrillic),
               title = { Text(stringResource(echo.music.iad1tya.R.string.app_font)) },
               trailingContent = {
