@@ -38,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -50,11 +51,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
@@ -65,6 +69,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -276,7 +281,14 @@ fun Thumbnail(
     )
   val isLocalMedia = mediaMetadata?.id?.isLocalMediaId() == true
   val playerBackground = playerBackgroundPref
-  val thumbnailCornerRadius by rememberPreference(ThumbnailCornerRadiusKey, defaultValue = 3f)
+  val thumbnailCornerRadiusSetting by
+    rememberPreference(
+      ThumbnailCornerRadiusKey,
+      defaultValue = echo.music.iad1tya.constants.DefaultThumbnailCornerRadius
+    )
+  // A custom theme can define its own artwork corners (in dp; the dimensions double the value).
+  val themeArtworkCorner = echo.music.iad1tya.ui.theme.LocalFluxTheme.current?.player?.artworkCorner
+  val thumbnailCornerRadius = themeArtworkCorner?.let { it / 2f } ?: thumbnailCornerRadiusSetting
 
   val textBackgroundColor = getTextColor(playerBackground)
 
@@ -655,14 +667,25 @@ private fun ThumbnailItem(
     contentAlignment = Alignment.Center
   ) {
     val reactive = if (isCurrentItem && !hidePlayerThumbnail) audioReactive else null
+    // The full player paints the aura from its root (see ArtworkHaloLayer) so it isn't clipped by
+    // this pager; without a host (other screens) it is drawn here as before.
+    val haloHost = LocalArtworkHaloHost.current
+    val haloOwner = remember { Any() }
     if (reactive != null) {
-      AudioReactiveHalo(
-        state = reactive,
-        primary = MaterialTheme.colorScheme.primary,
-        secondary = MaterialTheme.colorScheme.secondary,
-        tertiary = MaterialTheme.colorScheme.tertiary,
-        modifier = Modifier.size(dimensions.thumbnailSize)
-      )
+      if (haloHost != null) {
+        DisposableEffect(haloHost, reactive) {
+          haloHost.attach(haloOwner, reactive)
+          onDispose { haloHost.detach(haloOwner) }
+        }
+      } else {
+        AudioReactiveHalo(
+          state = reactive,
+          primary = MaterialTheme.colorScheme.primary,
+          secondary = MaterialTheme.colorScheme.secondary,
+          tertiary = MaterialTheme.colorScheme.tertiary,
+          modifier = Modifier.size(dimensions.thumbnailSize)
+        )
+      }
     }
     Box(
       modifier =
@@ -670,6 +693,18 @@ private fun ThumbnailItem(
           .then(
             if (isCurrentItem && !rotatingThumbnail && !hidePlayerThumbnail) {
               Modifier.artworkMorphFull(dimensions.cornerRadius)
+            } else {
+              Modifier
+            }
+          )
+          .then(
+            if (reactive != null && haloHost != null) {
+              Modifier.onGloballyPositioned { coordinates ->
+                haloHost.updateBounds(
+                  haloOwner,
+                  Rect(coordinates.positionInRoot(), coordinates.size.toSize())
+                )
+              }
             } else {
               Modifier
             }

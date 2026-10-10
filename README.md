@@ -34,7 +34,8 @@ O Flux é um app de música para Android feito para quem quer ouvir sem interrup
 | | |
 | :-- | :-- |
 | 🎧 **Ouvir junto** | Crie uma sala e escute a mesma música, no mesmo segundo, com quem você quiser. Dá para entrar com um código direto da tela inicial. |
-| 🔎 **Descobrir música** | Identifica a música que está tocando ao seu redor ou em outros apps do celular (vídeos, reels, jogos), até com fone de ouvido. Um toque e ela abre no Flux. |
+| 🔎 **Descobrir música** | Identifica pelo microfone a música que está tocando perto de você, com o mesmo método dos clientes abertos da Shazam. Um toque e ela abre no Flux. |
+| 🎨 **Temas** | Aplique temas prontos ou importe um arquivo `.json` com cores, fonte, cantos e fundo do player, sem instalar outro APK. Veja o [THEMES.md](THEMES.md). |
 | ▶️ **Player vivo** | O botão de play flui e pulsa no ritmo da música, a capa ganha uma aura que reage a graves, médios e agudos, e o mini player vira o player completo com uma transição contínua. |
 | 🎨 **Cores da capa** | O tema acompanha a música que está tocando, com contraste ajustado automaticamente para o texto continuar legível. |
 | 🧊 **Liquid glass** | Barras e botões de vidro fosco que refletem o conteúdo atrás deles. |

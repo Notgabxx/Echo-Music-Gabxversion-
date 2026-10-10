@@ -73,8 +73,8 @@ val FluidPlayerTransitionKey = booleanPreferencesKey("fluidPlayerTransition")
 val AudioReactiveHaloKey = booleanPreferencesKey("audioReactiveHalo")
 val AmbientBackdropKey = booleanPreferencesKey("ambientBackdrop")
 
-/** Where song recognition listens: "MICROPHONE" (around you) or "DEVICE_AUDIO" (this phone). */
-val RecognitionSourceKey = stringPreferencesKey("recognitionSource")
+/** Id of the custom theme in use ("" = the default Flux look). */
+val ActiveThemeIdKey = stringPreferencesKey("activeThemeId")
 
 val SwipeToSongKey = booleanPreferencesKey("SwipeToSong")
 val SwipeToRemoveSongKey = booleanPreferencesKey("SwipeToRemoveSong")
@@ -84,6 +84,10 @@ val ShowCodecOnPlayerKey = booleanPreferencesKey("showCodecOnPlayer")
 val HidePlayerSliderKey = booleanPreferencesKey("hidePlayerSlider")
 val HidePlayerThumbnailKey = booleanPreferencesKey("hidePlayerThumbnail")
 val ThumbnailCornerRadiusKey = floatPreferencesKey("thumbnailCornerRadius")
+
+/** Default player artwork corner radius setting (the player doubles it: 14 → 28 dp). */
+const val DefaultThumbnailCornerRadius = 14f
+
 val CropAlbumArtKey = booleanPreferencesKey("cropAlbumArt")
 val SeekExtraSeconds = booleanPreferencesKey("seekExtraSeconds")
 val VarispeedKey = booleanPreferencesKey("varispeed")

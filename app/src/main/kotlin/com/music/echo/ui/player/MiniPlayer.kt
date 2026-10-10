@@ -128,6 +128,7 @@ import echo.music.iad1tya.ui.component.LocalGlassEffectConfig
 import echo.music.iad1tya.ui.component.isGlassSupported
 import echo.music.iad1tya.ui.component.liquidGlass
 import echo.music.iad1tya.ui.screens.settings.DarkMode
+import echo.music.iad1tya.ui.theme.LocalFluxTheme
 import echo.music.iad1tya.ui.theme.PlayerColorExtractor
 import echo.music.iad1tya.utils.rememberEnumPreference
 import echo.music.iad1tya.utils.rememberPreference
@@ -174,13 +175,15 @@ fun MiniPlayer(
 
     val isSystemInDarkTheme = androidx.compose.foundation.isSystemInDarkTheme()
     val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
+    val themeDarkMode = LocalFluxTheme.current?.forcedDarkMode
     val useDarkTheme =
-      remember(darkTheme, isSystemInDarkTheme) {
-        if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+      remember(darkTheme, isSystemInDarkTheme, themeDarkMode) {
+        themeDarkMode
+          ?: if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
       }
     val pureBlackGlobalPref by
       rememberPreference(echo.music.iad1tya.constants.PureBlackKey, defaultValue = false)
-    val globalPureBlack = pureBlackGlobalPref && useDarkTheme
+    val globalPureBlack = pureBlackGlobalPref && useDarkTheme && LocalFluxTheme.current == null
 
     val isFollowTheme = miniPlayerBackground == PlayerBackgroundStyle.DEFAULT
     val pureBlack = if (isFollowTheme) globalPureBlack else pureBlackMini
@@ -247,9 +250,11 @@ private fun NewMiniPlayer(progressState: ProgressState, modifier: Modifier = Mod
   val pureBlackMini by rememberPreference(PureBlackMiniPlayerKey, defaultValue = false)
   val isSystemInDarkTheme = isSystemInDarkTheme()
   val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
+  val themeDarkMode = LocalFluxTheme.current?.forcedDarkMode
   val useDarkTheme =
-    remember(darkTheme, isSystemInDarkTheme) {
-      if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+    remember(darkTheme, isSystemInDarkTheme, themeDarkMode) {
+      themeDarkMode
+        ?: if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
     }
 
   val miniPlayerBackground by
@@ -260,7 +265,7 @@ private fun NewMiniPlayer(progressState: ProgressState, modifier: Modifier = Mod
 
   val pureBlackGlobalPref by
     rememberPreference(echo.music.iad1tya.constants.PureBlackKey, defaultValue = false)
-  val globalPureBlack = pureBlackGlobalPref && useDarkTheme
+  val globalPureBlack = pureBlackGlobalPref && useDarkTheme && LocalFluxTheme.current == null
   val isFollowTheme = miniPlayerBackground == PlayerBackgroundStyle.DEFAULT
   val pureBlack = if (isFollowTheme) globalPureBlack else pureBlackMini
 
@@ -641,9 +646,11 @@ private fun LegacyMiniPlayer(progressState: ProgressState, modifier: Modifier = 
   val pureBlackMini by rememberPreference(PureBlackMiniPlayerKey, defaultValue = false)
   val isSystemInDarkTheme = isSystemInDarkTheme()
   val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
+  val themeDarkMode = LocalFluxTheme.current?.forcedDarkMode
   val useDarkTheme =
-    remember(darkTheme, isSystemInDarkTheme) {
-      if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+    remember(darkTheme, isSystemInDarkTheme, themeDarkMode) {
+      themeDarkMode
+        ?: if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
     }
 
   val miniPlayerBackground by
@@ -654,7 +661,7 @@ private fun LegacyMiniPlayer(progressState: ProgressState, modifier: Modifier = 
 
   val pureBlackGlobalPref by
     rememberPreference(echo.music.iad1tya.constants.PureBlackKey, defaultValue = false)
-  val globalPureBlack = pureBlackGlobalPref && useDarkTheme
+  val globalPureBlack = pureBlackGlobalPref && useDarkTheme && LocalFluxTheme.current == null
   val isFollowTheme = miniPlayerBackground == PlayerBackgroundStyle.DEFAULT
   val pureBlack = if (isFollowTheme) globalPureBlack else pureBlackMini
   val glassConfig = LocalGlassEffectConfig.current

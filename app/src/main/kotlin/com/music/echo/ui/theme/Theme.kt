@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
@@ -34,6 +35,7 @@ fun echomusicTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
   pureBlack: Boolean = false,
   themeColor: Color = DefaultThemeColor,
+  customTheme: FluxThemeSpec? = null,
   content: @Composable () -> Unit,
 ) {
   val context = LocalContext.current
@@ -65,7 +67,18 @@ fun echomusicTheme(
     }
 
   val useSystemDynamicColor =
-    (themeColor == DefaultThemeColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+    customTheme == null &&
+      (themeColor == DefaultThemeColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+
+  // A custom theme seeds Material You with its own color (or the album's, if it asks for it).
+  val seedColor =
+    if (customTheme != null && !customTheme.albumColors) {
+      parseThemeColor(customTheme.colors.seed)
+        ?: parseThemeColor(customTheme.colors.primary)
+        ?: themeColor
+    } else {
+      themeColor
+    }
 
   val baseColorScheme =
     if (useSystemDynamicColor) {
@@ -74,7 +87,7 @@ fun echomusicTheme(
     } else {
 
       rememberDynamicColorScheme(
-        seedColor = themeColor,
+        seedColor = seedColor,
         isDark = darkTheme,
         specVersion = ColorSpec.SpecVersion.SPEC_2025,
         style = PaletteStyle.TonalSpot
@@ -82,23 +95,37 @@ fun echomusicTheme(
     }
 
   val colorScheme =
-    remember(baseColorScheme, pureBlack, darkTheme) {
-      if (darkTheme && pureBlack) {
-        baseColorScheme.pureBlack(true)
-      } else {
-        baseColorScheme
+    remember(baseColorScheme, pureBlack, darkTheme, customTheme) {
+      when {
+        customTheme != null -> baseColorScheme.withThemeColors(customTheme.colors)
+        darkTheme && pureBlack -> baseColorScheme.pureBlack(true)
+        else -> baseColorScheme
       }
     }
 
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = getTypography(brandFont),
-    shapes =
-      androidx.compose.material3.MaterialTheme.shapes.copy(
-        extraSmall = androidx.compose.foundation.shape.RoundedCornerShape(24.dp)
-      ),
-    content = content
-  )
+  val typography =
+    remember(brandFont, customTheme) {
+      val themeTypography = customTheme?.typography
+      val fontFamily = themeFontFamily(themeTypography?.font) ?: brandFont
+      val base = getTypography(fontFamily)
+      if (themeTypography != null) base.withThemeTitles(themeTypography) else base
+    }
+
+  val defaultShapes = androidx.compose.material3.MaterialTheme.shapes
+  val shapes =
+    remember(customTheme, defaultShapes) {
+      customTheme?.shapes?.toShapes()
+        ?: defaultShapes.copy(extraSmall = androidx.compose.foundation.shape.RoundedCornerShape(24.dp))
+    }
+
+  CompositionLocalProvider(LocalFluxTheme provides customTheme) {
+    MaterialTheme(
+      colorScheme = colorScheme,
+      typography = typography,
+      shapes = shapes,
+      content = content
+    )
+  }
 }
 
 fun Bitmap.extractThemeColor(): Color {

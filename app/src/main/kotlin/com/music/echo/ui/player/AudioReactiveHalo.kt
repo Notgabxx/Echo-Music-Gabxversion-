@@ -1,17 +1,27 @@
 package echo.music.iad1tya.ui.player
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.positionInRoot
 import echo.music.iad1tya.playback.audio.AudioLevels
 import kotlin.math.PI
 import kotlin.math.cos
@@ -187,7 +197,60 @@ fun AudioReactiveHalo(
   tertiary: Color,
   modifier: Modifier = Modifier,
 ) {
-  Canvas(modifier = modifier) { drawHalo(state, primary, secondary, tertiary) }
+  Canvas(modifier = modifier) { drawHalo(state, primary, secondary, tertiary, size) }
+}
+
+/**
+ * Lets the full player draw the cover's aura behind its whole content. Drawn inside the artwork
+ * pager, the light was clipped by the pager's bounds and ended in a hard line right above the
+ * song title; drawn from the player's root it fades out naturally.
+ */
+@Stable
+class ArtworkHaloHost {
+  private var owner: Any? = null
+
+  var state: AudioReactiveState? by mutableStateOf(null)
+    private set
+
+  /** Artwork bounds in root coordinates. */
+  var bounds: Rect by mutableStateOf(Rect.Zero)
+    private set
+
+  fun attach(owner: Any, state: AudioReactiveState) {
+    this.owner = owner
+    this.state = state
+  }
+
+  fun detach(owner: Any) {
+    if (this.owner === owner) {
+      this.owner = null
+      state = null
+    }
+  }
+
+  fun updateBounds(owner: Any, bounds: Rect) {
+    if (this.owner === owner) this.bounds = bounds
+  }
+}
+
+val LocalArtworkHaloHost = staticCompositionLocalOf<ArtworkHaloHost?> { null }
+
+/** Full-size layer that paints the halo of the artwork registered in [host]. */
+@Composable
+fun ArtworkHaloLayer(host: ArtworkHaloHost, modifier: Modifier = Modifier) {
+  val primary = MaterialTheme.colorScheme.primary
+  val secondary = MaterialTheme.colorScheme.secondary
+  val tertiary = MaterialTheme.colorScheme.tertiary
+  val origin = remember { mutableStateOf(Offset.Zero) }
+  Canvas(modifier = modifier.onPlaced { origin.value = it.positionInRoot() }) {
+    val state = host.state ?: return@Canvas
+    val bounds = host.bounds
+    if (bounds.width <= 0f || bounds.height <= 0f) return@Canvas
+    val layerOrigin = origin.value
+    translate(left = bounds.left - layerOrigin.x, top = bounds.top - layerOrigin.y) {
+      drawHalo(state, primary, secondary, tertiary, bounds.size)
+    }
+  }
 }
 
 private fun DrawScope.drawHalo(
@@ -195,6 +258,7 @@ private fun DrawScope.drawHalo(
   primary: Color,
   secondary: Color,
   tertiary: Color,
+  haloSize: Size,
 ) {
   val bass = state.bass
   val mid = state.mid
@@ -202,9 +266,9 @@ private fun DrawScope.drawHalo(
   val kick = state.kick
   val phase = state.phase
 
-  val cx = size.width / 2f
-  val cy = size.height / 2f
-  val base = min(size.width, size.height) / 2f
+  val cx = haloSize.width / 2f
+  val cy = haloSize.height / 2f
+  val base = min(haloSize.width, haloSize.height) / 2f
   if (base <= 0f) return
   val center = Offset(cx, cy)
 

@@ -1,21 +1,16 @@
 package echo.music.iad1tya.ui.screens.recognition
 
 import android.Manifest
-import android.app.Activity
 import android.content.pm.PackageManager
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,7 +20,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,7 +30,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -44,7 +37,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -80,16 +72,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.music.innertube.YouTube
@@ -100,15 +87,11 @@ import echo.music.iad1tya.LocalDatabase
 import echo.music.iad1tya.LocalPlayerAwareWindowInsets
 import echo.music.iad1tya.LocalPlayerConnection
 import echo.music.iad1tya.R
-import echo.music.iad1tya.constants.RecognitionSourceKey
 import echo.music.iad1tya.db.entities.RecognitionHistory
 import echo.music.iad1tya.models.toMediaMetadata
 import echo.music.iad1tya.playback.queues.YouTubeQueue
-import echo.music.iad1tya.recognition.DeviceAudioCapture
 import echo.music.iad1tya.recognition.MusicRecognitionService
-import echo.music.iad1tya.recognition.RecognitionSource
 import echo.music.iad1tya.ui.component.IconButton
-import echo.music.iad1tya.utils.rememberEnumPreference
 import java.time.LocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -121,9 +104,8 @@ fun RecognitionScreen(navController: NavController) {
   val database = LocalDatabase.current
   val coroutineScope = rememberCoroutineScope()
 
-  // Keep a recognition that is still running (it may run in the background service, e.g. while
-  // the user switched to another app) or a fresh result opened from its notification; otherwise
-  // start from scratch.
+  // Keep a recognition that is still running (e.g. started from the quick-settings tile) or a
+  // fresh result opened from its notification; otherwise start from scratch.
   LaunchedEffect(Unit) {
     if (
       !MusicRecognitionService.isRunning && !MusicRecognitionService.consumeShowLastResult()
@@ -136,31 +118,7 @@ fun RecognitionScreen(navController: NavController) {
     onDispose { if (!MusicRecognitionService.isRunning) MusicRecognitionService.reset() }
   }
 
-  // Lets the background service know whether the user is looking at this screen, so a result
-  // found while they're here doesn't also show up as a notification.
-  val lifecycleOwner = LocalLifecycleOwner.current
-  DisposableEffect(lifecycleOwner) {
-    val observer = LifecycleEventObserver { _, event ->
-      when (event) {
-        Lifecycle.Event.ON_RESUME -> MusicRecognitionService.isScreenVisible = true
-        Lifecycle.Event.ON_PAUSE -> MusicRecognitionService.isScreenVisible = false
-        else -> Unit
-      }
-    }
-    lifecycleOwner.lifecycle.addObserver(observer)
-    MusicRecognitionService.isScreenVisible =
-      lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
-    onDispose {
-      lifecycleOwner.lifecycle.removeObserver(observer)
-      MusicRecognitionService.isScreenVisible = false
-    }
-  }
-
   val recognitionStatus by MusicRecognitionService.recognitionStatus.collectAsState()
-
-  var savedSource by rememberEnumPreference(RecognitionSourceKey, RecognitionSource.MICROPHONE)
-  val deviceAudioSupported = DeviceAudioCapture.isSupported
-  val source = if (deviceAudioSupported) savedSource else RecognitionSource.MICROPHONE
 
   var hasPermission by remember {
     mutableStateOf(
@@ -171,34 +129,9 @@ fun RecognitionScreen(navController: NavController) {
 
   var recognitionJob by remember { mutableStateOf<Job?>(null) }
 
-  // Device audio: the system consent dialog, then the foreground service does the listening.
-  val captureConsentLauncher =
-    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-      val data = result.data
-      if (result.resultCode == Activity.RESULT_OK && data != null) {
-        DeviceAudioCapture.start(context, result.resultCode, data, fromApp = true)
-      } else {
-        Toast.makeText(context, R.string.recognition_device_permission_denied, Toast.LENGTH_SHORT)
-          .show()
-      }
-    }
-
   fun launchRecognition() {
-    when (source) {
-      RecognitionSource.MICROPHONE -> {
-        recognitionJob?.cancel()
-        recognitionJob = coroutineScope.launch { MusicRecognitionService.recognize(context) }
-      }
-      RecognitionSource.DEVICE_AUDIO -> {
-        try {
-          captureConsentLauncher.launch(DeviceAudioCapture.consentIntent(context))
-        } catch (e: Exception) {
-          MusicRecognitionService.reportError(
-            context.getString(R.string.recognition_device_capture_unavailable)
-          )
-        }
-      }
-    }
+    recognitionJob?.cancel()
+    recognitionJob = coroutineScope.launch { MusicRecognitionService.recognize(context) }
   }
 
   val permissionLauncher =
@@ -219,7 +152,6 @@ fun RecognitionScreen(navController: NavController) {
   fun cancelRecognition() {
     recognitionJob?.cancel()
     recognitionJob = null
-    DeviceAudioCapture.cancel(context)
     MusicRecognitionService.reset()
   }
 
@@ -321,15 +253,10 @@ fun RecognitionScreen(navController: NavController) {
             ) {
               when (status) {
                 is RecognitionStatus.Ready -> {
-                  ReadyState(
-                    source = source,
-                    showSourcePicker = deviceAudioSupported,
-                    onSourceChange = { savedSource = it },
-                    onStartRecognition = ::startRecognition,
-                  )
+                  ReadyState(onStartRecognition = ::startRecognition)
                 }
                 is RecognitionStatus.Listening -> {
-                  ListeningState(source = source, onCancel = ::cancelRecognition)
+                  ListeningState(onCancel = ::cancelRecognition)
                 }
                 is RecognitionStatus.Processing -> {
                   ProcessingState()
@@ -351,12 +278,7 @@ fun RecognitionScreen(navController: NavController) {
 }
 
 @Composable
-private fun ReadyState(
-  source: RecognitionSource,
-  showSourcePicker: Boolean,
-  onSourceChange: (RecognitionSource) -> Unit,
-  onStartRecognition: () -> Unit,
-) {
+private fun ReadyState(onStartRecognition: () -> Unit) {
   val infiniteTransition = rememberInfiniteTransition(label = "pulse")
   val scale by
     infiniteTransition.animateFloat(
@@ -386,138 +308,36 @@ private fun ReadyState(
           .clickable { onStartRecognition() },
       contentAlignment = Alignment.Center
     ) {
-      AnimatedContent(
-        targetState = source,
-        transitionSpec = { fadeIn(tween(220)).togetherWith(fadeOut(tween(160))) },
-        label = "sourceIcon",
-      ) { target ->
-        Icon(
-          painter =
-            painterResource(
-              if (target == RecognitionSource.DEVICE_AUDIO) R.drawable.headphones
-              else R.drawable.music_note
-            ),
-          contentDescription = null,
-          modifier = Modifier.size(48.dp),
-          tint = MaterialTheme.colorScheme.surface
-        )
-      }
+      Icon(
+        painter = painterResource(R.drawable.music_note),
+        contentDescription = null,
+        modifier = Modifier.size(48.dp),
+        tint = MaterialTheme.colorScheme.surface
+      )
     }
 
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(16.dp),
+      verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       Text(
         text = stringResource(R.string.tap_to_recognize),
         style = MaterialTheme.typography.headlineSmall,
         color = MaterialTheme.colorScheme.onSurface
       )
-
-      if (showSourcePicker) {
-        SourceToggle(source = source, onSourceChange = onSourceChange)
-        AnimatedContent(
-          targetState = source,
-          transitionSpec = { fadeIn(tween(220)).togetherWith(fadeOut(tween(160))) },
-          label = "sourceDescription",
-        ) { target ->
-          Text(
-            text =
-              stringResource(
-                if (target == RecognitionSource.DEVICE_AUDIO) R.string.recognition_source_device_desc
-                else R.string.recognition_source_mic_desc
-              ),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.widthIn(max = 340.dp).padding(horizontal = 16.dp),
-          )
-        }
-      }
-    }
-  }
-}
-
-/** "Around me" / "This phone" switch with a sliding pill. */
-@Composable
-private fun SourceToggle(source: RecognitionSource, onSourceChange: (RecognitionSource) -> Unit) {
-  val options = remember { listOf(RecognitionSource.MICROPHONE, RecognitionSource.DEVICE_AUDIO) }
-  val selectedIndex = options.indexOf(source).coerceAtLeast(0)
-  BoxWithConstraints(
-    modifier =
-      Modifier.widthIn(max = 340.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .height(52.dp)
-        .clip(CircleShape)
-        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-        .padding(4.dp)
-  ) {
-    val segmentWidth = maxWidth / options.size
-    val pillOffset by
-      animateDpAsState(
-        targetValue = segmentWidth * selectedIndex,
-        animationSpec = spring(dampingRatio = 0.78f, stiffness = 520f),
-        label = "sourcePill",
+      Text(
+        text = stringResource(R.string.recognition_ready_hint),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.widthIn(max = 320.dp).padding(horizontal = 16.dp),
       )
-    Box(
-      modifier =
-        Modifier.offset { IntOffset(pillOffset.roundToPx(), 0) }
-          .width(segmentWidth)
-          .fillMaxHeight()
-          .clip(CircleShape)
-          .background(MaterialTheme.colorScheme.onSurface)
-    )
-    Row(modifier = Modifier.fillMaxSize()) {
-      options.forEachIndexed { index, option ->
-        val selected = index == selectedIndex
-        val contentColor by
-          animateColorAsState(
-            targetValue =
-              if (selected) MaterialTheme.colorScheme.surface
-              else MaterialTheme.colorScheme.onSurfaceVariant,
-            label = "sourceContent",
-          )
-        Row(
-          horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.CenterVertically,
-          modifier =
-            Modifier.weight(1f)
-              .fillMaxHeight()
-              .clip(CircleShape)
-              .selectable(selected = selected, role = Role.Tab) { onSourceChange(option) },
-        ) {
-          Icon(
-            painter =
-              painterResource(
-                if (option == RecognitionSource.DEVICE_AUDIO) R.drawable.headphones
-                else R.drawable.mic
-              ),
-            contentDescription = null,
-            tint = contentColor,
-            modifier = Modifier.size(18.dp),
-          )
-          Spacer(Modifier.width(8.dp))
-          Text(
-            text =
-              stringResource(
-                if (option == RecognitionSource.DEVICE_AUDIO) R.string.recognition_source_device
-                else R.string.recognition_source_mic
-              ),
-            color = contentColor,
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-          )
-        }
-      }
     }
   }
 }
 
 @Composable
-private fun ListeningState(source: RecognitionSource, onCancel: () -> Unit) {
+private fun ListeningState(onCancel: () -> Unit) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(48.dp)
@@ -564,29 +384,11 @@ private fun ListeningState(source: RecognitionSource, onCancel: () -> Unit) {
       }
     }
 
-    Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      Text(
-        text =
-          stringResource(
-            if (source == RecognitionSource.DEVICE_AUDIO) R.string.recognition_listening_device
-            else R.string.listening
-          ),
-        style = MaterialTheme.typography.titleLarge,
-        color = MaterialTheme.colorScheme.onSurface
-      )
-      if (source == RecognitionSource.DEVICE_AUDIO) {
-        Text(
-          text = stringResource(R.string.recognition_listening_device_hint),
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          textAlign = TextAlign.Center,
-          modifier = Modifier.widthIn(max = 320.dp).padding(horizontal = 16.dp),
-        )
-      }
-    }
+    Text(
+      text = stringResource(R.string.listening),
+      style = MaterialTheme.typography.titleLarge,
+      color = MaterialTheme.colorScheme.onSurface
+    )
 
     OutlinedButton(onClick = onCancel) { Text(stringResource(R.string.cancel)) }
   }

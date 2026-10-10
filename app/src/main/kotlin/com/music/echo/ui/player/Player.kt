@@ -224,6 +224,7 @@ import echo.music.iad1tya.ui.component.rememberBottomSheetState
 import echo.music.iad1tya.ui.menu.OldPlayerMenu
 import echo.music.iad1tya.ui.menu.PlayerMenu
 import echo.music.iad1tya.ui.screens.settings.DarkMode
+import echo.music.iad1tya.ui.theme.LocalFluxTheme
 import echo.music.iad1tya.ui.theme.PlayerColorExtractor
 import echo.music.iad1tya.ui.theme.PlayerSliderColors
 import echo.music.iad1tya.ui.theme.fadeThroughTransform
@@ -294,9 +295,11 @@ fun BottomSheetPlayer(
 
   val isSystemInDarkTheme = isSystemInDarkTheme()
   val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
+  val themeDarkMode = LocalFluxTheme.current?.forcedDarkMode
   val useDarkTheme =
-    remember(darkTheme, isSystemInDarkTheme) {
-      if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+    remember(darkTheme, isSystemInDarkTheme, themeDarkMode) {
+      themeDarkMode
+        ?: if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
     }
 
   val dataSaverEnabled by
@@ -392,11 +395,7 @@ fun BottomSheetPlayer(
       else -> MaterialTheme.colorScheme.onSurface
     }
   val useBlackBackground =
-    remember(isSystemInDarkTheme, darkTheme, pureBlack) {
-      val useDarkTheme =
-        if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
-      useDarkTheme && pureBlack
-    }
+    remember(useDarkTheme, pureBlack) { useDarkTheme && pureBlack }
 
   val playbackState by playerConnection.playbackState.collectAsState()
   val currentFormatEntity by database.format(mediaMetadata?.id).collectAsState(initial = null)
@@ -590,7 +589,19 @@ fun BottomSheetPlayer(
     listOf(MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.surfaceVariant)
   val fallbackColor = MaterialTheme.colorScheme.surface.toArgb()
 
-  LaunchedEffect(mediaMetadata?.id, playerBackground) {
+  // A custom theme can paint the player with its own gradient instead of the album's colors.
+  val themePlayerBackground =
+    LocalFluxTheme.current?.playerBackgroundColors()
+
+  LaunchedEffect(mediaMetadata?.id, playerBackground, themePlayerBackground) {
+    if (
+      themePlayerBackground != null &&
+        (playerBackground == PlayerBackgroundStyle.GRADIENT ||
+          playerBackground == PlayerBackgroundStyle.GLOW_ANIMATED)
+    ) {
+      gradientColors = themePlayerBackground
+      return@LaunchedEffect
+    }
     if (
       playerBackground == PlayerBackgroundStyle.GRADIENT ||
         playerBackground == PlayerBackgroundStyle.GLOW_ANIMATED
@@ -1002,6 +1013,8 @@ fun BottomSheetPlayer(
   val fluidPlayerTransition by rememberPreference(FluidPlayerTransitionKey, defaultValue = true)
   val artworkMorphState = remember(state) { ArtworkMorphState { state.progress } }
   val activeArtworkMorph = if (fluidPlayerTransition) artworkMorphState else null
+  // The cover's audio-reactive aura is painted from here, behind the whole player content.
+  val artworkHaloHost = remember { ArtworkHaloHost() }
   val morphArtworkUrl = mediaMetadata?.thumbnailUrl?.resize(1200, 1200)
 
   // Warm the full-size artwork as soon as the track changes so the morph can start instantly.
@@ -2710,6 +2723,8 @@ fun BottomSheetPlayer(
       }
     }
 
+    ArtworkHaloLayer(host = artworkHaloHost, modifier = Modifier.fillMaxSize())
+
     when (LocalConfiguration.current.orientation) {
       Configuration.ORIENTATION_LANDSCAPE -> {
 
@@ -2752,7 +2767,10 @@ fun BottomSheetPlayer(
                   positionProvider = { effectivePosition }
                 )
               } else {
-                CompositionLocalProvider(LocalArtworkMorphState provides activeArtworkMorph) {
+                CompositionLocalProvider(
+                  LocalArtworkMorphState provides activeArtworkMorph,
+                  LocalArtworkHaloHost provides artworkHaloHost,
+                ) {
                   Thumbnail(
                     sliderPositionProvider = sliderPositionProvider,
                     modifier = Modifier.animateContentSize(),
@@ -2820,7 +2838,10 @@ fun BottomSheetPlayer(
                   positionProvider = { effectivePosition }
                 )
               } else {
-                CompositionLocalProvider(LocalArtworkMorphState provides activeArtworkMorph) {
+                CompositionLocalProvider(
+                  LocalArtworkMorphState provides activeArtworkMorph,
+                  LocalArtworkHaloHost provides artworkHaloHost,
+                ) {
                   Thumbnail(
                     sliderPositionProvider = sliderPositionProvider,
                     modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),

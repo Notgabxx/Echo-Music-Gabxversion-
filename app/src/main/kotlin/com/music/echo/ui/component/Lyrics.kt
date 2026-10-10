@@ -182,6 +182,7 @@ import echo.music.iad1tya.ui.component.shimmer.ShimmerHost
 import echo.music.iad1tya.ui.component.shimmer.TextPlaceholder
 import echo.music.iad1tya.ui.screens.settings.DarkMode
 import echo.music.iad1tya.ui.screens.settings.LyricsPosition
+import echo.music.iad1tya.ui.theme.LocalFluxTheme
 import echo.music.iad1tya.ui.utils.fadingEdge
 import echo.music.iad1tya.utils.ComposeToImage
 import echo.music.iad1tya.utils.rememberEnumPreference
@@ -261,9 +262,11 @@ fun Lyrics(
 
   val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
   val isSystemInDarkTheme = isSystemInDarkTheme()
+  val themeDarkMode = LocalFluxTheme.current?.forcedDarkMode
   val useDarkTheme =
-    remember(darkTheme, isSystemInDarkTheme) {
-      if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+    remember(darkTheme, isSystemInDarkTheme, themeDarkMode) {
+      themeDarkMode
+        ?: if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
     }
 
   val currentSongRomanize = currentSong?.song?.romanizeLyrics ?: true

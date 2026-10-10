@@ -2,6 +2,7 @@ package com.music.shazamkit.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 @Serializable
 data class ShazamRequestJson(
@@ -22,6 +23,22 @@ data class ShazamRequestJson(
     @SerialName("samplems") val samplems: Long,
     @SerialName("timestamp") val timestamp: Long,
     @SerialName("uri") val uri: String
+  )
+}
+
+/** Body of a `discovery/v5/.../tag` request, as sent by ShazamIO. */
+@Serializable
+data class ShazamTagRequest(
+  @SerialName("timezone") val timezone: String,
+  @SerialName("signature") val signature: Signature,
+  @SerialName("timestamp") val timestamp: Long,
+  @SerialName("context") val context: JsonObject = JsonObject(emptyMap()),
+  @SerialName("geolocation") val geolocation: JsonObject = JsonObject(emptyMap()),
+) {
+  @Serializable
+  data class Signature(
+    @SerialName("uri") val uri: String,
+    @SerialName("samplems") val samplems: Long,
   )
 }
 

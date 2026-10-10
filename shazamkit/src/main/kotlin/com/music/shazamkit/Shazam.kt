@@ -1,8 +1,8 @@
 package com.music.shazamkit
 
 import com.music.shazamkit.models.RecognitionResult
-import com.music.shazamkit.models.ShazamRequestJson
 import com.music.shazamkit.models.ShazamResponseJson
+import com.music.shazamkit.models.ShazamTagRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
@@ -15,11 +15,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import java.util.TimeZone
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.random.Random
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -85,16 +85,6 @@ object Shazam {
       "Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-P905V Build/LMY47X)",
       "Dalvik/2.1.0 (Linux; U; Android 6.0.1; SM-G920F Build/MMB29K)",
       "Dalvik/2.1.0 (Linux; U; Android 5.0; SM-G900F Build/LRX21T)"
-    )
-
-  private val timezones =
-    listOf(
-      "Europe/Paris",
-      "Europe/London",
-      "America/New_York",
-      "America/Los_Angeles",
-      "Asia/Tokyo",
-      "Asia/Dubai"
     )
 
   /**
@@ -230,44 +220,43 @@ object Shazam {
     throw lastException ?: Exception("Recognition failed after $MAX_RETRIES attempts")
   }
 
-  /** Perform actual recognition request */
+  /**
+   * Perform the recognition request.
+   *
+   * Same request ShazamIO sends (https://github.com/shazamio/ShazamIO, `misc.py`, `converter.py`):
+   * the `iphone` device profile (it includes the Spotify/Deezer providers and plain Apple Music
+   * links), the iOS app headers and an empty context/geolocation.
+   */
   private suspend fun performRecognition(
     signature: String,
     sampleDurationMs: Long
   ): RecognitionResult {
-    val timestamp = System.currentTimeMillis() / 1000
     val uuid1 = UUID.randomUUID().toString().uppercase()
-    val uuid2 = UUID.randomUUID().toString()
+    val uuid2 = UUID.randomUUID().toString().uppercase()
 
     val request =
-      ShazamRequestJson(
-        geolocation =
-          ShazamRequestJson.Geolocation(
-            altitude = Random.nextDouble() * 400 + 100,
-            latitude = Random.nextDouble() * 180 - 90,
-            longitude = Random.nextDouble() * 360 - 180
-          ),
-        signature =
-          ShazamRequestJson.Signature(
-            samplems = sampleDurationMs,
-            timestamp = timestamp,
-            uri = signature
-          ),
-        timestamp = timestamp,
-        timezone = timezones.random()
+      ShazamTagRequest(
+        timezone = TimeZone.getDefault().id ?: "Europe/Paris",
+        signature = ShazamTagRequest.Signature(uri = signature, samplems = sampleDurationMs),
+        timestamp = System.currentTimeMillis(),
       )
 
     val response =
-      client.post("https://amp.shazam.com/discovery/v5/en/US/android/-/tag/$uuid1/$uuid2") {
+      client.post("https://amp.shazam.com/discovery/v5/en-US/US/iphone/-/tag/$uuid1/$uuid2") {
         parameter("sync", "true")
         parameter("webv3", "true")
         parameter("sampling", "true")
         parameter("connected", "")
         parameter("shazamapiversion", "v3")
         parameter("sharehub", "true")
+        parameter("hubv5minorversion", "v5.1")
+        parameter("hidelb", "true")
         parameter("video", "v3")
+        header("X-Shazam-Platform", "IPHONE")
+        header("X-Shazam-AppVersion", "14.1.0")
+        header("Accept", "*/*")
+        header("Accept-Language", "en-US")
         header("User-Agent", userAgents.random())
-        header("Content-Language", "en_US")
         contentType(ContentType.Application.Json)
         setBody(request)
       }
@@ -282,7 +271,12 @@ object Shazam {
       }
     }
 
-    val shazamResponse = response.body<ShazamResponseJson>()
+    val shazamResponse =
+      try {
+        response.body<ShazamResponseJson>()
+      } catch (e: Exception) {
+        throw Exception("Shazam service temporarily unavailable", e)
+      }
     return shazamResponse.toRecognitionResult() ?: throw Exception("No match found")
   }
 

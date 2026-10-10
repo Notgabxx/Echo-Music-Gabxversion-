@@ -151,6 +151,7 @@ import echo.music.iad1tya.ui.menu.LocalPlaylistMenu
 import echo.music.iad1tya.ui.menu.SelectionSongMenu
 import echo.music.iad1tya.ui.menu.SongMenu
 import echo.music.iad1tya.ui.screens.settings.DarkMode
+import echo.music.iad1tya.ui.theme.LocalFluxTheme
 import echo.music.iad1tya.ui.utils.backToMain
 import echo.music.iad1tya.utils.listItemShape
 import echo.music.iad1tya.utils.makeTimeString
@@ -925,7 +926,9 @@ fun LocalPlaylistHeader(
   val (darkMode, _) = rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
 
   val cropColor = MaterialTheme.colorScheme
-  val darkTheme = darkMode == DarkMode.ON || (darkMode == DarkMode.AUTO && isSystemInDarkTheme())
+  val darkTheme =
+    LocalFluxTheme.current?.forcedDarkMode
+      ?: (darkMode == DarkMode.ON || (darkMode == DarkMode.AUTO && isSystemInDarkTheme()))
 
   val editCoverTitle = stringResource(R.string.edit_playlist_cover)
   val playlistSyncedMsg = stringResource(R.string.playlist_synced)

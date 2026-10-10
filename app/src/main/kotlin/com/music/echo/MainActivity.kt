@@ -594,17 +594,26 @@ class MainActivity : ComponentActivity() {
       }
     }
 
+    // Custom theme (Settings → Appearance → Themes): read once per activity, so applying a theme
+    // only needs the activity to be recreated.
+    val customTheme = remember { echo.music.iad1tya.ui.theme.FluxThemes.loadActive(this@MainActivity) }
+
     val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val useDarkTheme =
-      remember(darkTheme, isSystemInDarkTheme) {
-        if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+      remember(darkTheme, isSystemInDarkTheme, customTheme) {
+        customTheme?.forcedDarkMode
+          ?: if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
       }
 
     LaunchedEffect(useDarkTheme) { setSystemBarAppearance(useDarkTheme) }
 
     val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
-    val pureBlack = remember(pureBlackEnabled, useDarkTheme) { pureBlackEnabled && useDarkTheme }
+    // A custom theme brings its own background colors, so it wins over pure black.
+    val pureBlack =
+      remember(pureBlackEnabled, useDarkTheme, customTheme) {
+        customTheme == null && pureBlackEnabled && useDarkTheme
+      }
 
     val (selectedThemeColorInt) =
       rememberPreference(SelectedThemeColorKey, defaultValue = DefaultThemeColor.toArgb())
@@ -657,6 +666,7 @@ class MainActivity : ComponentActivity() {
       darkTheme = useDarkTheme,
       pureBlack = pureBlack,
       themeColor = themeColor,
+      customTheme = customTheme,
     ) {
       val hapticHelper = rememberHapticHelper()
 

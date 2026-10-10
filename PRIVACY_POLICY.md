@@ -27,7 +27,7 @@ Esses dados só saem do aparelho se você exportar um backup. Desinstalar o app 
 
 **Capas e vídeos de fundo.** Capas em alta resolução e vídeos curtos de fundo podem ser buscados no Apple Music, no Tidal e em arquivos públicos de artes. Informações de artistas podem vir da Wikipédia.
 
-**Descobrir música (reconhecimento).** O áudio é transformado no próprio aparelho em uma "impressão digital" e só essa impressão digital é enviada ao serviço de reconhecimento da Shazam. A gravação em si não é enviada nem guardada. No modo **Neste celular**, o Flux capta o som tocado por outros apps somente depois que você inicia o reconhecimento e aprova o aviso do Android, e para de captar assim que termina. O som do próprio Flux não é captado.
+**Descobrir música (reconhecimento).** O áudio é transformado no próprio aparelho em uma "impressão digital" e só essa impressão digital é enviada ao serviço de reconhecimento da Shazam. A gravação em si não é enviada nem guardada.
 
 **Ouvir junto.** Quando você cria ou entra em uma sala, o código da sala, o nome que você escolher e o estado da reprodução (música, posição, play/pausa) passam por um servidor comunitário e ficam visíveis para quem está na sala.
 
@@ -47,7 +47,7 @@ Estas integrações só funcionam se você ativá-las ou fizer login:
 
 ## Permissões do Android
 
-- **Microfone:** usado só durante o reconhecimento de música. No modo Neste celular, o Android também pede autorização para captar o áudio do aparelho.
+- **Microfone:** usado só durante o reconhecimento de música, por até 12 segundos.
 - **Notificações:** controles de reprodução, downloads e resultados do reconhecimento.
 - **Localização (opcional):** recursos baseados no clima.
 - **Armazenamento e mídia:** tocar músicas salvas no aparelho e exportar arquivos.

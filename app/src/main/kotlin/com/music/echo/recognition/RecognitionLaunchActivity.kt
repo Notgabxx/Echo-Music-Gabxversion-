@@ -8,15 +8,10 @@ import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import echo.music.iad1tya.MainActivity
-import echo.music.iad1tya.constants.RecognitionSourceKey
-import echo.music.iad1tya.extensions.toEnum
-import echo.music.iad1tya.utils.dataStore
-import echo.music.iad1tya.utils.get
 
 /**
- * Invisible trampoline used by the quick-settings tile. It starts recognition with the source the
- * user picked on the recognition screen: the microphone, or the phone's own audio (which first
- * needs the system capture consent, handled by [DeviceAudioConsentActivity]).
+ * Invisible trampoline used by the quick-settings tile: starts listening in the background, or
+ * opens the app to ask for the microphone permission first.
  */
 class RecognitionLaunchActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,19 +25,13 @@ class RecognitionLaunchActivity : Activity() {
   }
 
   private fun handleRecognitionLaunch() {
-    when {
-      !hasRecordPermission() -> openRecognitionPermissionFlow()
-      preferredSource() == RecognitionSource.DEVICE_AUDIO && DeviceAudioCapture.isSupported ->
-        startActivity(Intent(this, DeviceAudioConsentActivity::class.java))
-      else -> startRecognitionService()
+    if (hasRecordPermission()) {
+      startRecognitionService()
+    } else {
+      openRecognitionPermissionFlow()
     }
     finish()
   }
-
-  private fun preferredSource(): RecognitionSource =
-    runCatching { dataStore[RecognitionSourceKey] }
-      .getOrNull()
-      .toEnum(RecognitionSource.MICROPHONE)
 
   private fun hasRecordPermission(): Boolean {
     return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==

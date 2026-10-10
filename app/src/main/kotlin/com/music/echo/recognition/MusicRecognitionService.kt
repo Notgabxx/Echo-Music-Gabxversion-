@@ -4,26 +4,21 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.AudioAttributes
 import android.media.AudioFormat
-import android.media.AudioPlaybackCaptureConfiguration
+import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import android.media.projection.MediaProjection
-import android.os.Build
-import android.os.Process
 import android.os.SystemClock
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.music.shazamkit.Shazam
 import com.music.shazamkit.models.RecognitionResult
 import com.music.shazamkit.models.RecognitionStatus
 import echo.music.iad1tya.R
-import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -37,38 +32,23 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Where song recognition listens. */
-enum class RecognitionSource {
-  /** The microphone: music playing around the user. */
-  MICROPHONE,
-
-  /**
-   * Audio played by this phone itself (other apps, videos, games), captured digitally through
-   * Android's playback-capture API. It does not depend on the speaker, so it also works with wired
-   * or Bluetooth headphones. Requires Android 10+ and the user's capture consent.
-   */
-  DEVICE_AUDIO,
-}
-
+/**
+ * Song recognition through the microphone, done the way the proven open-source Shazam clients do
+ * it (SongRec / ShazamIO): 16 kHz mono audio, fingerprinted over a 12-second window (zero-padded
+ * in front while less has been heard) and matched every 4 seconds until Shazam finds the song.
+ */
 object MusicRecognitionService {
 
-  private const val RECORDING_SAMPLE_RATE = 44100
+  private const val SAMPLE_RATE = ShazamSignatureGenerator.SAMPLE_RATE
+  private const val FALLBACK_SAMPLE_RATE = 44100
   private const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
   private const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
-  private const val BYTES_PER_SECOND = RECORDING_SAMPLE_RATE * 2
 
-  /** Longest listening window. */
-  private const val RECORDING_DURATION_MS = 10_000L
+  /** How long we listen at most: one full Shazam window. */
+  private const val LISTEN_SECONDS = ShazamSignatureGenerator.WINDOW_SECONDS
 
-  /**
-   * Moments at which the audio heard so far is already sent for matching: a clean signal (always
-   * the case for device audio) is recognized in a few seconds instead of after the whole window.
-   */
-  private val MATCH_ATTEMPTS_MS = longArrayOf(4_000L, 7_000L, RECORDING_DURATION_MS)
-
-  /** Minimum amount of non-silent audio for an early attempt; the last one takes what it has. */
-  private const val MIN_EARLY_AUDIO_MS = 3_000L
-  private const val MIN_FINAL_AUDIO_MS = 1_000L
+  /** Like SongRec: a new attempt every 4 seconds of audio. */
+  private val MATCH_ATTEMPTS_SECONDS = intArrayOf(4, 8, LISTEN_SECONDS)
 
   /** Peak amplitude (16-bit) under which audio is treated as silence. */
   private const val SILENCE_PEAK = 48
@@ -82,17 +62,11 @@ object MusicRecognitionService {
   private val running = AtomicBoolean(false)
   @Volatile private var lastResultAt = 0L
   @Volatile private var lastSavedResult: RecognitionResult? = null
-
-  /** Set by the recognition screen while it is resumed (visible to the user). */
-  @Volatile var isScreenVisible: Boolean = false
+  @Volatile private var showLastResultRequested = false
 
   /** True while a recognition (from any entry point) is listening or matching. */
   val isRunning: Boolean
     get() = running.get()
-
-  /** Device-audio capture needs the playback-capture API (Android 10+). */
-  val isDeviceAudioSupported: Boolean
-    get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
   fun hasRecordPermission(context: Context): Boolean {
     return ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
@@ -103,8 +77,6 @@ object MusicRecognitionService {
   fun hasFreshResult(): Boolean =
     _recognitionStatus.value is RecognitionStatus.Success &&
       SystemClock.elapsedRealtime() - lastResultAt < RESULT_FRESHNESS_MS
-
-  @Volatile private var showLastResultRequested = false
 
   /** The recognition screen is being opened from a result notification. */
   fun requestShowLastResult() {
@@ -126,17 +98,8 @@ object MusicRecognitionService {
     return true
   }
 
-  /** Publishes a terminal error raised outside the recognition flow (e.g. capture revoked). */
-  fun reportError(message: String) {
-    _recognitionStatus.value = RecognitionStatus.Error(message)
-  }
-
-  /**
-   * Listens and identifies the song that is playing. With a [projection] the phone's own audio
-   * output is captured (see [RecognitionSource.DEVICE_AUDIO]); otherwise the microphone is used.
-   * The caller owns the projection and stops it afterwards.
-   */
-  suspend fun recognize(context: Context, projection: MediaProjection? = null): RecognitionStatus =
+  /** Listens through the microphone and identifies the song that is playing. */
+  suspend fun recognize(context: Context): RecognitionStatus =
     withContext(Dispatchers.IO) {
       val appContext = context.applicationContext
       if (!hasRecordPermission(appContext)) {
@@ -145,17 +108,12 @@ object MusicRecognitionService {
         )
       }
 
-      val source =
-        if (projection != null && isDeviceAudioSupported) RecognitionSource.DEVICE_AUDIO
-        else RecognitionSource.MICROPHONE
-
       running.set(true)
       _recognitionStatus.value = RecognitionStatus.Listening
       try {
-        publish(listenAndMatch(appContext, source, projection))
+        publish(listenAndMatch(appContext))
       } catch (e: CancellationException) {
-        // Cancelled by the user (or the screen went away): go back to idle, unless a terminal
-        // state (e.g. "capture stopped") was already published.
+        // Cancelled by the user (or the screen went away): back to idle.
         val current = _recognitionStatus.value
         if (current is RecognitionStatus.Listening || current is RecognitionStatus.Processing) {
           _recognitionStatus.value = RecognitionStatus.Ready
@@ -174,63 +132,72 @@ object MusicRecognitionService {
     return status
   }
 
+  private class OpenRecorder(val record: AudioRecord, val sampleRate: Int)
+
   /**
-   * Records up to [RECORDING_DURATION_MS] while trying to match at each of [MATCH_ATTEMPTS_MS], and
-   * stops at the first match.
+   * Prefers the unprocessed microphone at 16 kHz where the device supports it (no noise
+   * suppression or automatic gain, which can eat music), then the regular one, then 44.1 kHz with
+   * resampling for devices that refuse 16 kHz.
    */
-  private suspend fun listenAndMatch(
-    context: Context,
-    source: RecognitionSource,
-    projection: MediaProjection?,
-  ): RecognitionStatus = coroutineScope {
-    val minBuffer = AudioRecord.getMinBufferSize(RECORDING_SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT)
-    // ~200 ms chunks: large enough to never overrun, small enough for responsive attempts.
-    val bufferSize = maxOf(if (minBuffer > 0) minBuffer else 0, BYTES_PER_SECOND / 5)
-
-    val record =
+  @SuppressLint("MissingPermission")
+  private fun openRecorder(context: Context): OpenRecorder? {
+    val unprocessed =
       runCatching {
-          if (
-            source == RecognitionSource.DEVICE_AUDIO &&
-              projection != null &&
-              Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-          ) {
-            createPlaybackCaptureRecord(projection, bufferSize)
-          } else {
-            createMicrophoneRecord(bufferSize)
-          }
+          context
+            .getSystemService(AudioManager::class.java)
+            ?.getProperty(AudioManager.PROPERTY_SUPPORT_AUDIO_SOURCE_UNPROCESSED) == "true"
         }
-        .getOrNull()
-
-    if (record == null || record.state != AudioRecord.STATE_INITIALIZED) {
-      record?.release()
-      return@coroutineScope RecognitionStatus.Error(context.getString(unavailableMessage(source)))
+        .getOrDefault(false)
+    val candidates = buildList {
+      if (unprocessed) add(MediaRecorder.AudioSource.UNPROCESSED to SAMPLE_RATE)
+      add(MediaRecorder.AudioSource.MIC to SAMPLE_RATE)
+      add(MediaRecorder.AudioSource.MIC to FALLBACK_SAMPLE_RATE)
     }
+    for ((source, rate) in candidates) {
+      val minBuffer = AudioRecord.getMinBufferSize(rate, CHANNEL_CONFIG, AUDIO_FORMAT)
+      if (minBuffer <= 0) continue
+      // ~400 ms of headroom so the reader never overruns.
+      val bufferSize = maxOf(minBuffer, rate * 2 * 2 / 5)
+      val record =
+        runCatching { AudioRecord(source, rate, CHANNEL_CONFIG, AUDIO_FORMAT, bufferSize) }
+          .getOrNull() ?: continue
+      if (record.state == AudioRecord.STATE_INITIALIZED) return OpenRecorder(record, rate)
+      record.release()
+    }
+    return null
+  }
 
-    val pcm = ByteArrayOutputStream(BYTES_PER_SECOND * (RECORDING_DURATION_MS / 1000L + 1).toInt())
-    val recordedBytes = AtomicLong(0L)
-    val targetBytes = RECORDING_DURATION_MS * BYTES_PER_SECOND / 1000L
+  private suspend fun listenAndMatch(context: Context): RecognitionStatus = coroutineScope {
+    val opened =
+      openRecorder(context)
+        ?: return@coroutineScope RecognitionStatus.Error(
+          context.getString(R.string.recognition_mic_unavailable)
+        )
+    val record = opened.record
+    val rate = opened.sampleRate
+
+    val audio = ShortArray(rate * LISTEN_SECONDS)
+    val written = AtomicInteger(0)
     var recorder: Job? = null
 
     try {
       record.startRecording()
       if (record.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
-        return@coroutineScope RecognitionStatus.Error(context.getString(unavailableMessage(source)))
+        return@coroutineScope RecognitionStatus.Error(
+          context.getString(R.string.recognition_mic_unavailable)
+        )
       }
 
       val recorderJob =
         launch(Dispatchers.IO) {
-          val buffer = ByteArray(bufferSize)
+          val chunk = rate / 10 // 100 ms per read
           // Wall-clock guard in case the audio stack delivers data slower than real time.
-          val deadline = SystemClock.elapsedRealtime() + RECORDING_DURATION_MS + 3_000L
-          while (
-            isActive &&
-              recordedBytes.get() < targetBytes &&
-              SystemClock.elapsedRealtime() < deadline
-          ) {
-            val read = record.read(buffer, 0, buffer.size)
+          val deadline = SystemClock.elapsedRealtime() + LISTEN_SECONDS * 1000L + 3_000L
+          while (isActive && written.get() < audio.size && SystemClock.elapsedRealtime() < deadline) {
+            val position = written.get()
+            val read = record.read(audio, position, minOf(chunk, audio.size - position))
             if (read > 0) {
-              synchronized(pcm) { pcm.write(buffer, 0, read) }
-              recordedBytes.addAndGet(read.toLong())
+              written.addAndGet(read)
             } else if (read < 0) {
               break
             }
@@ -241,37 +208,37 @@ object MusicRecognitionService {
       var outcome: Result<RecognitionResult>? = null
       var heardAudio = false
 
-      for ((index, attemptAtMs) in MATCH_ATTEMPTS_MS.withIndex()) {
-        val neededBytes = attemptAtMs * BYTES_PER_SECOND / 1000L
-        while (recordedBytes.get() < neededBytes && recorderJob.isActive) delay(100)
+      for ((index, attemptSeconds) in MATCH_ATTEMPTS_SECONDS.withIndex()) {
+        val needed = attemptSeconds * rate
+        while (written.get() < needed && recorderJob.isActive) delay(100)
 
-        val finalAttempt = index == MATCH_ATTEMPTS_MS.lastIndex || !recorderJob.isActive
-        val audio = trimLeadingSilence(synchronized(pcm) { pcm.toByteArray() })
-        val audioMs = audio.size * 1000L / BYTES_PER_SECOND
-        if (audio.isNotEmpty()) heardAudio = true
-
-        val minimumMs = if (finalAttempt) MIN_FINAL_AUDIO_MS else MIN_EARLY_AUDIO_MS
-        if (audioMs < minimumMs) {
+        val finalAttempt = index == MATCH_ATTEMPTS_SECONDS.lastIndex || !recorderJob.isActive
+        val available = written.get()
+        if (available < rate) {
+          // Less than a second of audio: nothing worth sending yet.
           if (finalAttempt) break else continue
         }
 
+        val pcm = to16kHz(audio.copyOf(available), rate)
+        if (isSilent(pcm)) {
+          if (finalAttempt) break else continue
+        }
+        heardAudio = true
+
         if (finalAttempt) _recognitionStatus.value = RecognitionStatus.Processing
-        val attempt = match(audio)
+        val attempt = match(pcm)
         outcome = attempt
         // Stop on a match, or on a real failure (network, service) that waiting won't fix.
         if (attempt.isSuccess || !attempt.isNoMatch() || finalAttempt) break
       }
 
       when {
-        outcome == null && !heardAudio ->
-          RecognitionStatus.Error(context.getString(silentMessage(source)))
+        !heardAudio -> RecognitionStatus.Error(context.getString(R.string.recognition_mic_silent))
         outcome == null || outcome.isNoMatch() ->
           RecognitionStatus.NoMatch(context.getString(R.string.recognition_no_match_hint))
         outcome.isSuccess -> RecognitionStatus.Success(outcome.getOrThrow())
         else ->
-          RecognitionStatus.Error(
-            errorMessage(context, outcome.exceptionOrNull() ?: Exception())
-          )
+          RecognitionStatus.Error(errorMessage(context, outcome.exceptionOrNull() ?: Exception()))
       }
     } finally {
       recorder?.cancel()
@@ -282,113 +249,45 @@ object MusicRecognitionService {
     }
   }
 
-  @SuppressLint("MissingPermission")
-  private fun createMicrophoneRecord(bufferSize: Int): AudioRecord =
-    AudioRecord(
-      MediaRecorder.AudioSource.MIC,
-      RECORDING_SAMPLE_RATE,
-      CHANNEL_CONFIG,
-      AUDIO_FORMAT,
-      bufferSize,
-    )
-
-  /**
-   * Captures what other apps are playing (media, games and unclassified audio) straight from the
-   * mixer, so it works whether the sound goes to the speaker or to headphones. Flux's own playback
-   * is excluded — the player already shows that song — and apps can opt out of capture (e.g.
-   * protected streams), in which case their audio simply isn't included.
-   */
-  @SuppressLint("MissingPermission")
-  @RequiresApi(Build.VERSION_CODES.Q)
-  private fun createPlaybackCaptureRecord(projection: MediaProjection, bufferSize: Int): AudioRecord {
-    val captureConfig =
-      AudioPlaybackCaptureConfiguration.Builder(projection)
-        .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
-        .addMatchingUsage(AudioAttributes.USAGE_GAME)
-        .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
-        .excludeUid(Process.myUid())
-        .build()
-
-    return AudioRecord.Builder()
-      .setAudioFormat(
-        AudioFormat.Builder()
-          .setEncoding(AUDIO_FORMAT)
-          .setSampleRate(RECORDING_SAMPLE_RATE)
-          .setChannelMask(CHANNEL_CONFIG)
-          .build()
-      )
-      .setBufferSizeInBytes(bufferSize)
-      .setAudioPlaybackCaptureConfig(captureConfig)
-      .build()
+  /** Fingerprints the 16 kHz PCM over Shazam's 12-second window and asks Shazam for a match. */
+  private suspend fun match(pcm16k: ShortArray): Result<RecognitionResult> {
+    val signature =
+      withContext(Dispatchers.Default) { ShazamSignatureGenerator.windowedSignature(pcm16k) }
+    if (signature.peakCount == 0) return Result.failure(Exception("No match found"))
+    val uri = ShazamSignatureGenerator.encodeToUri(signature)
+    return Shazam.recognize(uri, signature.durationMs)
   }
 
-  /** Fingerprints the PCM (44.1 kHz mono) and asks Shazam for a match. */
-  private suspend fun match(pcm: ByteArray): Result<RecognitionResult> {
+  /** Recordings are 16 kHz already, except on devices that only offer 44.1 kHz. */
+  private suspend fun to16kHz(pcm: ShortArray, rate: Int): ShortArray {
+    if (rate == SAMPLE_RATE) return pcm
+    val bytes = ByteBuffer.allocate(pcm.size * 2).order(ByteOrder.LITTLE_ENDIAN)
+    bytes.asShortBuffer().put(pcm)
     val resampled =
       AudioResampler.resample(
           DecodedAudio(
-            data = pcm,
+            data = bytes.array(),
             channelCount = 1,
-            sampleRate = RECORDING_SAMPLE_RATE,
+            sampleRate = rate,
             pcmEncoding = AUDIO_FORMAT,
           ),
-          VibraSignature.REQUIRED_SAMPLE_RATE,
+          SAMPLE_RATE,
         )
-        .getOrElse {
-          return Result.failure(Exception("Failed to resample audio: ${it.message}", it))
-        }
-
-    val validFormat =
-      resampled.channelCount == 1 &&
-        resampled.sampleRate == VibraSignature.REQUIRED_SAMPLE_RATE &&
-        resampled.pcmEncoding == AudioFormat.ENCODING_PCM_16BIT &&
-        ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN &&
-        resampled.data.isNotEmpty() &&
-        resampled.data.size % 2 == 0
-    if (!validFormat) {
-      return Result.failure(IllegalStateException("Invalid audio format for fingerprint generation"))
-    }
-
-    val signature =
-      try {
-        VibraSignature.fromI16(resampled.data)
-      } catch (e: Exception) {
-        return Result.failure(Exception("Failed to generate fingerprint: ${e.message}", e))
-      }
-
-    val sampleDurationMs =
-      (resampled.data.size / 2) * 1000L / VibraSignature.REQUIRED_SAMPLE_RATE
-    return Shazam.recognize(signature, sampleDurationMs)
+        .getOrThrow()
+    val out = ShortArray(resampled.data.size / 2)
+    ByteBuffer.wrap(resampled.data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(out)
+    return out
   }
 
-  /**
-   * Drops the silence before the music starts (e.g. the user pressed play a few seconds after
-   * starting), keeping a short lead-in. Returns an empty array when everything is silent.
-   */
-  private fun trimLeadingSilence(pcm: ByteArray): ByteArray {
-    var index = 0
-    while (index + 1 < pcm.size) {
-      // Little-endian signed 16-bit sample.
-      val sample = (pcm[index].toInt() and 0xFF) or (pcm[index + 1].toInt() shl 8)
-      if (sample > SILENCE_PEAK || sample < -SILENCE_PEAK) break
-      index += 2
+  private fun isSilent(pcm: ShortArray): Boolean {
+    for (sample in pcm) {
+      if (sample > SILENCE_PEAK || sample < -SILENCE_PEAK) return false
     }
-    if (index + 1 >= pcm.size) return ByteArray(0)
-    val leadInBytes = BYTES_PER_SECOND / 10
-    val start = (index - leadInBytes).coerceAtLeast(0).let { it - it % 2 }
-    return if (start == 0) pcm else pcm.copyOfRange(start, pcm.size)
+    return true
   }
 
   private fun Result<RecognitionResult>.isNoMatch(): Boolean =
     isFailure && exceptionOrNull()?.message?.contains("No match", ignoreCase = true) == true
-
-  private fun unavailableMessage(source: RecognitionSource): Int =
-    if (source == RecognitionSource.DEVICE_AUDIO) R.string.recognition_device_capture_unavailable
-    else R.string.recognition_mic_unavailable
-
-  private fun silentMessage(source: RecognitionSource): Int =
-    if (source == RecognitionSource.DEVICE_AUDIO) R.string.recognition_device_silent
-    else R.string.recognition_mic_silent
 
   private fun errorMessage(context: Context, error: Throwable): String =
     if (generateSequence(error) { it.cause }.any { it is IOException }) {

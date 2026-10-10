@@ -1,0 +1,62 @@
+{
+  "format": "flux-theme",
+  "version": 1,
+  "id": "midnight-hour",
+  "name": "Midnight Hour",
+  "author": "Flux",
+  "description": "Azul da meia-noite, ciano elétrico, cantos cortados na diagonal e títulos pesados em itálico.",
+  "mode": "dark",
+  "albumColors": false,
+  "colors": {
+    "seed": "#1E5BFF",
+    "primary": "#3FD8FF",
+    "onPrimary": "#00121F",
+    "primaryContainer": "#0D3B8F",
+    "onPrimaryContainer": "#CDF4FF",
+    "inversePrimary": "#005A88",
+    "secondary": "#7FA8FF",
+    "onSecondary": "#001A44",
+    "secondaryContainer": "#12306E",
+    "onSecondaryContainer": "#DCE6FF",
+    "tertiary": "#FFFFFF",
+    "onTertiary": "#031033",
+    "tertiaryContainer": "#1B4FCC",
+    "onTertiaryContainer": "#FFFFFF",
+    "background": "#030B26",
+    "onBackground": "#EAF4FF",
+    "surface": "#04102F",
+    "onSurface": "#EAF4FF",
+    "surfaceVariant": "#0C2563",
+    "onSurfaceVariant": "#9EC3FF",
+    "surfaceTint": "#3FD8FF",
+    "inverseSurface": "#EAF4FF",
+    "inverseOnSurface": "#071A52",
+    "surfaceBright": "#13306F",
+    "surfaceDim": "#030B26",
+    "surfaceContainerLowest": "#020820",
+    "surfaceContainerLow": "#06143A",
+    "surfaceContainer": "#081A48",
+    "surfaceContainerHigh": "#0B2156",
+    "surfaceContainerHighest": "#0F2A66",
+    "outline": "#3A6BD1",
+    "outlineVariant": "#173A85",
+    "error": "#FF6B8B",
+    "onError": "#3D0013",
+    "errorContainer": "#5C0A26",
+    "onErrorContainer": "#FFD9E0",
+    "scrim": "#000000"
+  },
+  "shapes": {
+    "style": "cut",
+    "scale": 0.8
+  },
+  "typography": {
+    "font": "condensed",
+    "titleWeight": 900,
+    "italicTitles": true
+  },
+  "player": {
+    "artworkCorner": 6,
+    "background": ["#0B2A7A", "#071A52", "#030B26"]
+  }
+}

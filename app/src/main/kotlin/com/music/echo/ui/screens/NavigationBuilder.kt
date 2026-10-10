@@ -61,6 +61,7 @@ import echo.music.iad1tya.ui.screens.settings.ThemeScreen
 import echo.music.iad1tya.ui.screens.settings.UpdateSettings
 import echo.music.iad1tya.ui.screens.settings.UptimeScreen
 import echo.music.iad1tya.ui.screens.settings.integrations.ListenTogetherSettings
+import echo.music.iad1tya.ui.theme.LocalFluxTheme
 import echo.music.iad1tya.utils.rememberEnumPreference
 import echo.music.iad1tya.utils.rememberPreference
 
@@ -79,11 +80,17 @@ fun NavGraphBuilder.navigationBuilder(
     val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
     val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
     val isSystemInDarkTheme = isSystemInDarkTheme()
+    val themeDarkMode = LocalFluxTheme.current?.forcedDarkMode
     val useDarkTheme =
-      remember(darkTheme, isSystemInDarkTheme) {
-        if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+      remember(darkTheme, isSystemInDarkTheme, themeDarkMode) {
+        themeDarkMode
+          ?: if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
       }
-    val pureBlack = remember(pureBlackEnabled, useDarkTheme) { pureBlackEnabled && useDarkTheme }
+    val customThemeActive = LocalFluxTheme.current != null
+    val pureBlack =
+      remember(pureBlackEnabled, useDarkTheme, customThemeActive) {
+        pureBlackEnabled && useDarkTheme && !customThemeActive
+      }
     SearchScreen(navController = navController, pureBlack = pureBlack)
   }
 
@@ -343,6 +350,9 @@ fun NavGraphBuilder.navigationBuilder(
   }
 
   composable("settings/appearance/theme") { ThemeScreen(navController) }
+  composable("settings/appearance/themes") {
+    echo.music.iad1tya.ui.screens.settings.FluxThemesScreen(navController)
+  }
   composable(
     route = "settings/appearance/haptics?highlightKey={highlightKey}",
     arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })

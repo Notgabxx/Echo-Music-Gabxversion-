@@ -2,7 +2,8 @@ Flux is an open-source music player for Android that streams the YouTube Music c
 
 Highlights:
 * Listen Together — create a room and play the same song, in sync, with your friends.
-* Find songs — identify music playing around you or in other apps on your phone (videos, reels, games), even with headphones on, and open it in Flux with one tap.
+* Find songs — identify the music playing around you and open it in Flux with one tap.
+* Themes — apply ready-made themes or import a .json theme file, no reinstall needed.
 * Living player — the play button flows and pulses with the beat, the cover gets an aura that reacts to bass, mids and treble, and the mini player morphs into the full player.
 * Album colors — the theme follows the song that is playing, with automatic contrast so text stays readable.
 * Liquid glass — frosted-glass bars and buttons.

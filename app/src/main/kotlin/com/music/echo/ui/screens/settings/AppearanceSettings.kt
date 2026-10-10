@@ -937,6 +937,15 @@ fun AppearanceSettings(
         buildList {
           add(
             Material3SettingsItem(
+              icon = painterResource(R.drawable.brush_themes),
+              title = { Text(stringResource(R.string.themes_title)) },
+              description = { Text(stringResource(R.string.themes_entry_desc)) },
+              onClick = { navController.navigate("settings/appearance/themes") }
+            )
+          )
+
+          add(
+            Material3SettingsItem(
               icon = painterResource(echo.music.iad1tya.R.drawable.alphabet_cyrillic),
               title = { Text(stringResource(echo.music.iad1tya.R.string.app_font)) },
               trailingContent = {
@@ -1064,7 +1073,10 @@ fun AppearanceSettings(
     Spacer(modifier = Modifier.height(16.dp))
 
     val (thumbnailCornerRadius, onThumbnailCornerRadiusChange) =
-      rememberPreference(ThumbnailCornerRadiusKey, defaultValue = 3f)
+      rememberPreference(
+        ThumbnailCornerRadiusKey,
+        defaultValue = echo.music.iad1tya.constants.DefaultThumbnailCornerRadius
+      )
 
     var showSensitivityDialog by rememberSaveable { mutableStateOf(false) }
     var showThumbnailCornerRadiusDialog by rememberSaveable { mutableStateOf(false) }
