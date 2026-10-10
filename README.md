@@ -4,12 +4,6 @@
 
 <br>
 
-<img src="assets/flux-logo.png" alt="" width="88">
-
-# Flux
-
-**Música sem anúncios, ouvir junto com os amigos e uma interface que flui.**
-
 [![Baixar APK](https://img.shields.io/github/v/release/Notgabxx/Echo-Music-Gabxversion-?include_prereleases&label=baixar%20APK&style=for-the-badge&color=6A3DFF)](https://github.com/Notgabxx/Echo-Music-Gabxversion-/releases)
 [![Licença GPL-3.0](https://img.shields.io/badge/licen%C3%A7a-GPL--3.0-00B4FF?style=for-the-badge)](LICENSE)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)
