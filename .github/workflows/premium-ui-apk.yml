@@ -64,24 +64,49 @@ jobs:
         shell: bash
         run: |
           chmod +x gradlew
-          ./gradlew :app:assembleUniversalGmsRelease -PpremiumUiBuild=true --stacktrace 2>&1 | tee build.log
+          ./gradlew :app:assembleUniversalGmsRelease -PpremiumUiBuild=true --continue --stacktrace 2>&1 | tee build.log
 
       - name: Report build errors
         if: failure()
         shell: bash
         run: |
-          # Surface compiler errors as annotations (readable from the checks API and the run page).
+          # Surface the real failure reason as annotations (readable from the checks API).
           python3 - <<'PY'
-          import re
           lines = open("build.log", encoding="utf-8", errors="replace").read().splitlines()
-          errors = [l for l in lines if l.startswith("e: ") or "error:" in l or "FAILURE:" in l or "What went wrong" in l]
-          if not errors:
-              errors = lines[-40:]
-          batches = [errors[i:i + 6] for i in range(0, min(len(errors), 60), 6)]
-          for batch in batches[:10]:
-              msg = "%0A".join(b.replace("%", "%25").replace("\r", "") for b in batch)
+          picked = []
+          for i, l in enumerate(lines):
+              if "What went wrong" in l:
+                  block = []
+                  for nxt in lines[i + 1:i + 40]:
+                      if nxt.startswith("* Try:"):
+                          break
+                      block.append(nxt)
+                  picked.append("WHAT WENT WRONG: " + " | ".join(x.strip() for x in block if x.strip())[:1500])
+          kotlin = [l for l in lines if l.startswith("e: ")]
+          other = [l for l in lines if ("error:" in l.lower() or "Execution failed for task" in l) and not l.startswith("e: ")]
+          items = picked + kotlin[:60] + other[:20]
+          if not items:
+              items = lines[-30:]
+          batches = [items[i:i + 6] for i in range(0, len(items), 6)][:9]
+          for batch in batches:
+              msg = "%0A".join(b.replace("%", "%25").replace("\r", "")[:900] for b in batch)
               print(f"::error title=Build error::{msg}")
           PY
+
+      - name: Publish full build log (on failure)
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Push the complete log to a throwaway `ci-logs` branch so it can be read with plain git.
+          LOGDIR="$RUNNER_TEMP/ci-logs"
+          rm -rf "$LOGDIR" && mkdir -p "$LOGDIR" && cd "$LOGDIR"
+          git init -q
+          cp "$GITHUB_WORKSPACE/build.log" build.log || echo "no build.log" > build.log
+          git add build.log
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "build log for run ${GITHUB_RUN_NUMBER}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/ci-logs
 
       - name: Collect APK
         shell: bash
