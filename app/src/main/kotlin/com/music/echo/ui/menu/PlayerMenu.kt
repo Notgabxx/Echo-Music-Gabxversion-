@@ -567,6 +567,23 @@ fun PlayerMenu(
 
             add(
               Material3MenuItemData(
+                title = { Text(text = stringResource(R.string.mash_title)) },
+                description = { Text(text = stringResource(R.string.mash_menu_desc)) },
+                icon = {
+                  Icon(
+                    painter = painterResource(R.drawable.mash),
+                    contentDescription = null,
+                  )
+                },
+                onClick = {
+                  navController.navigate("mash/${mediaMetadata.id}")
+                  playerBottomSheetState.collapseSoft()
+                  onDismiss()
+                }
+              )
+            )
+            add(
+              Material3MenuItemData(
                 title = { Text(text = "Ambient Mode") },
                 icon = {
                   Icon(

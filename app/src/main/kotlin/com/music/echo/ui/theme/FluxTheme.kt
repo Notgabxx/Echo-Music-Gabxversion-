@@ -110,7 +110,20 @@ data class FluxThemeSpec(
     @SerialName("artworkCorner") val artworkCorner: Float? = null,
     /** Two or three colors for the player's gradient background, top to bottom. */
     @SerialName("background") val background: List<String>? = null,
-  )
+    /** "liquid" (default) or "diamond": the play button's body. */
+    @SerialName("playButton") val playButton: String? = null,
+    /** Tilts the artwork, in degrees (e.g. -3). */
+    @SerialName("artworkTilt") val artworkTilt: Float? = null,
+    /** Frame drawn around the artwork: a color or a role ("primary", "onSurface"…). */
+    @SerialName("artworkFrame") val artworkFrame: String? = null,
+    /** A solid block offset behind the artwork, like a print shadow: color or role. */
+    @SerialName("artworkBackdrop") val artworkBackdrop: String? = null,
+    /** Hard offset shadow behind the song title: color or role. */
+    @SerialName("titleShadow") val titleShadow: String? = null,
+  ) {
+    val diamondPlayButton: Boolean
+      get() = playButton.equals("diamond", ignoreCase = true)
+  }
 
   /** True when the theme forces dark mode, false when it forces light mode, null to follow. */
   val forcedDarkMode: Boolean?
@@ -143,6 +156,24 @@ fun parseThemeColor(value: String?): Color? {
       else -> null
     } ?: return null
   return Color(argb.toInt())
+}
+
+/** A theme color: "#RRGGBB"/"#AARRGGBB" or a role of [scheme] ("primary", "onSurface"…). */
+fun themeColorOrRole(value: String?, scheme: ColorScheme): Color? {
+  val text = value?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+  return when (text.lowercase()) {
+    "primary" -> scheme.primary
+    "onprimary" -> scheme.onPrimary
+    "secondary" -> scheme.secondary
+    "tertiary" -> scheme.tertiary
+    "surface" -> scheme.surface
+    "onsurface" -> scheme.onSurface
+    "background" -> scheme.background
+    "onbackground" -> scheme.onBackground
+    "white" -> Color.White
+    "black" -> Color.Black
+    else -> parseThemeColor(text)
+  }
 }
 
 /** Applies every color the theme defines on top of a generated Material scheme. */
@@ -222,10 +253,31 @@ fun themeFontFamily(name: String?): FontFamily? {
   }
 }
 
+/**
+ * A font family installed on the device, declared in every weight and in italic so the theme's
+ * title weight and italics reach the platform (a plain Typeface would ignore both).
+ */
 private fun deviceFontFamily(familyName: String): FontFamily? =
   runCatching {
-      val typeface = android.graphics.Typeface.create(familyName, android.graphics.Typeface.NORMAL)
-      FontFamily(androidx.compose.ui.text.font.Typeface(typeface))
+      val name = androidx.compose.ui.text.font.DeviceFontFamilyName(familyName)
+      val weights =
+        listOf(
+          FontWeight.Light,
+          FontWeight.Normal,
+          FontWeight.Medium,
+          FontWeight.SemiBold,
+          FontWeight.Bold,
+          FontWeight.ExtraBold,
+          FontWeight.Black,
+        )
+      FontFamily(
+        weights.flatMap { weight ->
+          listOf(
+            androidx.compose.ui.text.font.Font(name, weight, FontStyle.Normal),
+            androidx.compose.ui.text.font.Font(name, weight, FontStyle.Italic),
+          )
+        }
+      )
     }
     .getOrNull()
 

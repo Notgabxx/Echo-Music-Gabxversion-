@@ -68,6 +68,9 @@ fun LivingPlayButton(
   enabled: Boolean = true,
   contentDescription: String? = null,
   interactionSource: MutableInteractionSource? = null,
+  /** Theme style: a diamond body over an offset block of [diamondAccent], swelling on beats. */
+  diamond: Boolean = false,
+  diamondAccent: Color = Color.Unspecified,
 ) {
   val source = interactionSource ?: remember { MutableInteractionSource() }
   val pressed by source.collectIsPressedAsState()
@@ -113,8 +116,12 @@ fun LivingPlayButton(
         }
         .drawBehind {
           val live = liveness
-          drawing.drawBody(this, containerColor, live, intensity, audio)
-          if (beatRings) drawing.drawBeatRings(this, containerColor, live, audio)
+          if (diamond) {
+            drawing.drawDiamond(this, containerColor, diamondAccent, live, audio)
+          } else {
+            drawing.drawBody(this, containerColor, live, intensity, audio)
+            if (beatRings) drawing.drawBeatRings(this, containerColor, live, audio)
+          }
           if (overrideIcon == null) {
             drawing.drawGlyph(this, contentColor, glyphMorph, glyphSize.toPx())
           }
@@ -191,6 +198,34 @@ private class LivingButtonDrawing {
         if (i == 0) bodyPath.moveTo(x, y) else bodyPath.lineTo(x, y)
       }
       bodyPath.close()
+      drawPath(bodyPath, color)
+    }
+  }
+
+  /** A diamond (square turned 45°) over an offset accent diamond; beats make it swell. */
+  fun drawDiamond(
+    scope: DrawScope,
+    color: Color,
+    accent: Color,
+    live: Float,
+    audio: AudioReactiveState,
+  ) {
+    with(scope) {
+      val swell = 1f + live * 0.06f * audio.kick
+      val half = size.minDimension / 2f * 0.96f * swell
+      fun diamondAt(dx: Float, dy: Float) {
+        bodyPath.rewind()
+        bodyPath.moveTo(center.x + dx, center.y - half + dy)
+        bodyPath.lineTo(center.x + half + dx, center.y + dy)
+        bodyPath.lineTo(center.x + dx, center.y + half + dy)
+        bodyPath.lineTo(center.x - half + dx, center.y + dy)
+        bodyPath.close()
+      }
+      if (accent != Color.Unspecified) {
+        diamondAt(0f, half * 0.14f)
+        drawPath(bodyPath, accent)
+      }
+      diamondAt(0f, 0f)
       drawPath(bodyPath, color)
     }
   }

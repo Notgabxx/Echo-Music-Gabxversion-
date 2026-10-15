@@ -206,7 +206,10 @@ class CreateAiPlaylistViewModel @Inject constructor(
     }
   }
 
-  fun generateFromTaste(onPlaylistCreated: (String) -> Unit) {
+  fun generateFromTaste(
+    nowPlaying: echo.music.iad1tya.models.MediaMetadata? = null,
+    onPlaylistCreated: (String) -> Unit,
+  ) {
     if (_isGenerating.value) return
     isTasteGenerating = true
     _isGenerating.value = true
@@ -218,7 +221,7 @@ class CreateAiPlaylistViewModel @Inject constructor(
     generateTasteJob?.cancel()
     generateTasteJob = viewModelScope.launch {
       try {
-        val result = localTasteEngine.generate(count = _numSongs.value.toInt())
+        val result = localTasteEngine.generateFor(nowPlaying, count = _numSongs.value.toInt())
         result.fold(
           onSuccess = { playlistId ->
             isTasteGenerating = false

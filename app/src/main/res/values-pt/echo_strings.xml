@@ -448,4 +448,21 @@
     <string name="themes_import_failed">Não foi possível importar o tema: %1$s</string>
     <string name="themes_applying">A aplicar o tema…</string>
     <string name="themes_help">Um tema é um ficheiro .json com cores, tipo de letra, formato dos cantos e o fundo do leitor. O formato está explicado no ficheiro THEMES.md do repositório do Flux.</string>
+    <string name="mash_title">Mash com IA</string>
+    <string name="mash_menu_desc">Misture esta música com outra</string>
+    <string name="mash_roles_title">Quem faz o quê</string>
+    <string name="mash_role_auto">Automático</string>
+    <string name="mash_role_auto_desc">A IA ouve as duas e escolhe o beat mais forte e a voz mais clara.</string>
+    <string name="mash_role_beat_from">Beat de “%1$s”</string>
+    <string name="mash_role_voice_from">Voz de “%1$s”</string>
+    <string name="mash_pick_second">Escolha a segunda música</string>
+    <string name="mash_search_hint">Buscar uma música</string>
+    <string name="mash_create">Criar mash</string>
+    <string name="mash_engine_note">O motor de IA que separa a voz do beat no próprio celular chega na próxima versão do Flux. As escolhas daqui já valem para ele.</string>
+    <string name="mash_soon_title">Quase lá</string>
+    <string name="mash_soon_text">O mash está montado. O motor que separa a voz do beat e acerta andamento e tom chega na próxima versão do Flux.</string>
+    <string name="mash_label_ai">IA decide</string>
+    <string name="mash_label_beat">Beat</string>
+    <string name="mash_label_voice">Voz</string>
+    <string name="mash_empty_slot">Segunda música</string>
 </resources>

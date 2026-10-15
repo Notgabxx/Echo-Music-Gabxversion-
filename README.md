@@ -72,13 +72,13 @@ O Flux não tem contas, anúncios nem rastreamento. Suas músicas, playlists e c
 
 ## Créditos
 
-O Flux é um fork do **[Echo Music](https://github.com/EchoMusicApp/Echo-Music)** e é distribuído sob a mesma licença, a **GNU GPL v3.0** (veja [LICENSE](LICENSE)). O código-fonte completo está neste repositório.
+O Flux é baseado no código do Echo Music e é distribuído sob a mesma licença, a **GNU GPL v3.0** (veja [LICENSE](LICENSE)). O código-fonte completo está neste repositório.
 
 Projetos open source que também fazem parte desta base:
 
 | Projeto | Contribuição |
 | :------ | :----------- |
-| **[Echo Music](https://github.com/EchoMusicApp/Echo-Music)** | Base do aplicativo (fork) |
+| **Echo Music** | Código-base do aplicativo |
 | **[Metrolist](https://github.com/MetrolistGroup/Metrolist)** & **[Vivi Music](https://github.com/vivizzz007/vivi-music)** | Referência de arquitetura e servidor comunitário do Ouvir junto |
 | **[ArchiveTune](https://github.com/koiverse/ArchiveTune)** | Inspiração de interface Material You |
 | **[Better Lyrics](https://better-lyrics.boidu.dev/)** | Aprimoramento e sincronização de letras |

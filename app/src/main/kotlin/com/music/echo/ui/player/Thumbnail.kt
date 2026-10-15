@@ -12,6 +12,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
@@ -51,9 +52,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -671,6 +675,27 @@ private fun ThumbnailItem(
     // this pager; without a host (other screens) it is drawn here as before.
     val haloHost = LocalArtworkHaloHost.current
     val haloOwner = remember { Any() }
+    // Theme styling of the cover: cut corners, a tilt, a frame and an offset block behind it.
+    val fluxTheme = echo.music.iad1tya.ui.theme.LocalFluxTheme.current
+    val scheme = MaterialTheme.colorScheme
+    val artTilt = fluxTheme?.player?.artworkTilt?.coerceIn(-15f, 15f) ?: 0f
+    val artFrame =
+      remember(fluxTheme, scheme) {
+        echo.music.iad1tya.ui.theme.themeColorOrRole(fluxTheme?.player?.artworkFrame, scheme)
+      }
+    val artBackdrop =
+      remember(fluxTheme, scheme) {
+        echo.music.iad1tya.ui.theme.themeColorOrRole(fluxTheme?.player?.artworkBackdrop, scheme)
+      }
+    val artShape =
+      remember(fluxTheme, rotatingThumbnail, dimensions.cornerRadius) {
+        when {
+          rotatingThumbnail -> null
+          fluxTheme?.shapes?.style.equals("cut", ignoreCase = true) ->
+            androidx.compose.foundation.shape.CutCornerShape(dimensions.cornerRadius)
+          else -> RoundedCornerShape(dimensions.cornerRadius)
+        }
+      }
     if (reactive != null) {
       if (haloHost != null) {
         DisposableEffect(haloHost, reactive) {
@@ -714,13 +739,27 @@ private fun ThumbnailItem(
             val kick = reactive?.kick ?: 0f
             scaleX = 1f + 0.02f * kick
             scaleY = 1f + 0.02f * kick
+            rotationZ = artTilt
           }
-          .graphicsLayer { rotationZ = rotation }
-          .clip(
-            if (rotatingThumbnail) {
-              MaterialShapes.Clover8Leaf.toShape()
+          .then(
+            if (artBackdrop != null && artShape != null && !hidePlayerThumbnail) {
+              Modifier.drawBehind {
+                val outline = artShape.createOutline(size, layoutDirection, this)
+                translate(left = size.width * 0.055f, top = size.height * 0.055f) {
+                  drawOutline(outline, artBackdrop)
+                }
+              }
             } else {
-              RoundedCornerShape(dimensions.cornerRadius)
+              Modifier
+            }
+          )
+          .graphicsLayer { rotationZ = rotation }
+          .clip(artShape ?: MaterialShapes.Clover8Leaf.toShape())
+          .then(
+            if (artFrame != null && artShape != null && !hidePlayerThumbnail) {
+              Modifier.border(6.dp, artFrame, artShape)
+            } else {
+              Modifier
             }
           )
           .graphicsLayer { rotationZ = -rotation }

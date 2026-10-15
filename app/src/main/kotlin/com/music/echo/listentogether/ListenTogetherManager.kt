@@ -47,9 +47,18 @@ constructor(
 
     private const val SYNC_DEBOUNCE_THRESHOLD_MS = 1000L
 
-    private const val POSITION_TOLERANCE_MS = 2000L
+    private const val POSITION_TOLERANCE_MS = 1000L
 
-    private const val PLAYBACK_POSITION_TOLERANCE_MS = 3000L
+    /** Drift a playing guest accepts before seeking (it used to be 3 s, audibly out of sync). */
+    private const val PLAYBACK_POSITION_TOLERANCE_MS = 600L
+
+    private const val HOST_HEARTBEAT_MS = 5000L
+
+    /** A guest that buffered starts anyway if the server never confirms everyone did. */
+    private const val BUFFER_COMPLETE_FALLBACK_MS = 5000L
+
+    /** Network delay assumed until a ping measures it. */
+    private const val DEFAULT_RTT_MS = 150L
   }
 
   private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -89,6 +98,15 @@ constructor(
   private var pendingSyncState: SyncStatePayload? = null
 
   private var bufferCompleteReceivedForTrack: String? = null
+
+  private var bufferFallbackJob: Job? = null
+
+  /**
+   * Smallest (local receive time − server_time) seen in this room: the clock difference between
+   * this phone and the server plus the fastest delivery. Lets positions be advanced by the real
+   * delay even when the phone's clock is off.
+   */
+  private var minTransitMs: Long? = null
 
   val connectionState = client.connectionState
   val roomState = client.roomState
@@ -370,7 +388,8 @@ constructor(
         }
         .distinctUntilChanged()
         .collect { enabled -> syncHostVolumeEnabled.value = enabled }
-
+    }
+    scope.launch {
       context.dataStore.data
         .map {
           (try {
@@ -469,11 +488,12 @@ constructor(
         Timber.tag(TAG).d("Join approved for room: ${event.roomCode}")
 
         saveMuteStateOnJoin()
+        minTransitMs = null
 
         applyPlaybackState(
           currentTrack = event.state.currentTrack,
           isPlaying = event.state.isPlaying,
-          position = event.state.position,
+          position = statePosition(event.state),
           queue = event.state.queue
         )
         applyHostVolumeIfNeeded(event.state.volume)
@@ -481,7 +501,11 @@ constructor(
       }
       is ListenTogetherEvent.PlaybackSync -> {
         Timber.tag(TAG).d("PlaybackSync received: ${event.action.action}")
-        if (isSyncing) return
+        if (isHost && !allowParticipantControl) {
+          Timber.tag(TAG).d("Host ignores relayed action ${event.action.action}")
+          return
+        }
+        if (isSyncing && !isGuestPlaybackRestricted) return
         handlePlaybackSync(event.action)
       }
       is ListenTogetherEvent.UserJoined -> {
@@ -592,7 +616,7 @@ constructor(
             applyPlaybackState(
               currentTrack = event.state.currentTrack,
               isPlaying = event.state.isPlaying,
-              position = event.state.position,
+              position = statePosition(event.state),
               queue = event.state.queue,
               bypassBuffer = true
             )
@@ -685,6 +709,8 @@ constructor(
     bufferingTrackId = null
     isSyncing = false
     bufferCompleteReceivedForTrack = null
+    bufferFallbackJob?.cancel()
+    minTransitMs = null
     lastRole = RoomRole.NONE
     lastSyncActionTime = 0L
     ++currentTrackGeneration
@@ -751,10 +777,16 @@ constructor(
         "Applying pending sync: track=$pendingTrackId, pos=${pending.position}, play=${pending.isPlaying}"
       )
     isSyncing = true
+    bufferFallbackJob?.cancel()
 
-    val targetPos = pending.position
-    val posDiff = kotlin.math.abs(player.currentPosition - targetPos)
     val willPlay = pending.isPlaying
+    val targetPos =
+      if (willPlay) {
+        pending.position + (System.currentTimeMillis() - pending.lastUpdate).coerceAtLeast(0L)
+      } else {
+        pending.position
+      }
+    val posDiff = kotlin.math.abs(player.currentPosition - targetPos)
 
     val tolerance =
       if (willPlay && player.playWhenReady) PLAYBACK_POSITION_TOLERANCE_MS
@@ -805,9 +837,7 @@ constructor(
         PlaybackActions.PLAY -> {
           val basePos = action.position ?: 0L
           val now = System.currentTimeMillis()
-          val adjustedPos =
-            action.serverTime?.let { serverTime -> basePos + kotlin.math.max(0L, now - serverTime) }
-              ?: basePos
+          val adjustedPos = basePos + delaySince(action.serverTime, now)
 
           Timber.tag(TAG)
             .d("Guest: PLAY at position $adjustedPos, currently playing=${player.playWhenReady}")
@@ -941,6 +971,18 @@ constructor(
           action.trackInfo?.let { track ->
             Timber.tag(TAG)
               .d("Guest: CHANGE_TRACK to ${track.title}, queue size=${action.queue?.size}")
+
+            if (
+              player.currentMediaItem?.mediaId == track.id &&
+                player.playbackState == Player.STATE_READY &&
+                bufferingTrackId == null
+            ) {
+              // Same song already loaded (the host re-announces it when someone joins): don't
+              // reload it; the PLAY that follows only corrects the position if needed.
+              Timber.tag(TAG).d("Guest: CHANGE_TRACK for the current song, keeping playback")
+              client.sendBufferReady(track.id)
+              return
+            }
 
             lastSyncActionTime = 0L
 
@@ -1091,14 +1133,32 @@ constructor(
     }
   }
 
-  private fun handleSyncState(state: SyncStatePayload) {
+  /**
+   * Network delay since the server relayed a message: the extra delay over the fastest delivery
+   * seen (so the phone's clock may be wrong) plus a round trip for the sender's and our leg.
+   */
+  private fun delaySince(serverTime: Long?, now: Long): Long {
+    val rtt = client.rtt.value.takeIf { it in 1L..5000L } ?: DEFAULT_RTT_MS
+    if (serverTime == null || serverTime <= 0L) return rtt
+    val transit = now - serverTime
+    val fastest = minTransitMs?.let { minOf(it, transit) } ?: transit
+    minTransitMs = fastest
+    return (transit - fastest).coerceIn(0L, 5000L) + rtt
+  }
+
+  /** The room's position now, for a state recorded by the server at [SyncStatePayload.lastUpdate]. */
+  private fun statePosition(state: SyncStatePayload): Long {
+    if (!state.isPlaying) return state.position
     val now = System.currentTimeMillis()
-    val adjustedPos =
-      if (state.isPlaying) {
-        state.position + kotlin.math.max(0L, now - state.lastUpdate)
-      } else {
-        state.position
-      }
+    val rtt = client.rtt.value.takeIf { it in 1L..5000L } ?: DEFAULT_RTT_MS
+    // Clock difference with the server, when messages measured it (fastest transit minus a leg).
+    val clockSkew = minTransitMs?.let { it - rtt / 2 } ?: 0L
+    val elapsed = (now - clockSkew - state.lastUpdate).coerceIn(0L, 6 * 60 * 60 * 1000L)
+    return state.position + elapsed + rtt / 2
+  }
+
+  private fun handleSyncState(state: SyncStatePayload) {
+    val adjustedPos = statePosition(state)
 
     Timber.tag(TAG)
       .d(
@@ -1170,6 +1230,7 @@ constructor(
 
     bufferingTrackId = currentTrack.id
     val generation = ++currentTrackGeneration
+    val requestedAt = System.currentTimeMillis()
 
     scope.launch(Dispatchers.Main) {
       if (currentTrackGeneration != generation) {
@@ -1233,8 +1294,10 @@ constructor(
             attempts++
           }
           if (player.playbackState == Player.STATE_READY) {
-            Timber.tag(TAG).d("Player ready after ${attempts * 50}ms, seeking to $position")
-            player.seekTo(position)
+            val target =
+              if (isPlaying) position + (System.currentTimeMillis() - requestedAt) else position
+            Timber.tag(TAG).d("Player ready after ${attempts * 50}ms, seeking to $target")
+            player.seekTo(target)
             if (isPlaying) {
               connection.play()
               Timber.tag(TAG).d("Bypass: PLAY issued")
@@ -1253,14 +1316,16 @@ constructor(
 
           connection.pause()
           pendingSyncState =
-            SyncStatePayload(
-              currentTrack = currentTrack,
-              isPlaying = isPlaying,
-              position = position,
-              lastUpdate = System.currentTimeMillis()
-            )
+            newerPending(currentTrack.id, requestedAt)
+              ?: SyncStatePayload(
+                currentTrack = currentTrack,
+                isPlaying = isPlaying,
+                position = position,
+                lastUpdate = requestedAt
+              )
           applyPendingSyncIfReady()
           client.sendBufferReady(currentTrack.id)
+          scheduleBufferFallback(currentTrack.id)
         }
       } catch (e: Exception) {
         Timber.tag(TAG).e(e, "Error applying playback state")
@@ -1272,11 +1337,32 @@ constructor(
     }
   }
 
+  /** A PLAY/PAUSE for [trackId] that arrived after [since], while the track was loading. */
+  private fun newerPending(trackId: String, since: Long): SyncStatePayload? =
+    pendingSyncState?.takeIf {
+      (it.currentTrack?.id ?: trackId) == trackId && it.lastUpdate >= since
+    }
+
+  /** Starts anyway if the server never sends BUFFER_COMPLETE for [trackId]. */
+  private fun scheduleBufferFallback(trackId: String) {
+    bufferFallbackJob?.cancel()
+    bufferFallbackJob =
+      scope.launch {
+        delay(BUFFER_COMPLETE_FALLBACK_MS)
+        if (bufferingTrackId == trackId && pendingSyncState != null) {
+          Timber.tag(TAG).d("No BUFFER_COMPLETE for $trackId, starting anyway")
+          bufferCompleteReceivedForTrack = trackId
+          applyPendingSyncIfReady()
+        }
+      }
+  }
+
   private fun syncToTrack(track: TrackInfo, shouldPlay: Boolean, position: Long) {
     Timber.tag(TAG).d("syncToTrack: ${track.title}, play: $shouldPlay, pos: $position")
 
     bufferingTrackId = track.id
     val generation = currentTrackGeneration
+    val requestedAt = System.currentTimeMillis()
 
     activeSyncJob?.cancel()
     activeSyncJob =
@@ -1359,16 +1445,18 @@ constructor(
                 connection.pause()
 
                 pendingSyncState =
-                  SyncStatePayload(
-                    currentTrack = track,
-                    isPlaying = shouldPlay,
-                    position = position,
-                    lastUpdate = System.currentTimeMillis()
-                  )
+                  newerPending(track.id, requestedAt)
+                    ?: SyncStatePayload(
+                      currentTrack = track,
+                      isPlaying = shouldPlay,
+                      position = position,
+                      lastUpdate = requestedAt
+                    )
 
                 applyPendingSyncIfReady()
 
                 client.sendBufferReady(track.id)
+                scheduleBufferFallback(track.id)
                 Timber.tag(TAG)
                   .d(
                     "Sent buffer ready for ${track.id}, pending sync stored: pos=$position, play=$shouldPlay"
@@ -1615,7 +1703,7 @@ constructor(
     heartbeatJob =
       scope.launch {
         while (heartbeatJob?.isActive == true && isInRoom && isHost) {
-          delay(10000L)
+          delay(HOST_HEARTBEAT_MS)
           playerConnection?.player?.let { player ->
             if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
               val pos = player.currentPosition
@@ -1625,7 +1713,7 @@ constructor(
           }
         }
       }
-    Timber.tag(TAG).d("Host heartbeat started (10s interval)")
+    Timber.tag(TAG).d("Host heartbeat started (${HOST_HEARTBEAT_MS / 1000}s interval)")
   }
 
   private fun stopHeartbeat() {

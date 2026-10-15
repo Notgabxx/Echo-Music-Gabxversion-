@@ -10,6 +10,7 @@ import echo.music.iad1tya.db.entities.PlaylistEntity
 import echo.music.iad1tya.db.entities.PlaylistSongMap
 import echo.music.iad1tya.db.entities.SongEntity
 import echo.music.iad1tya.db.entities.SongPlayStatsEntity
+import echo.music.iad1tya.models.MediaMetadata
 import echo.music.iad1tya.models.toMediaMetadata
 import java.time.LocalTime
 import javax.inject.Inject
@@ -70,6 +71,59 @@ open class LocalTasteEngine @Inject constructor(
   private val recommendationExclusionDao: RecommendationExclusionDao,
   private val database: MusicDatabase? = null,
 ) {
+  /**
+   * A playlist around the song that is playing; around the listening history only when nothing
+   * is playing (or the song gives too few related tracks).
+   */
+  open suspend fun generateFor(
+    nowPlaying: MediaMetadata?,
+    count: Int = MAX_SUGGESTIONS,
+  ): Result<String> {
+    if (nowPlaying != null) {
+      val fromSong = generateFromSong(nowPlaying, count)
+      if (fromSong.isSuccess) return fromSong
+      Timber.w(fromSong.exceptionOrNull(), "Song mix failed, falling back to taste")
+    }
+    return generate(count)
+  }
+
+  protected open suspend fun generateFromSong(seed: MediaMetadata, count: Int): Result<String> =
+    withContext(Dispatchers.IO) {
+      runCatching {
+        val exclusions = recommendationExclusionDao.getAll().map { it.trackKey }.toSet()
+        val seedKey = trackKeyOf(seed.title, seed.artists.joinToString(", ") { it.name })
+        val seen = (exclusions + seedKey).toMutableSet()
+        val songs = mutableListOf<SongItem>()
+
+        val next = YouTube.next(WatchEndpoint(videoId = seed.id)).getOrNull()
+        val candidates = mutableListOf<SongItem>()
+        next?.items?.filterIsInstance<SongItem>()?.let { candidates.addAll(it) }
+        next?.relatedEndpoint?.let { endpoint ->
+          YouTube.related(endpoint).getOrNull()?.songs?.let { candidates.addAll(it) }
+        }
+        for (song in candidates) {
+          if (song.id == seed.id) continue
+          val key = trackKeyOf(song.title, song.artists.joinToString(", ") { it.name })
+          if (seen.add(key)) songs.add(song)
+          if (songs.size >= count - 1) break
+        }
+        check(songs.size >= 5) { "Not enough related songs for ${seed.id}" }
+
+        val seedItem =
+          SongItem(
+            id = seed.id,
+            title = seed.title,
+            artists = seed.artists.map { com.music.innertube.models.Artist(name = it.name, id = it.id) },
+            album = null,
+            duration = seed.duration.takeIf { it > 0 },
+            thumbnail = seed.thumbnailUrl.orEmpty(),
+          )
+        val playlistId = "song_mix_${System.currentTimeMillis()}"
+        persistPlaylist(playlistId, "Mix · ${seed.title}", listOf(seedItem) + songs)
+        playlistId
+      }
+    }
+
   open suspend fun generate(count: Int = MAX_SUGGESTIONS): Result<String> = withContext(Dispatchers.IO) {
     try {
       val exclusions = recommendationExclusionDao.getAll().map { it.trackKey }.toSet()

@@ -1530,13 +1530,39 @@ fun BottomSheetPlayer(
         ) {
           AnimatedContent(
             targetState = mediaMetadata.title,
-            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            // The new title rises in while the old one lifts away, on a soft spring.
+            transitionSpec = {
+              (androidx.compose.animation.slideInVertically(
+                androidx.compose.animation.core.spring(dampingRatio = 0.8f, stiffness = 380f)
+              ) { it / 2 } + fadeIn()) togetherWith
+                (androidx.compose.animation.slideOutVertically { -it / 2 } + fadeOut())
+            },
             label = "",
           ) { title ->
+            val themePlayer = LocalFluxTheme.current
+            val titleShadow =
+              echo.music.iad1tya.ui.theme.themeColorOrRole(
+                themePlayer?.player?.titleShadow,
+                MaterialTheme.colorScheme,
+              )
             Text(
               text = title,
-              style = MaterialTheme.typography.titleLarge,
-              fontWeight = FontWeight.Bold,
+              style =
+                MaterialTheme.typography.titleLarge.let { base ->
+                  if (titleShadow == null) base
+                  else
+                    base.copy(
+                      shadow =
+                        androidx.compose.ui.graphics.Shadow(
+                          color = titleShadow,
+                          offset = androidx.compose.ui.geometry.Offset(5f, 5f),
+                          blurRadius = 0f,
+                        )
+                    )
+                },
+              fontWeight =
+                themePlayer?.typography?.titleWeight?.let { FontWeight(it.coerceIn(100, 900)) }
+                  ?: FontWeight.Bold,
               maxLines = 1,
               overflow = TextOverflow.Ellipsis,
               color = TextBackgroundColor,
@@ -2444,6 +2470,8 @@ fun BottomSheetPlayer(
                 contentColor = iconButtonColor,
                 living = wavyPlayPause && state.isExpanded,
                 glyphSize = 36.dp,
+                diamond = LocalFluxTheme.current?.player?.diamondPlayButton == true,
+                diamondAccent = MaterialTheme.colorScheme.primary,
                 overrideIcon =
                   if (isListenTogetherGuest) {
                     painterResource(if (isMuted) R.drawable.volume_off else R.drawable.volume_up)

@@ -1137,4 +1137,21 @@
     <string name="themes_import_failed">Couldn\'t import the theme: %1$s</string>
     <string name="themes_applying">Applying theme…</string>
     <string name="themes_help">A theme is a .json file with colors, font, corner style and the player background. The format is explained in THEMES.md in the Flux repository.</string>
+    <string name="mash_title">AI Mash</string>
+    <string name="mash_menu_desc">Blend this song with another one</string>
+    <string name="mash_roles_title">Who does what</string>
+    <string name="mash_role_auto">Automatic</string>
+    <string name="mash_role_auto_desc">The AI listens to both and picks the strongest beat and the clearest voice.</string>
+    <string name="mash_role_beat_from">Beat from “%1$s”</string>
+    <string name="mash_role_voice_from">Voice from “%1$s”</string>
+    <string name="mash_pick_second">Pick the second song</string>
+    <string name="mash_search_hint">Search for a song</string>
+    <string name="mash_create">Create mash</string>
+    <string name="mash_engine_note">The AI engine that separates the voice from the beat on your phone arrives in the next Flux version. Your choices are already supported.</string>
+    <string name="mash_soon_title">Almost there</string>
+    <string name="mash_soon_text">The mash is set up. The engine that separates the voice from the beat and matches tempo and key ships in the next Flux version.</string>
+    <string name="mash_label_ai">AI decides</string>
+    <string name="mash_label_beat">Beat</string>
+    <string name="mash_label_voice">Voice</string>
+    <string name="mash_empty_slot">Second song</string>
 </resources>

@@ -34,6 +34,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,6 +65,19 @@ fun GenerateScreen(
   val exclusions by viewModel.exclusionCount.collectAsStateWithLifecycle()
   val database = LocalDatabase.current
   val coroutineScope = rememberCoroutineScope()
+  // The mix follows the song that is playing; the listening history only when nothing plays.
+  val playerConnection = echo.music.iad1tya.LocalPlayerConnection.current
+  val nowPlaying = { playerConnection?.takeIf { it.isPlaying.value }?.mediaMetadata?.value }
+  val playingFlow = remember(playerConnection) {
+    playerConnection?.isPlaying ?: kotlinx.coroutines.flow.MutableStateFlow(false)
+  }
+  val songFlow = remember(playerConnection) {
+    playerConnection?.mediaMetadata
+      ?: kotlinx.coroutines.flow.MutableStateFlow<echo.music.iad1tya.models.MediaMetadata?>(null)
+  }
+  val isPlayingNow by playingFlow.collectAsStateWithLifecycle()
+  val currentSong by songFlow.collectAsStateWithLifecycle()
+  val playingTitle = currentSong?.title?.takeIf { isPlayingNow }
 
   Scaffold(
     topBar = {
@@ -115,7 +129,7 @@ fun GenerateScreen(
           )
           Spacer(modifier = Modifier.height(6.dp))
           Text(
-            text = "Generates a personalized mix from your listening momentum. 100% on-device, offline, and account-free.",
+            text = "Builds a mix around the song you're playing. With nothing playing, it uses your listening momentum. Account-free.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
@@ -216,7 +230,7 @@ fun GenerateScreen(
           Spacer(modifier = Modifier.height(32.dp))
 
           Button(
-            onClick = { viewModel.generate() },
+            onClick = { viewModel.generate(nowPlaying()) },
             modifier = Modifier
               .fillMaxWidth()
               .height(54.dp),
@@ -227,7 +241,9 @@ fun GenerateScreen(
             ),
           ) {
             Text(
-              text = "Generate Taste Mix",
+              text = playingTitle?.let { "Mix from “$it”" } ?: "Generate Taste Mix",
+              maxLines = 1,
+              overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
               fontWeight = FontWeight.Bold,
               fontSize = 16.sp,
             )
@@ -323,7 +339,7 @@ fun GenerateScreen(
               }
               Spacer(modifier = Modifier.height(10.dp))
               OutlinedButton(
-                onClick = { viewModel.generate() },
+                onClick = { viewModel.generate(nowPlaying()) },
                 modifier = Modifier
                   .fillMaxWidth()
                   .height(50.dp),
@@ -411,7 +427,7 @@ fun GenerateScreen(
                 onClick = {
                   coroutineScope.launch(Dispatchers.IO) {
                     database.recommendationExclusionDao.clear()
-                    viewModel.generate()
+                    viewModel.generate(nowPlaying())
                   }
                 },
                 shape = RoundedCornerShape(20.dp),
@@ -447,7 +463,7 @@ fun GenerateScreen(
               )
               Spacer(modifier = Modifier.height(20.dp))
               Button(
-                onClick = { viewModel.generate() },
+                onClick = { viewModel.generate(nowPlaying()) },
                 shape = RoundedCornerShape(20.dp),
               ) {
                 Text("Retry")

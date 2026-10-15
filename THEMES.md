@@ -34,6 +34,11 @@ Só `format`, `id`, `name` e uma cor são obrigatórios. As cores que faltarem s
 | `typography.italicTitles` | `true` deixa os títulos em itálico. |
 | `player.artworkCorner` | Arredondamento da capa no player, em dp. |
 | `player.background` | Duas ou três cores do degradê de fundo do player, de cima para baixo. |
+| `player.playButton` | `"diamond"` deixa o botão de play em losango, com um bloco colorido atrás. |
+| `player.artworkTilt` | Inclina a capa, em graus (por exemplo `-4`). |
+| `player.artworkFrame` | Moldura em volta da capa: uma cor (`"#FFFFFF"`) ou um papel (`"white"`, `"primary"`…). |
+| `player.artworkBackdrop` | Bloco sólido deslocado atrás da capa, como uma sombra impressa: cor ou papel. |
+| `player.titleShadow` | Sombra dura atrás do nome da música: cor ou papel. |
 
 ### Cores
 

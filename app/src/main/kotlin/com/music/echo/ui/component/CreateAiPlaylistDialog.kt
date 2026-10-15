@@ -38,6 +38,7 @@ fun CreateAiPlaylistDialog(
   viewModel: CreateAiPlaylistViewModel = hiltViewModel()
 ) {
   val context = LocalContext.current
+  val playerConnection = echo.music.iad1tya.LocalPlayerConnection.current
 
   val prompt by viewModel.prompt.collectAsState()
   val numSongs by viewModel.numSongs.collectAsState()
@@ -368,7 +369,13 @@ fun CreateAiPlaylistDialog(
             verticalAlignment = Alignment.CenterVertically
           ) {
             OutlinedButton(
-              onClick = { viewModel.generateFromTaste(onPlaylistCreated) },
+              onClick = {
+                viewModel.generateFromTaste(
+                  nowPlaying =
+                    playerConnection?.takeIf { it.isPlaying.value }?.mediaMetadata?.value,
+                  onPlaylistCreated = onPlaylistCreated,
+                )
+              },
               shape = RoundedCornerShape(12.dp),
               contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
             ) {

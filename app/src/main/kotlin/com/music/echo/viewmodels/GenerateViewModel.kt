@@ -8,6 +8,7 @@ import echo.music.iad1tya.db.daos.SongPlayStatsDao
 import echo.music.iad1tya.generate.GenerationState
 import echo.music.iad1tya.generate.GenerationStatus
 import echo.music.iad1tya.generate.LocalTasteEngine
+import echo.music.iad1tya.models.MediaMetadata
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,17 +78,20 @@ class GenerateViewModel @Inject constructor(
     }
   }
 
-  fun generate() {
+  /** Built around [nowPlaying] when something is playing, else around the listening history. */
+  fun generate(nowPlaying: MediaMetadata? = null) {
     if (_uiState.value is GenerateUiState.Generating) return
 
     generationJob?.cancel()
     generationJob = viewModelScope.launch {
       try {
-        val initialMsg = "Analyzing listening momentum..."
+        val initialMsg =
+          if (nowPlaying != null) "Building a mix around ${nowPlaying.title}..."
+          else "Analyzing listening momentum..."
         _uiState.value = GenerateUiState.Generating(initialMsg)
         generationStatus?.start(initialMsg)
 
-        val result = localTasteEngine.generate()
+        val result = localTasteEngine.generateFor(nowPlaying)
         result.fold(
           onSuccess = { playlistId ->
             _uiState.value = GenerateUiState.Success(playlistId)

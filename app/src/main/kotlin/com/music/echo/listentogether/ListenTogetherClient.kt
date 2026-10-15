@@ -152,6 +152,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
     private const val INITIAL_RECONNECT_DELAY_MS = 1000L
     private const val MAX_RECONNECT_DELAY_MS = 120000L
     private const val PING_INTERVAL_MS = 25000L
+    private const val ECHO_WINDOW_MS = 10_000L
     private const val MAX_LOG_ENTRIES = 500
     private const val SESSION_GRACE_PERIOD_MS = 10 * 60 * 1000L
 
@@ -212,6 +213,19 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
 
   private val _rtt = MutableStateFlow(0L)
   val rtt: StateFlow<Long> = _rtt.asStateFlow()
+
+  /** Actions this device sent recently (signature → send time), to drop the server's echo. */
+  private val sentActions = java.util.concurrent.ConcurrentHashMap<String, Long>()
+
+  private fun PlaybackActionPayload.signature(): String =
+    "$action|${trackInfo?.id ?: trackId}|$position|${queue?.size}|$insertNext|$volume"
+
+  /** True for the relay of an action we sent ourselves a moment ago. */
+  private fun isOwnEcho(payload: PlaybackActionPayload): Boolean {
+    val now = System.currentTimeMillis()
+    sentActions.entries.removeIf { now - it.value > ECHO_WINDOW_MS }
+    return sentActions.remove(payload.signature()) != null
+  }
 
   init {
     setInstance(this)
@@ -1048,6 +1062,10 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
             }
           }
 
+          if (isOwnEcho(payload)) {
+            log(LogLevel.DEBUG, "Own action echoed back, ignored", "Action: ${payload.action}")
+            return
+          }
           scope.launch { _events.emit(ListenTogetherEvent.PlaybackSync(payload)) }
         }
         MessageTypes.BUFFER_WAIT -> {
@@ -1462,8 +1480,7 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
       log(LogLevel.ERROR, "Cannot control playback", "Not allowed")
       return
     }
-    sendMessage(
-      MessageTypes.PLAYBACK_ACTION,
+    val payload =
       PlaybackActionPayload(
         action,
         trackId,
@@ -1474,7 +1491,8 @@ class ListenTogetherClient @Inject constructor(private val context: Context) {
         queueTitle,
         volume
       )
-    )
+    sentActions[payload.signature()] = System.currentTimeMillis()
+    sendMessage(MessageTypes.PLAYBACK_ACTION, payload)
   }
 
   fun sendChatMessage(message: String, replyTo: RepliedMessage? = null) {
