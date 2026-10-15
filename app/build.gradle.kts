@@ -205,6 +205,8 @@ android {
       useLegacyPackaging = true
       keepDebugSymbols +=
         listOf("**/libandroidx.graphics.path.so", "**/libdatastore_shared_counter.so")
+      // AI Mash runs on phones (ARM); leaving out the x86 runtimes keeps the APK lean.
+      excludes += listOf("lib/x86/libonnxruntime*.so", "lib/x86_64/libonnxruntime*.so")
     }
     resources {
       excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -291,6 +293,7 @@ dependencies {
   implementation(libs.shimmer)
 
   implementation(libs.media3)
+  implementation(libs.onnxruntime.android)
   implementation(libs.media3.session)
   implementation(libs.media3.hls)
   implementation(libs.media3.ui)

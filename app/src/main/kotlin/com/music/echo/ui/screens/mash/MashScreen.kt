@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -82,8 +83,13 @@ private fun SongItem.toMashSong() =
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MashScreen(navController: NavController, songId: String) {
+fun MashScreen(
+  navController: NavController,
+  songId: String,
+  viewModel: MashViewModel = androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel(),
+) {
   val playerConnection = LocalPlayerConnection.current
+  val mashState by viewModel.state.collectAsState()
   var first by remember {
     mutableStateOf(
       playerConnection?.mediaMetadata?.value?.takeIf { it.id == songId }?.let { meta ->
@@ -96,7 +102,6 @@ fun MashScreen(navController: NavController, songId: String) {
   var query by rememberSaveable { mutableStateOf("") }
   var results by remember { mutableStateOf<List<MashSong>>(emptyList()) }
   var searching by remember { mutableStateOf(false) }
-  var showSoon by remember { mutableStateOf(false) }
 
   LaunchedEffect(songId) {
     if (first == null) {
@@ -151,7 +156,28 @@ fun MashScreen(navController: NavController, songId: String) {
       verticalArrangement = Arrangement.spacedBy(16.dp),
       modifier = Modifier.fillMaxSize(),
     ) {
-      item { MashHero(first = first, second = second, role = role) }
+      item {
+        val shownRole =
+          (mashState as? MashUiState.Ready)?.result?.let {
+            if (it.firstIsBeat) MashRole.FIRST_IS_BEAT else MashRole.SECOND_IS_BEAT
+          } ?: role
+        MashHero(first = first, second = second, role = shownRole)
+      }
+
+      item {
+        MashActionCard(
+          state = mashState,
+          canCreate = first != null && second != null,
+          onCreate = {
+            val a = first
+            val b = second
+            if (a != null && b != null) viewModel.create(a.id, b.id, role)
+          },
+          onCancel = viewModel::cancel,
+          onReset = viewModel::reset,
+          onPlayStarted = { playerConnection?.player?.pause() },
+        )
+      }
 
       item {
         Text(
@@ -165,19 +191,28 @@ fun MashScreen(navController: NavController, songId: String) {
             selected = role == MashRole.AUTO,
             title = stringResource(R.string.mash_role_auto),
             description = stringResource(R.string.mash_role_auto_desc),
-            onClick = { role = MashRole.AUTO },
+            onClick = {
+              role = MashRole.AUTO
+              viewModel.reset()
+            },
           )
           RoleOption(
             selected = role == MashRole.FIRST_IS_BEAT,
             title = stringResource(R.string.mash_role_beat_from, first?.title ?: "1"),
             description = stringResource(R.string.mash_role_voice_from, second?.title ?: "2"),
-            onClick = { role = MashRole.FIRST_IS_BEAT },
+            onClick = {
+              role = MashRole.FIRST_IS_BEAT
+              viewModel.reset()
+            },
           )
           RoleOption(
             selected = role == MashRole.SECOND_IS_BEAT,
             title = stringResource(R.string.mash_role_beat_from, second?.title ?: "2"),
             description = stringResource(R.string.mash_role_voice_from, first?.title ?: "1"),
-            onClick = { role = MashRole.SECOND_IS_BEAT },
+            onClick = {
+              role = MashRole.SECOND_IS_BEAT
+              viewModel.reset()
+            },
           )
         }
       }
@@ -210,42 +245,236 @@ fun MashScreen(navController: NavController, songId: String) {
           onClick = {
             second = song
             query = ""
+            viewModel.reset()
           },
-        )
-      }
-
-      item {
-        Button(
-          onClick = { showSoon = true },
-          enabled = first != null && second != null,
-          shape = RoundedCornerShape(20.dp),
-          modifier = Modifier.fillMaxWidth().height(54.dp),
-        ) {
-          Icon(painterResource(R.drawable.mash), contentDescription = null)
-          Spacer(Modifier.width(10.dp))
-          Text(stringResource(R.string.mash_create), fontWeight = FontWeight.Bold)
-        }
-        Spacer(Modifier.height(8.dp))
-        Text(
-          stringResource(R.string.mash_engine_note),
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       }
     }
   }
+}
 
-  if (showSoon) {
-    AlertDialog(
-      onDismissRequest = { showSoon = false },
-      icon = { Icon(painterResource(R.drawable.mash), contentDescription = null) },
-      title = { Text(stringResource(R.string.mash_soon_title)) },
-      text = { Text(stringResource(R.string.mash_soon_text)) },
-      confirmButton = {
-        TextButton(onClick = { showSoon = false }) { Text(stringResource(android.R.string.ok)) }
-      },
-    )
+/** Create button → live progress → a player for the finished mash. */
+@Composable
+private fun MashActionCard(
+  state: MashUiState,
+  canCreate: Boolean,
+  onCreate: () -> Unit,
+  onCancel: () -> Unit,
+  onReset: () -> Unit,
+  onPlayStarted: () -> Unit,
+) {
+  AnimatedContent(targetState = state, contentKey = { it::class }, label = "mash_action") { s ->
+    when (s) {
+      is MashUiState.Idle,
+      is MashUiState.Failed -> {
+        Column {
+          if (s is MashUiState.Failed) {
+            Text(
+              s.message,
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.error,
+              modifier = Modifier.padding(bottom = 8.dp),
+            )
+          }
+          Button(
+            onClick = onCreate,
+            enabled = canCreate,
+            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier.fillMaxWidth().height(54.dp),
+          ) {
+            Icon(painterResource(R.drawable.mash), contentDescription = null)
+            Spacer(Modifier.width(10.dp))
+            Text(stringResource(R.string.mash_create), fontWeight = FontWeight.Bold)
+          }
+          Spacer(Modifier.height(8.dp))
+          Text(
+            stringResource(R.string.mash_engine_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+      }
+      is MashUiState.Working -> MashProgressCard(s, onCancel)
+      is MashUiState.Ready -> MashPlayerCard(s.result, onReset, onPlayStarted)
+    }
   }
+}
+
+@Composable
+private fun MashProgressCard(state: MashUiState.Working, onCancel: () -> Unit) {
+  val progress by
+    androidx.compose.animation.core.animateFloatAsState(
+      targetValue = state.fraction,
+      label = "mash_progress",
+    )
+  Surface(
+    shape = RoundedCornerShape(22.dp),
+    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    modifier = Modifier.fillMaxWidth(),
+  ) {
+    Column(Modifier.padding(18.dp)) {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+          stringResource(stageLabel(state.stage)),
+          style = MaterialTheme.typography.titleSmall,
+          fontWeight = FontWeight.Bold,
+          modifier = Modifier.weight(1f),
+        )
+        Text(
+          "${(progress * 100).toInt()}%",
+          style = MaterialTheme.typography.titleSmall,
+          fontWeight = FontWeight.Bold,
+          color = MaterialTheme.colorScheme.primary,
+        )
+      }
+      Spacer(Modifier.height(12.dp))
+      LinearProgressIndicator(
+        progress = { progress },
+        modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(50)),
+      )
+      Spacer(Modifier.height(10.dp))
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+          stringResource(R.string.mash_working_hint),
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.weight(1f),
+        )
+        TextButton(onClick = onCancel) { Text(stringResource(R.string.mash_cancel)) }
+      }
+    }
+  }
+}
+
+private fun stageLabel(stage: echo.music.iad1tya.mash.MashStage): Int =
+  when (stage) {
+    echo.music.iad1tya.mash.MashStage.MODEL -> R.string.mash_stage_model
+    echo.music.iad1tya.mash.MashStage.DOWNLOAD -> R.string.mash_stage_download
+    echo.music.iad1tya.mash.MashStage.ANALYZE -> R.string.mash_stage_analyze
+    echo.music.iad1tya.mash.MashStage.SEPARATE -> R.string.mash_stage_separate
+    echo.music.iad1tya.mash.MashStage.FIT -> R.string.mash_stage_fit
+    echo.music.iad1tya.mash.MashStage.MIX -> R.string.mash_stage_mix
+  }
+
+/** Plays the finished mash right away, here on the screen. */
+@Composable
+private fun MashPlayerCard(
+  result: echo.music.iad1tya.mash.MashResult,
+  onReset: () -> Unit,
+  onPlayStarted: () -> Unit,
+) {
+  val context = androidx.compose.ui.platform.LocalContext.current
+  val player = remember { androidx.media3.exoplayer.ExoPlayer.Builder(context).build() }
+  var playing by remember { mutableStateOf(false) }
+  var position by remember { mutableStateOf(0L) }
+  val durationMs = (result.durationSec * 1000).toLong().coerceAtLeast(1L)
+
+  androidx.compose.runtime.DisposableEffect(player) {
+    val listener =
+      object : androidx.media3.common.Player.Listener {
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+          playing = isPlaying
+        }
+      }
+    player.addListener(listener)
+    onDispose {
+      player.removeListener(listener)
+      player.release()
+    }
+  }
+  LaunchedEffect(result.file) {
+    player.setMediaItem(
+      androidx.media3.common.MediaItem.fromUri(android.net.Uri.fromFile(result.file))
+    )
+    player.prepare()
+    onPlayStarted()
+    player.play()
+  }
+  LaunchedEffect(player) {
+    while (true) {
+      position = player.currentPosition
+      delay(200)
+    }
+  }
+
+  Surface(
+    shape = RoundedCornerShape(22.dp),
+    color = MaterialTheme.colorScheme.primaryContainer,
+    modifier = Modifier.fillMaxWidth(),
+  ) {
+    Column(Modifier.padding(18.dp)) {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Surface(
+          onClick = {
+            if (player.isPlaying) {
+              player.pause()
+            } else {
+              if (player.playbackState == androidx.media3.common.Player.STATE_ENDED) player.seekTo(0)
+              onPlayStarted()
+              player.play()
+            }
+          },
+          shape = CircleShape,
+          color = MaterialTheme.colorScheme.primary,
+          modifier = Modifier.size(56.dp),
+        ) {
+          Box(contentAlignment = Alignment.Center) {
+            Icon(
+              painterResource(if (playing) R.drawable.pause else R.drawable.play),
+              contentDescription = null,
+              tint = MaterialTheme.colorScheme.onPrimary,
+              modifier = Modifier.size(28.dp),
+            )
+          }
+        }
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+          Text(
+            stringResource(R.string.mash_ready_title),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+          )
+          Text(
+            stringResource(
+              R.string.mash_ready_info,
+              result.beatBpm.toInt(),
+              if (result.semitones == 0) stringResource(R.string.mash_key_kept)
+              else stringResource(R.string.mash_key_moved, "%+d".format(result.semitones)),
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+          )
+        }
+      }
+      Spacer(Modifier.height(12.dp))
+      androidx.compose.material3.Slider(
+        value = (position.toFloat() / durationMs).coerceIn(0f, 1f),
+        onValueChange = { player.seekTo((it * durationMs).toLong()) },
+      )
+      Row {
+        Text(
+          formatTime(position),
+          style = MaterialTheme.typography.labelSmall,
+          color = MaterialTheme.colorScheme.onPrimaryContainer,
+          modifier = Modifier.weight(1f),
+        )
+        Text(
+          formatTime(durationMs),
+          style = MaterialTheme.typography.labelSmall,
+          color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+      }
+      TextButton(onClick = onReset, modifier = Modifier.align(Alignment.End)) {
+        Text(stringResource(R.string.mash_again))
+      }
+    }
+  }
+}
+
+private fun formatTime(ms: Long): String {
+  val s = (ms / 1000).toInt()
+  return "%d:%02d".format(s / 60, s % 60)
 }
 
 /** The two songs side by side, joined by a glowing badge, with the role each one plays. */
