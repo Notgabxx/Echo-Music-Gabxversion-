@@ -1146,15 +1146,21 @@ constructor(
     return (transit - fastest).coerceIn(0L, 5000L) + rtt
   }
 
-  /** The room's position now, for a state recorded by the server at [SyncStatePayload.lastUpdate]. */
-  private fun statePosition(state: SyncStatePayload): Long {
-    if (!state.isPlaying) return state.position
+  private fun statePosition(state: SyncStatePayload): Long =
+    statePosition(state.isPlaying, state.position, state.lastUpdate)
+
+  private fun statePosition(state: RoomState): Long =
+    statePosition(state.isPlaying, state.position, state.lastUpdate)
+
+  /** The room's position now, for a position the server recorded at [lastUpdate]. */
+  private fun statePosition(isPlaying: Boolean, position: Long, lastUpdate: Long): Long {
+    if (!isPlaying) return position
     val now = System.currentTimeMillis()
     val rtt = client.rtt.value.takeIf { it in 1L..5000L } ?: DEFAULT_RTT_MS
     // Clock difference with the server, when messages measured it (fastest transit minus a leg).
     val clockSkew = minTransitMs?.let { it - rtt / 2 } ?: 0L
-    val elapsed = (now - clockSkew - state.lastUpdate).coerceIn(0L, 6 * 60 * 60 * 1000L)
-    return state.position + elapsed + rtt / 2
+    val elapsed = (now - clockSkew - lastUpdate).coerceIn(0L, 6 * 60 * 60 * 1000L)
+    return position + elapsed + rtt / 2
   }
 
   private fun handleSyncState(state: SyncStatePayload) {
