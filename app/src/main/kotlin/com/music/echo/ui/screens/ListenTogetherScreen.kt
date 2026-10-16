@@ -393,7 +393,8 @@ fun ListenTogetherScreen(navController: NavController, showTopBar: Boolean = fal
       }
     }
 
-    if (isInRoom && isHost) {
+    // The server only takes playback commands from the host: no participant control.
+    if (false) {
       item {
         ParticipantControlCard(
           allowParticipantControl = roomState?.allowParticipantControl == true,
@@ -684,8 +685,6 @@ private fun RoomStatusCard(
       Text(
         text =
           if (isHost) stringResource(R.string.listen_together_you_are_host)
-          else if (allowParticipantControl)
-            stringResource(R.string.listen_together_participant_control_enabled)
           else stringResource(R.string.listen_together_you_are_guest),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,

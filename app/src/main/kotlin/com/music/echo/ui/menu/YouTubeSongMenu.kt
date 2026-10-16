@@ -705,22 +705,6 @@ fun YouTubeSongMenu(
       Material3MenuGroup(
         items =
           buildList {
-            add(
-              Material3MenuItemData(
-                title = { Text(text = stringResource(R.string.mash_title)) },
-                description = { Text(text = stringResource(R.string.mash_menu_desc)) },
-                icon = {
-                  Icon(
-                    painter = painterResource(R.drawable.mash),
-                    contentDescription = null,
-                  )
-                },
-                onClick = {
-                  navController.navigate("mash/${song.id}")
-                  onDismiss()
-                }
-              )
-            )
             if (artists.isNotEmpty()) {
               add(
                 Material3MenuItemData(

@@ -354,15 +354,6 @@ fun NavGraphBuilder.navigationBuilder(
     echo.music.iad1tya.ui.screens.settings.FluxThemesScreen(navController)
   }
   composable(
-    route = "mash/{songId}",
-    arguments = listOf(navArgument("songId") { type = NavType.StringType }),
-  ) { backStackEntry ->
-    echo.music.iad1tya.ui.screens.mash.MashScreen(
-      navController = navController,
-      songId = backStackEntry.arguments?.getString("songId").orEmpty(),
-    )
-  }
-  composable(
     route = "settings/appearance/haptics?highlightKey={highlightKey}",
     arguments = listOf(navArgument("highlightKey") { type = NavType.StringType; nullable = true })
   ) { backStackEntry ->

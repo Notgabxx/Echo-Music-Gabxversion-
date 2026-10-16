@@ -10,7 +10,6 @@ material3 = "1.5.0-alpha18"
 adaptive = "1.4.0-alpha02"
 appcompat = "1.8.0"
 media3 = "1.7.1"
-onnxruntime = "1.22.0"
 mediarouter = "1.8.1"
 castFramework = "22.3.1"
 room = "2.8.5"
@@ -96,7 +95,6 @@ shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "s
 palette = { module = "androidx.palette:palette-ktx", version.ref = "palette" }
 
 media3 = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
-onnxruntime-android = { module = "com.microsoft.onnxruntime:onnxruntime-android", version.ref = "onnxruntime" }
 media3-okhttp = { module = "androidx.media3:media3-datasource-okhttp", version.ref = "media3" }
 media3-cronet = { module = "androidx.media3:media3-datasource-cronet", version.ref = "media3" }
 media3-session = { module = "androidx.media3:media3-session", version.ref = "media3" }

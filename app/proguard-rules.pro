@@ -184,7 +184,3 @@
 -keepclasseswithmembers class echo.music.iad1tya.listentogether.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
-
-# ONNX Runtime (AI Mash): the native library calls these classes by name.
--keep class ai.onnxruntime.** { *; }
--dontwarn ai.onnxruntime.**

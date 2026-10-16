@@ -925,22 +925,6 @@ fun SongMenu(
           buildList {
             add(
               Material3MenuItemData(
-                title = { Text(text = stringResource(R.string.mash_title)) },
-                description = { Text(text = stringResource(R.string.mash_menu_desc)) },
-                icon = {
-                  Icon(
-                    painter = painterResource(R.drawable.mash),
-                    contentDescription = null,
-                  )
-                },
-                onClick = {
-                  navController.navigate("mash/${song.id}")
-                  onDismiss()
-                }
-              )
-            )
-            add(
-              Material3MenuItemData(
                 title = { Text(text = stringResource(R.string.view_artist)) },
                 description = { Text(text = song.artists.joinToString { it.name }) },
                 icon = {

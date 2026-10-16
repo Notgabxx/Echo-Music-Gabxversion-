@@ -97,6 +97,8 @@ fun FloatingNavigationToolbar(
   onAiHubClick: (() -> Unit)? = null,
   aiHubIconRes: Int? = null,
   aiHubContentDescription: String = "",
+  onSettingsClick: (() -> Unit)? = null,
+  onPersonalizeClick: (() -> Unit)? = null,
   scrollBehavior: FloatingToolbarScrollBehavior? = null,
   onSearchLongClick: (() -> Unit)? = null,
   isSelected: (Screens) -> Boolean,
@@ -138,9 +140,12 @@ fun FloatingNavigationToolbar(
         androidx.compose.foundation.shape.RoundedCornerShape(percent = 50)
       )
 
-  val hasOverflowMenu =
-    (onShuffleClick != null && shuffleIconRes != null) || onMusicRecognitionClick != null
   val hasFabAction = onFabClick != null && fabIconRes != null
+  // Settings and personalization live here, so the menu shows wherever there's no FAB.
+  val hasOverflowMenu =
+    (onShuffleClick != null && shuffleIconRes != null) ||
+      onMusicRecognitionClick != null ||
+      (!hasFabAction && (onSettingsClick != null || onPersonalizeClick != null))
 
   Box(
     modifier = modifier.fillMaxWidth(),
@@ -163,6 +168,8 @@ fun FloatingNavigationToolbar(
         isSelected = isSelected,
         onItemClick = onItemClick,
         hasOverflowMenu = hasOverflowMenu,
+        onSettingsClick = onSettingsClick,
+        onPersonalizeClick = onPersonalizeClick,
         onShuffleClick = onShuffleClick,
         shuffleEnabled = shuffleEnabled,
         shuffleIconRes = shuffleIconRes,
@@ -189,6 +196,8 @@ private fun ToolbarItemsContainer(
   isSelected: (Screens) -> Boolean,
   onItemClick: (Screens, Boolean) -> Unit,
   hasOverflowMenu: Boolean = false,
+  onSettingsClick: (() -> Unit)? = null,
+  onPersonalizeClick: (() -> Unit)? = null,
   onShuffleClick: (() -> Unit)? = null,
   shuffleEnabled: Boolean = false,
   shuffleIconRes: Int? = null,
@@ -271,6 +280,8 @@ private fun ToolbarItemsContainer(
       if (hasOverflowMenu) {
         FloatingToolbarOverflowMenuButton(
           pureBlack = pureBlack,
+          onSettingsClick = onSettingsClick,
+          onPersonalizeClick = onPersonalizeClick,
           onShuffleClick = onShuffleClick,
           shuffleEnabled = shuffleEnabled,
           shuffleIconRes = shuffleIconRes,
@@ -294,6 +305,8 @@ private fun ToolbarItemsContainer(
 @Composable
 fun FloatingToolbarOverflowMenuButton(
   pureBlack: Boolean,
+  onSettingsClick: (() -> Unit)? = null,
+  onPersonalizeClick: (() -> Unit)? = null,
   onShuffleClick: (() -> Unit)?,
   shuffleEnabled: Boolean,
   shuffleIconRes: Int?,
@@ -336,10 +349,41 @@ fun FloatingToolbarOverflowMenuButton(
             modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
           )
 
+          // Closes the sheet, then runs the action (navigation from a visible sheet flickers).
+          fun closeThen(action: () -> Unit) {
+            scope
+              .launch { sheetState.hide() }
+              .invokeOnCompletion {
+                if (!sheetState.isVisible) {
+                  showSheet = false
+                  action()
+                }
+              }
+          }
+
           Material3SettingsGroup(
             compact = true,
             items =
               buildList {
+                if (onSettingsClick != null) {
+                  add(
+                    Material3SettingsItem(
+                      title = { Text(stringResource(R.string.settings)) },
+                      icon = painterResource(R.drawable.settings),
+                      onClick = { closeThen(onSettingsClick) }
+                    )
+                  )
+                }
+                if (onPersonalizeClick != null) {
+                  add(
+                    Material3SettingsItem(
+                      title = { Text(stringResource(R.string.personalization)) },
+                      description = { Text(stringResource(R.string.personalization_desc)) },
+                      icon = painterResource(R.drawable.palette),
+                      onClick = { closeThen(onPersonalizeClick) }
+                    )
+                  )
+                }
                 if (onShuffleClick != null && shuffleIconRes != null) {
                   add(
                     Material3SettingsItem(

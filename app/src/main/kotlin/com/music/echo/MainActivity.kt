@@ -1402,6 +1402,12 @@ class MainActivity : ComponentActivity() {
                         },
                         aiHubIconRes = R.drawable.sparks,
                         aiHubContentDescription = stringResource(R.string.ai_lyrics_translation),
+                        onSettingsClick = {
+                          navController.navigate("settings") { launchSingleTop = true }
+                        },
+                        onPersonalizeClick = {
+                          navController.navigate("settings/appearance") { launchSingleTop = true }
+                        },
                         onSearchLongClick = onRailSearchLongClick,
                         isSelected = { screen ->
                           currentRoute == screen.route ||

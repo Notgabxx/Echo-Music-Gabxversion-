@@ -132,16 +132,18 @@ constructor(
   val allowParticipantControl: Boolean
     get() = roomState.value?.allowParticipantControl == true
 
+  /**
+   * The Listen Together server only accepts playback actions from the host (a guest's are
+   * rejected with "not_host"), so in a room only the host controls the music.
+   */
   val canControlMusic: Boolean
-    get() = !isInRoom || isHost || allowParticipantControl
+    get() = !isInRoom || isHost
 
   val isGuestPlaybackRestricted: Boolean
     get() = isInRoom && !canControlMusic
 
   val guestPlaybackRestricted =
-    combine(client.roomState, client.role) { state, role ->
-        role == RoomRole.GUEST && state?.allowParticipantControl != true
-      }
+    combine(client.roomState, client.role) { _, role -> role == RoomRole.GUEST }
       .stateIn(scope, SharingStarted.WhileSubscribed(5000), false)
 
   private val _chatMessages = MutableStateFlow<List<ChatMessagePayload>>(emptyList())
@@ -501,11 +503,11 @@ constructor(
       }
       is ListenTogetherEvent.PlaybackSync -> {
         Timber.tag(TAG).d("PlaybackSync received: ${event.action.action}")
-        if (isHost && !allowParticipantControl) {
+        // The server relays every action to every member, the host included.
+        if (isHost) {
           Timber.tag(TAG).d("Host ignores relayed action ${event.action.action}")
           return
         }
-        if (isSyncing && !isGuestPlaybackRestricted) return
         handlePlaybackSync(event.action)
       }
       is ListenTogetherEvent.UserJoined -> {
@@ -1092,28 +1094,25 @@ constructor(
               if (playerConnection !== connection) return@launch
               val player = connection.player
 
-              val mediaItems = queue.map { track -> track.toMediaMetadata().toMediaItem() }
-
               val currentId = player.currentMediaItem?.mediaId
-              var newIndex = -1
-              if (currentId != null) {
-                newIndex = mediaItems.indexOfFirst { it.mediaId == currentId }
-              }
-
-              val currentPos = player.currentPosition
-              val wasPlaying = player.isPlaying
+              val currentIndex = player.currentMediaItemIndex
+              val upcoming =
+                queue
+                  .filter { it.id != currentId }
+                  .map { track -> track.toMediaMetadata().toMediaItem() }
 
               connection.allowInternalSync = true
-              if (newIndex != -1) {
-                player.setMediaItems(mediaItems, newIndex, currentPos)
+              if (currentId == null || player.mediaItemCount == 0) {
+                player.setMediaItems(upcoming)
               } else {
-                player.setMediaItems(mediaItems)
+                // Keep the song that is playing (and its position); swap only what comes after.
+                // (Replacing everything used to jump the guest to the next song.)
+                if (player.mediaItemCount > currentIndex + 1) {
+                  player.removeMediaItems(currentIndex + 1, player.mediaItemCount)
+                }
+                player.addMediaItems(upcoming)
               }
               connection.allowInternalSync = false
-
-              if (wasPlaying && !player.isPlaying) {
-                connection.play()
-              }
 
               try {
                 connection.service.queueTitle = queueTitle
@@ -1264,13 +1263,12 @@ constructor(
         if (queue != null && queue.isNotEmpty()) {
           val mediaItems = queue.map { it.toMediaMetadata().toMediaItem() }
 
-          var startIndex = mediaItems.indexOfFirst { it.mediaId == currentTrack.id }
+          val startIndex = mediaItems.indexOfFirst { it.mediaId == currentTrack.id }
           if (startIndex == -1) {
-            Timber.tag(TAG)
-              .w("Current track ${currentTrack.id} not found in queue, defaulting to 0")
-            val singleItem = currentTrack.toMediaMetadata().toMediaItem()
-
-            player.setMediaItems(listOf(singleItem), 0, position)
+            // The server's queue holds only the upcoming songs: play the current one, then them,
+            // so the guest moves on to the same next song as the host.
+            val current = currentTrack.toMediaMetadata().toMediaItem()
+            player.setMediaItems(listOf(current) + mediaItems, 0, position)
           } else {
             player.setMediaItems(mediaItems, startIndex, position)
           }
@@ -1556,7 +1554,7 @@ constructor(
 
     val currentQueue =
       try {
-        playerConnection?.queueWindows?.value?.map { it.toTrackInfo() }
+        playerConnection?.queueWindows?.value?.let { upcomingTracks(it) }
       } catch (e: Exception) {
         Timber.tag(TAG).e(e, "Failed to get current queue")
         null
@@ -1579,6 +1577,16 @@ constructor(
     }
   }
 
+  /**
+   * The songs after the one that is playing: the server keeps only "upcoming" songs, so sending
+   * the ones already played would make guests play them next.
+   */
+  private fun upcomingTracks(windows: List<androidx.media3.common.Timeline.Window>): List<TrackInfo> {
+    val currentId = playerConnection?.player?.currentMediaItem?.mediaId
+    val index = windows.indexOfFirst { it.mediaItem.mediaId == currentId }
+    return windows.drop(if (index >= 0) index + 1 else 0).map { it.toTrackInfo() }
+  }
+
   private fun startQueueSyncObservation() {
     if (queueObserverJob?.isActive == true) return
 
@@ -1587,7 +1595,7 @@ constructor(
       scope.launch {
         playerConnection
           ?.queueWindows
-          ?.map { windows -> windows.map { it.toTrackInfo() } }
+          ?.map { windows -> upcomingTracks(windows) }
           ?.distinctUntilChanged()
           ?.collectLatest { tracks ->
             if (!canControlMusic || !isInRoom || isSyncing) return@collectLatest
