@@ -1,0 +1,1068 @@
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Configure project :app
+WARNING: The option setting 'android.newDsl=false' is deprecated.
+The current default is 'true'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+
+> Task :dsp-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :dsp-core:processResources NO-SOURCE
+> Task :applecanvas:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :canvas:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :canvas:processResources NO-SOURCE
+> Task :applecanvas:processResources NO-SOURCE
+> Task :echomusiccanvas:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :echomusiccanvas:processResources NO-SOURCE
+> Task :metadata:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :metadata:processResources NO-SOURCE
+> Task :unison:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :unison:processResources NO-SOURCE
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+
+> Task :domain:compileKotlin
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/domain/src/main/kotlin/echo/music/domain/usecase/ResolveLocalMixUseCase.kt:33:15 Condition is always 'true'.
+
+> Task :metadata:compileKotlin
+> Task :domain:compileJava NO-SOURCE
+> Task :metadata:compileJava NO-SOURCE
+> Task :metadata:classes UP-TO-DATE
+> Task :dsp-core:compileKotlin
+
+> Task :canvas:compileKotlin
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/canvas/src/main/kotlin/com/music/echo/canvas/TidalCanvasProvider.kt:200:48 Unnecessary safe call on a non-null receiver of type 'JsonObject'.
+
+> Task :metadata:jar
+> Task :dsp-core:compileJava NO-SOURCE
+> Task :dsp-core:classes UP-TO-DATE
+> Task :dsp-core:jar
+> Task :canvas:compileJava NO-SOURCE
+> Task :canvas:classes UP-TO-DATE
+> Task :canvas:jar
+> Task :domain:processResources NO-SOURCE
+> Task :domain:classes UP-TO-DATE
+> Task :domain:jar
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preUniversalGmsReleaseBuild UP-TO-DATE
+> Task :app:mergeUniversalGmsReleaseJniLibFolders
+> Task :artistvideo:preBuild UP-TO-DATE
+> Task :artistvideo:preReleaseBuild UP-TO-DATE
+> Task :artistvideo:mergeReleaseJniLibFolders
+> Task :artistvideo:mergeReleaseNativeLibs NO-SOURCE
+> Task :artistvideo:copyReleaseJniLibsProjectOnly
+> Task :audio-dsp:preBuild UP-TO-DATE
+> Task :audio-dsp:preReleaseBuild UP-TO-DATE
+> Task :audio-dsp:mergeReleaseJniLibFolders
+> Task :audio-dsp:mergeReleaseNativeLibs NO-SOURCE
+> Task :audio-dsp:copyReleaseJniLibsProjectOnly
+> Task :betterlyrics:preBuild UP-TO-DATE
+> Task :betterlyrics:preReleaseBuild UP-TO-DATE
+> Task :betterlyrics:mergeReleaseJniLibFolders
+> Task :betterlyrics:mergeReleaseNativeLibs NO-SOURCE
+> Task :betterlyrics:copyReleaseJniLibsProjectOnly
+> Task :core:preBuild UP-TO-DATE
+> Task :core:preReleaseBuild UP-TO-DATE
+> Task :core:mergeReleaseJniLibFolders
+> Task :core:mergeReleaseNativeLibs NO-SOURCE
+> Task :core:copyReleaseJniLibsProjectOnly
+> Task :innertube:preBuild UP-TO-DATE
+> Task :innertube:preReleaseBuild UP-TO-DATE
+> Task :innertube:mergeReleaseJniLibFolders
+> Task :innertube:mergeReleaseNativeLibs NO-SOURCE
+> Task :innertube:copyReleaseJniLibsProjectOnly
+> Task :kugou:preBuild UP-TO-DATE
+> Task :kugou:preReleaseBuild UP-TO-DATE
+> Task :kugou:mergeReleaseJniLibFolders
+> Task :kugou:mergeReleaseNativeLibs NO-SOURCE
+> Task :kugou:copyReleaseJniLibsProjectOnly
+> Task :lrclib:preBuild UP-TO-DATE
+> Task :lrclib:preReleaseBuild UP-TO-DATE
+> Task :lrclib:mergeReleaseJniLibFolders
+> Task :lrclib:mergeReleaseNativeLibs NO-SOURCE
+> Task :lrclib:copyReleaseJniLibsProjectOnly
+> Task :lyrics:preBuild UP-TO-DATE
+> Task :lyrics:preReleaseBuild UP-TO-DATE
+> Task :lyrics:mergeReleaseJniLibFolders
+> Task :lyrics:mergeReleaseNativeLibs NO-SOURCE
+> Task :lyrics:copyReleaseJniLibsProjectOnly
+> Task :paxsenixlyrics:preBuild UP-TO-DATE
+> Task :paxsenixlyrics:preReleaseBuild UP-TO-DATE
+> Task :paxsenixlyrics:mergeReleaseJniLibFolders
+> Task :paxsenixlyrics:mergeReleaseNativeLibs NO-SOURCE
+> Task :paxsenixlyrics:copyReleaseJniLibsProjectOnly
+> Task :playback:preBuild UP-TO-DATE
+> Task :playback:preGmsReleaseBuild UP-TO-DATE
+> Task :playback:mergeGmsReleaseJniLibFolders
+> Task :playback:mergeGmsReleaseNativeLibs NO-SOURCE
+> Task :playback:copyGmsReleaseJniLibsProjectOnly
+> Task :shazamkit:preBuild UP-TO-DATE
+> Task :shazamkit:preReleaseBuild UP-TO-DATE
+> Task :shazamkit:mergeReleaseJniLibFolders
+> Task :shazamkit:mergeReleaseNativeLibs NO-SOURCE
+> Task :shazamkit:copyReleaseJniLibsProjectOnly
+> Task :simpmusic:preBuild UP-TO-DATE
+> Task :simpmusic:preReleaseBuild UP-TO-DATE
+> Task :simpmusic:mergeReleaseJniLibFolders
+> Task :simpmusic:mergeReleaseNativeLibs NO-SOURCE
+> Task :simpmusic:copyReleaseJniLibsProjectOnly
+> Task :usbaudio:preBuild UP-TO-DATE
+> Task :usbaudio:preReleaseBuild UP-TO-DATE
+> Task :usbaudio:configureCMakeRelWithDebInfo[arm64-v8a]
+> Task :echomusiccanvas:compileKotlin
+> Task :unison:compileKotlin
+> Task :usbaudio:buildCMakeRelWithDebInfo[arm64-v8a]
+> Task :echomusiccanvas:compileJava NO-SOURCE
+> Task :echomusiccanvas:classes UP-TO-DATE
+> Task :echomusiccanvas:jar
+> Task :unison:compileJava NO-SOURCE
+> Task :unison:classes UP-TO-DATE
+> Task :unison:jar
+> Task :applecanvas:compileKotlin
+> Task :usbaudio:configureCMakeRelWithDebInfo[armeabi-v7a]
+> Task :applecanvas:compileJava NO-SOURCE
+> Task :applecanvas:classes UP-TO-DATE
+> Task :applecanvas:jar
+> Task :usbaudio:buildCMakeRelWithDebInfo[armeabi-v7a]
+> Task :usbaudio:configureCMakeRelWithDebInfo[x86]
+> Task :usbaudio:buildCMakeRelWithDebInfo[x86]
+> Task :usbaudio:configureCMakeRelWithDebInfo[x86_64]
+> Task :usbaudio:buildCMakeRelWithDebInfo[x86_64]
+> Task :usbaudio:mergeReleaseJniLibFolders
+> Task :youlyplus:preBuild UP-TO-DATE
+> Task :youlyplus:preReleaseBuild UP-TO-DATE
+> Task :youlyplus:mergeReleaseJniLibFolders
+> Task :youlyplus:mergeReleaseNativeLibs NO-SOURCE
+> Task :youlyplus:copyReleaseJniLibsProjectOnly
+> Task :artistvideo:prepareReleaseArtProfile
+> Task :audio-dsp:prepareReleaseArtProfile
+> Task :betterlyrics:prepareReleaseArtProfile
+> Task :core:prepareReleaseArtProfile
+> Task :innertube:prepareReleaseArtProfile
+> Task :kugou:prepareReleaseArtProfile
+> Task :lrclib:prepareReleaseArtProfile
+> Task :lyrics:prepareReleaseArtProfile
+> Task :paxsenixlyrics:prepareReleaseArtProfile
+> Task :usbaudio:mergeReleaseNativeLibs
+> Task :playback:prepareGmsReleaseArtProfile
+> Task :shazamkit:prepareReleaseArtProfile
+> Task :simpmusic:prepareReleaseArtProfile
+> Task :usbaudio:prepareReleaseArtProfile
+> Task :youlyplus:prepareReleaseArtProfile
+> Task :usbaudio:copyReleaseJniLibsProjectOnly
+> Task :app:mergeUniversalGmsReleaseArtProfile
+> Task :app:mergeUniversalGmsReleaseNativeLibs
+> Task :audio-dsp:generateReleaseResources
+> Task :audio-dsp:packageReleaseResources
+> Task :audio-dsp:processReleaseNavigationResources
+> Task :app:expandUniversalGmsReleaseL8ArtProfileWildcards
+> Task :audio-dsp:javaPreCompileRelease
+> Task :audio-dsp:parseReleaseLocalResources
+> Task :app:stripUniversalGmsReleaseDebugSymbols
+> Task :core:generateReleaseResources
+> Task :core:packageReleaseResources
+> Task :core:processReleaseNavigationResources
+> Task :innertube:generateReleaseResources
+> Task :audio-dsp:generateReleaseRFile
+> Task :core:parseReleaseLocalResources
+> Task :innertube:packageReleaseResources
+> Task :app:extractUniversalGmsReleaseNativeSymbolTables
+> Task :innertube:processReleaseNavigationResources
+> Task :core:generateReleaseRFile
+> Task :innertube:javaPreCompileRelease
+> Task :innertube:parseReleaseLocalResources
+> Task :core:javaPreCompileRelease
+> Task :innertube:generateReleaseRFile
+> Task :playback:generateGmsReleaseResources
+> Task :app:mergeUniversalGmsReleaseNativeDebugMetadata
+> Task :playback:packageGmsReleaseResources
+> Task :playback:processGmsReleaseNavigationResources
+> Task :usbaudio:generateReleaseResources
+> Task :usbaudio:packageReleaseResources
+> Task :usbaudio:processReleaseNavigationResources
+> Task :playback:parseGmsReleaseLocalResources
+> Task :usbaudio:parseReleaseLocalResources
+> Task :playback:generateGmsReleaseRFile
+> Task :usbaudio:javaPreCompileRelease
+> Task :usbaudio:generateReleaseRFile
+> Task :playback:javaPreCompileGmsRelease
+> Task :betterlyrics:generateReleaseResources
+> Task :betterlyrics:packageReleaseResources
+> Task :betterlyrics:processReleaseNavigationResources
+> Task :betterlyrics:parseReleaseLocalResources
+> Task :betterlyrics:generateReleaseRFile
+> Task :betterlyrics:compileReleaseKotlin
+> Task :betterlyrics:javaPreCompileRelease
+> Task :betterlyrics:compileReleaseJavaWithJavac NO-SOURCE
+> Task :betterlyrics:bundleLibCompileToJarRelease
+> Task :kugou:generateReleaseResources
+> Task :kugou:packageReleaseResources
+> Task :kugou:processReleaseNavigationResources
+> Task :kugou:parseReleaseLocalResources
+> Task :kugou:generateReleaseRFile
+> Task :usbaudio:compileReleaseKotlin
+> Task :usbaudio:compileReleaseJavaWithJavac NO-SOURCE
+> Task :usbaudio:bundleLibCompileToJarRelease
+> Task :usbaudio:bundleLibRuntimeToJarRelease
+> Task :kugou:javaPreCompileRelease
+> Task :lrclib:generateReleaseResources
+> Task :lrclib:packageReleaseResources
+> Task :lrclib:processReleaseNavigationResources
+> Task :lrclib:parseReleaseLocalResources
+> Task :lrclib:generateReleaseRFile
+> Task :kugou:compileReleaseKotlin
+> Task :kugou:compileReleaseJavaWithJavac NO-SOURCE
+> Task :kugou:bundleLibCompileToJarRelease
+> Task :lrclib:javaPreCompileRelease
+> Task :lyrics:generateReleaseResources
+> Task :lyrics:packageReleaseResources
+> Task :lyrics:processReleaseNavigationResources
+> Task :lyrics:parseReleaseLocalResources
+> Task :lyrics:generateReleaseRFile
+> Task :paxsenixlyrics:generateReleaseResources
+> Task :paxsenixlyrics:packageReleaseResources
+> Task :paxsenixlyrics:processReleaseNavigationResources
+> Task :paxsenixlyrics:parseReleaseLocalResources
+> Task :paxsenixlyrics:generateReleaseRFile
+> Task :lrclib:compileReleaseKotlin
+> Task :lrclib:compileReleaseJavaWithJavac NO-SOURCE
+> Task :lrclib:bundleLibCompileToJarRelease
+> Task :paxsenixlyrics:javaPreCompileRelease
+> Task :simpmusic:generateReleaseResources
+> Task :simpmusic:packageReleaseResources
+> Task :simpmusic:processReleaseNavigationResources
+> Task :simpmusic:parseReleaseLocalResources
+> Task :simpmusic:generateReleaseRFile
+> Task :simpmusic:compileReleaseKotlin
+> Task :simpmusic:javaPreCompileRelease
+> Task :simpmusic:compileReleaseJavaWithJavac NO-SOURCE
+> Task :simpmusic:bundleLibCompileToJarRelease
+> Task :youlyplus:generateReleaseResources
+> Task :youlyplus:packageReleaseResources
+> Task :youlyplus:processReleaseNavigationResources
+> Task :youlyplus:parseReleaseLocalResources
+> Task :youlyplus:generateReleaseRFile
+> Task :paxsenixlyrics:compileReleaseKotlin
+> Task :audio-dsp:kspReleaseKotlin
+> Task :paxsenixlyrics:compileReleaseJavaWithJavac NO-SOURCE
+> Task :paxsenixlyrics:bundleLibCompileToJarRelease
+> Task :youlyplus:javaPreCompileRelease
+> Task :lyrics:javaPreCompileRelease
+> Task :usbaudio:mergeReleaseGeneratedProguardFiles
+> Task :usbaudio:exportReleaseConsumerProguardFiles
+> Task :kugou:mergeReleaseGeneratedProguardFiles
+> Task :kugou:exportReleaseConsumerProguardFiles
+> Task :lrclib:mergeReleaseGeneratedProguardFiles
+> Task :lrclib:exportReleaseConsumerProguardFiles
+> Task :paxsenixlyrics:mergeReleaseGeneratedProguardFiles
+> Task :paxsenixlyrics:exportReleaseConsumerProguardFiles
+> Task :betterlyrics:mergeReleaseGeneratedProguardFiles
+> Task :betterlyrics:exportReleaseConsumerProguardFiles
+> Task :simpmusic:mergeReleaseGeneratedProguardFiles
+> Task :simpmusic:exportReleaseConsumerProguardFiles
+> Task :shazamkit:generateReleaseResources
+> Task :shazamkit:packageReleaseResources
+> Task :shazamkit:processReleaseNavigationResources
+> Task :shazamkit:parseReleaseLocalResources
+> Task :shazamkit:generateReleaseRFile
+> Task :youlyplus:compileReleaseKotlin
+> Task :youlyplus:compileReleaseJavaWithJavac NO-SOURCE
+> Task :youlyplus:bundleLibCompileToJarRelease
+> Task :youlyplus:mergeReleaseGeneratedProguardFiles
+> Task :youlyplus:exportReleaseConsumerProguardFiles
+> Task :shazamkit:javaPreCompileRelease
+> Task :artistvideo:generateReleaseResources
+> Task :artistvideo:packageReleaseResources
+> Task :artistvideo:processReleaseNavigationResources
+> Task :artistvideo:parseReleaseLocalResources
+> Task :artistvideo:generateReleaseRFile
+> Task :audio-dsp:compileReleaseKotlin
+> Task :shazamkit:compileReleaseKotlin
+> Task :artistvideo:compileReleaseKotlin
+> Task :audio-dsp:compileReleaseJavaWithJavac
+> Task :shazamkit:compileReleaseJavaWithJavac NO-SOURCE
+> Task :shazamkit:mergeReleaseGeneratedProguardFiles
+> Task :shazamkit:exportReleaseConsumerProguardFiles
+> Task :artistvideo:javaPreCompileRelease
+> Task :audio-dsp:transformReleaseClassesWithAsm
+> Task :audio-dsp:bundleLibCompileToJarRelease
+> Task :audio-dsp:bundleLibRuntimeToJarRelease
+> Task :audio-dsp:mergeReleaseGeneratedProguardFiles
+> Task :audio-dsp:exportReleaseConsumerProguardFiles
+> Task :artistvideo:compileReleaseJavaWithJavac NO-SOURCE
+> Task :artistvideo:mergeReleaseGeneratedProguardFiles
+> Task :artistvideo:exportReleaseConsumerProguardFiles
+> Task :app:generateUniversalGmsReleaseBuildConfig
+> Task :app:protobufDummy UP-TO-DATE
+> Task :app:extractGmsProto
+> Task :artistvideo:bundleLibRuntimeToJarRelease
+> Task :artistvideo:processReleaseJavaRes
+> Task :artistvideo:createFullJarRelease
+> Task :audio-dsp:processReleaseJavaRes
+> Task :app:checkUniversalGmsReleaseDuplicateClasses
+> Task :audio-dsp:createFullJarRelease
+> Task :betterlyrics:bundleLibRuntimeToJarRelease
+> Task :betterlyrics:processReleaseJavaRes
+> Task :betterlyrics:createFullJarRelease
+> Task :kugou:bundleLibRuntimeToJarRelease
+> Task :kugou:processReleaseJavaRes
+> Task :kugou:createFullJarRelease
+> Task :lrclib:bundleLibRuntimeToJarRelease
+> Task :lrclib:processReleaseJavaRes
+> Task :lrclib:createFullJarRelease
+> Task :paxsenixlyrics:bundleLibRuntimeToJarRelease
+> Task :paxsenixlyrics:processReleaseJavaRes
+> Task :paxsenixlyrics:createFullJarRelease
+> Task :shazamkit:bundleLibRuntimeToJarRelease
+> Task :shazamkit:processReleaseJavaRes
+> Task :shazamkit:createFullJarRelease
+> Task :simpmusic:bundleLibRuntimeToJarRelease
+> Task :simpmusic:processReleaseJavaRes
+> Task :simpmusic:createFullJarRelease
+> Task :usbaudio:processReleaseJavaRes
+> Task :usbaudio:createFullJarRelease
+> Task :youlyplus:bundleLibRuntimeToJarRelease
+> Task :youlyplus:processReleaseJavaRes
+> Task :youlyplus:createFullJarRelease
+> Task :app:extractProto
+> Task :app:extractReleaseProto
+> Task :app:extractUniversalGmsProto
+> Task :app:extractUniversalGmsReleaseProto
+> Task :app:extractUniversalProto
+> Task :app:extractUniversalGmsReleaseSupportedLocales
+> Task :artistvideo:extractReleaseSupportedLocales
+> Task :audio-dsp:extractReleaseSupportedLocales
+> Task :betterlyrics:extractReleaseSupportedLocales
+> Task :core:extractReleaseSupportedLocales
+> Task :innertube:extractReleaseSupportedLocales
+> Task :kugou:extractReleaseSupportedLocales
+> Task :lrclib:extractReleaseSupportedLocales
+> Task :lyrics:extractReleaseSupportedLocales
+> Task :paxsenixlyrics:extractReleaseSupportedLocales
+> Task :playback:extractGmsReleaseSupportedLocales
+> Task :shazamkit:extractReleaseSupportedLocales
+> Task :simpmusic:extractReleaseSupportedLocales
+> Task :usbaudio:extractReleaseSupportedLocales
+> Task :youlyplus:extractReleaseSupportedLocales
+> Task :app:generateUniversalGmsReleaseResources
+> Task :app:generateUniversalGmsReleaseLocaleConfig
+> Task :app:processUniversalGmsReleaseNavigationResources
+> Task :app:packageUniversalGmsReleaseResources
+> Task :artistvideo:bundleLibCompileToJarRelease
+> Task :shazamkit:bundleLibCompileToJarRelease
+> Task :app:javaPreCompileUniversalGmsRelease
+> Task :artistvideo:writeReleaseAarMetadata
+> Task :audio-dsp:writeReleaseAarMetadata
+> Task :betterlyrics:writeReleaseAarMetadata
+> Task :core:writeReleaseAarMetadata
+> Task :innertube:writeReleaseAarMetadata
+> Task :kugou:writeReleaseAarMetadata
+> Task :lrclib:writeReleaseAarMetadata
+> Task :lyrics:writeReleaseAarMetadata
+> Task :paxsenixlyrics:writeReleaseAarMetadata
+> Task :playback:writeGmsReleaseAarMetadata
+> Task :shazamkit:writeReleaseAarMetadata
+> Task :simpmusic:writeReleaseAarMetadata
+> Task :usbaudio:writeReleaseAarMetadata
+> Task :youlyplus:writeReleaseAarMetadata
+> Task :app:compileUniversalGmsReleaseNavigationResources
+> Task :app:checkUniversalGmsReleaseAarMetadata
+> Task :app:mapUniversalGmsReleaseSourceSetPaths
+> Task :app:parseUniversalGmsReleaseLocalResources
+> Task :innertube:compileReleaseKotlin
+> Task :app:createUniversalGmsReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksUniversalGmsRelease
+> Task :artistvideo:extractDeepLinksRelease
+
+> Task :app:mergeUniversalGmsReleaseResources
+/home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/res/values/strings.xml:450:4: Failed to flatten XML for resource 'personalization_desc' with error: Invalid unicode escape sequence in string
+"{str}"
+/home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/res/values/strings.xml:450:4: string/personalization_desc does not contain a valid string resource.
+/home/runner/.gradle/caches/9.3.1/transforms/0ad92844ea7f8f8938f9144742920c92/transformed/mediarouter-1.8.1/res/values-az/values-az.xml:2:4: Multiple substitutions specified in non-positional format of string resource string/hours_minutes_format. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/res/values-az/strings.xml:350:4: Multiple substitutions specified in non-positional format of string resource string/spotify_import_progress_step. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/res/values-az/strings.xml:357:4: Multiple substitutions specified in non-positional format of string resource string/spotify_source_summary. Did you mean to add the formatted="false" attribute?
+
+> Task :app:generateUniversalGmsReleaseRFile
+> Task :audio-dsp:extractDeepLinksRelease
+> Task :artistvideo:processReleaseManifest
+> Task :audio-dsp:processReleaseManifest
+> Task :betterlyrics:extractDeepLinksRelease
+> Task :core:extractDeepLinksRelease
+> Task :betterlyrics:processReleaseManifest
+> Task :innertube:extractDeepLinksRelease
+> Task :core:processReleaseManifest
+> Task :kugou:extractDeepLinksRelease
+> Task :innertube:processReleaseManifest
+> Task :kugou:processReleaseManifest
+> Task :lrclib:extractDeepLinksRelease
+> Task :lyrics:extractDeepLinksRelease
+> Task :lrclib:processReleaseManifest
+> Task :lyrics:processReleaseManifest
+> Task :paxsenixlyrics:extractDeepLinksRelease
+> Task :paxsenixlyrics:processReleaseManifest
+> Task :playback:extractDeepLinksGmsRelease
+> Task :app:mergeUniversalGmsReleaseResources FAILED
+> Task :playback:processGmsReleaseManifest
+> Task :shazamkit:extractDeepLinksRelease
+> Task :shazamkit:processReleaseManifest
+> Task :simpmusic:extractDeepLinksRelease
+> Task :simpmusic:processReleaseManifest
+> Task :usbaudio:extractDeepLinksRelease
+> Task :usbaudio:processReleaseManifest
+> Task :youlyplus:extractDeepLinksRelease
+
+> Task :youlyplus:processReleaseManifest
+package="com.music.youlyplus" found in source AndroidManifest.xml: /home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/youlyplus/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.music.youlyplus" from the source AndroidManifest.xml: /home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/youlyplus/src/main/AndroidManifest.xml.
+
+> Task :app:extractProguardFiles
+
+> Task :app:processUniversalGmsReleaseMainManifest
+/home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/AndroidManifest.xml:59:9-41 Warning:
+	android:extractNativeLibs should not be specified in this source AndroidManifest.xml file. See https://d.android.com/guide/topics/manifest/application-element#extractNativeLibs for more information.
+The AGP Upgrade Assistant can remove the attribute from the AndroidManifest.xml file and update the build file accordingly. See https://d.android.com/studio/build/agp-upgrade-assistant for more information.
+
+> Task :app:processUniversalGmsReleaseManifest
+> Task :app:mergeUniversalGmsReleaseStartupProfile
+> Task :app:generateUniversalGmsReleaseAssets UP-TO-DATE
+> Task :artistvideo:generateReleaseAssets UP-TO-DATE
+> Task :artistvideo:mergeReleaseAssets
+> Task :audio-dsp:generateReleaseAssets UP-TO-DATE
+> Task :audio-dsp:mergeReleaseAssets
+> Task :betterlyrics:generateReleaseAssets UP-TO-DATE
+> Task :app:processUniversalGmsReleaseManifestForPackage
+> Task :betterlyrics:mergeReleaseAssets
+> Task :core:generateReleaseAssets UP-TO-DATE
+> Task :core:mergeReleaseAssets
+> Task :innertube:generateReleaseAssets UP-TO-DATE
+> Task :innertube:mergeReleaseAssets
+> Task :kugou:generateReleaseAssets UP-TO-DATE
+> Task :kugou:mergeReleaseAssets
+> Task :lrclib:generateReleaseAssets UP-TO-DATE
+> Task :lrclib:mergeReleaseAssets
+> Task :lyrics:generateReleaseAssets UP-TO-DATE
+> Task :lyrics:mergeReleaseAssets
+> Task :paxsenixlyrics:generateReleaseAssets UP-TO-DATE
+> Task :paxsenixlyrics:mergeReleaseAssets
+> Task :playback:generateGmsReleaseAssets UP-TO-DATE
+> Task :playback:mergeGmsReleaseAssets
+> Task :shazamkit:generateReleaseAssets UP-TO-DATE
+> Task :shazamkit:mergeReleaseAssets
+> Task :simpmusic:generateReleaseAssets UP-TO-DATE
+> Task :simpmusic:mergeReleaseAssets
+> Task :usbaudio:generateReleaseAssets UP-TO-DATE
+> Task :usbaudio:mergeReleaseAssets
+> Task :youlyplus:generateReleaseAssets UP-TO-DATE
+> Task :youlyplus:mergeReleaseAssets
+> Task :app:mergeUniversalGmsReleaseAssets
+> Task :app:compressUniversalGmsReleaseAssets
+> Task :app:extractUniversalGmsReleaseVersionControlInfo
+> Task :artistvideo:extractProguardFiles
+> Task :artistvideo:generateReleaseLintModel
+> Task :artistvideo:prepareLintJarForPublish
+> Task :audio-dsp:extractProguardFiles
+> Task :audio-dsp:generateReleaseLintModel
+> Task :audio-dsp:prepareLintJarForPublish
+> Task :betterlyrics:extractProguardFiles
+> Task :betterlyrics:generateReleaseLintModel
+> Task :betterlyrics:prepareLintJarForPublish
+> Task :core:extractProguardFiles
+> Task :innertube:extractProguardFiles
+> Task :core:prepareLintJarForPublish
+> Task :innertube:prepareLintJarForPublish
+> Task :kugou:extractProguardFiles
+> Task :kugou:generateReleaseLintModel
+> Task :kugou:prepareLintJarForPublish
+> Task :lrclib:extractProguardFiles
+> Task :lrclib:generateReleaseLintModel
+> Task :lrclib:prepareLintJarForPublish
+> Task :lyrics:extractProguardFiles
+> Task :paxsenixlyrics:extractProguardFiles
+> Task :paxsenixlyrics:generateReleaseLintModel
+> Task :paxsenixlyrics:prepareLintJarForPublish
+> Task :simpmusic:extractProguardFiles
+> Task :simpmusic:generateReleaseLintModel
+> Task :simpmusic:prepareLintJarForPublish
+> Task :youlyplus:extractProguardFiles
+> Task :youlyplus:generateReleaseLintModel
+> Task :youlyplus:prepareLintJarForPublish
+> Task :lyrics:prepareLintJarForPublish
+> Task :playback:extractProguardFiles
+> Task :usbaudio:extractProguardFiles
+> Task :usbaudio:generateReleaseLintModel
+> Task :usbaudio:prepareLintJarForPublish
+> Task :playback:prepareLintJarForPublish
+> Task :shazamkit:extractProguardFiles
+> Task :shazamkit:generateReleaseLintModel
+> Task :shazamkit:prepareLintJarForPublish
+> Task :playback:stripGmsReleaseDebugSymbols NO-SOURCE
+> Task :playback:copyGmsReleaseJniLibsProjectAndLocalJars
+> Task :playback:extractDeepLinksForAarGmsRelease
+> Task :playback:checkGmsReleaseAarMetadata
+> Task :lyrics:checkReleaseAarMetadata
+> Task :lyrics:stripReleaseDebugSymbols NO-SOURCE
+> Task :lyrics:copyReleaseJniLibsProjectAndLocalJars
+> Task :lyrics:extractDeepLinksForAarRelease
+> Task :core:stripReleaseDebugSymbols NO-SOURCE
+> Task :core:extractDeepLinksForAarRelease
+> Task :core:checkReleaseAarMetadata
+> Task :core:copyReleaseJniLibsProjectAndLocalJars
+> Task :audio-dsp:checkReleaseAarMetadata
+> Task :audio-dsp:stripReleaseDebugSymbols NO-SOURCE
+> Task :audio-dsp:copyReleaseJniLibsProjectAndLocalJars
+> Task :audio-dsp:extractDeepLinksForAarRelease
+> Task :audio-dsp:extractReleaseAnnotations
+> Task :audio-dsp:mergeReleaseConsumerProguardFiles
+> Task :usbaudio:checkReleaseAarMetadata
+> Task :usbaudio:extractDeepLinksForAarRelease
+> Task :usbaudio:stripReleaseDebugSymbols
+> Task :usbaudio:extractReleaseAnnotations
+> Task :usbaudio:copyReleaseJniLibsProjectAndLocalJars
+> Task :usbaudio:mergeReleaseConsumerProguardFiles
+> Task :innertube:checkReleaseAarMetadata
+> Task :innertube:stripReleaseDebugSymbols NO-SOURCE
+> Task :usbaudio:mergeReleaseJavaResource
+> Task :audio-dsp:mergeReleaseJavaResource
+> Task :innertube:copyReleaseJniLibsProjectAndLocalJars
+> Task :audio-dsp:syncReleaseLibJars
+> Task :audio-dsp:bundleReleaseLocalLintAar
+> Task :usbaudio:syncReleaseLibJars
+> Task :usbaudio:bundleReleaseLocalLintAar
+> Task :innertube:extractDeepLinksForAarRelease
+> Task :innertube:extractReleaseAnnotations
+> Task :kugou:stripReleaseDebugSymbols NO-SOURCE
+> Task :kugou:checkReleaseAarMetadata
+> Task :kugou:copyReleaseJniLibsProjectAndLocalJars
+> Task :kugou:extractDeepLinksForAarRelease
+> Task :kugou:extractReleaseAnnotations
+> Task :kugou:mergeReleaseConsumerProguardFiles
+> Task :kugou:mergeReleaseJavaResource
+> Task :lrclib:checkReleaseAarMetadata
+> Task :kugou:syncReleaseLibJars
+> Task :kugou:bundleReleaseLocalLintAar
+> Task :lrclib:stripReleaseDebugSymbols NO-SOURCE
+> Task :lrclib:copyReleaseJniLibsProjectAndLocalJars
+> Task :lrclib:extractDeepLinksForAarRelease
+> Task :lrclib:extractReleaseAnnotations
+> Task :lrclib:mergeReleaseConsumerProguardFiles
+> Task :lrclib:mergeReleaseJavaResource
+> Task :paxsenixlyrics:checkReleaseAarMetadata
+> Task :lrclib:syncReleaseLibJars
+> Task :lrclib:bundleReleaseLocalLintAar
+> Task :paxsenixlyrics:stripReleaseDebugSymbols NO-SOURCE
+> Task :paxsenixlyrics:copyReleaseJniLibsProjectAndLocalJars
+> Task :paxsenixlyrics:extractDeepLinksForAarRelease
+> Task :paxsenixlyrics:extractReleaseAnnotations
+> Task :paxsenixlyrics:mergeReleaseConsumerProguardFiles
+> Task :paxsenixlyrics:mergeReleaseJavaResource
+> Task :betterlyrics:checkReleaseAarMetadata
+> Task :paxsenixlyrics:syncReleaseLibJars
+> Task :paxsenixlyrics:bundleReleaseLocalLintAar
+> Task :betterlyrics:stripReleaseDebugSymbols NO-SOURCE
+> Task :betterlyrics:copyReleaseJniLibsProjectAndLocalJars
+> Task :betterlyrics:extractDeepLinksForAarRelease
+> Task :betterlyrics:extractReleaseAnnotations
+> Task :betterlyrics:mergeReleaseConsumerProguardFiles
+> Task :betterlyrics:mergeReleaseJavaResource
+> Task :simpmusic:checkReleaseAarMetadata
+> Task :betterlyrics:syncReleaseLibJars
+> Task :betterlyrics:bundleReleaseLocalLintAar
+> Task :simpmusic:stripReleaseDebugSymbols NO-SOURCE
+> Task :simpmusic:copyReleaseJniLibsProjectAndLocalJars
+> Task :simpmusic:extractDeepLinksForAarRelease
+> Task :simpmusic:extractReleaseAnnotations
+> Task :simpmusic:mergeReleaseConsumerProguardFiles
+> Task :simpmusic:mergeReleaseJavaResource
+> Task :youlyplus:checkReleaseAarMetadata
+> Task :simpmusic:syncReleaseLibJars
+> Task :simpmusic:bundleReleaseLocalLintAar
+> Task :youlyplus:stripReleaseDebugSymbols NO-SOURCE
+> Task :youlyplus:copyReleaseJniLibsProjectAndLocalJars
+> Task :youlyplus:extractDeepLinksForAarRelease
+> Task :youlyplus:extractReleaseAnnotations
+> Task :youlyplus:mergeReleaseConsumerProguardFiles
+> Task :youlyplus:mergeReleaseJavaResource
+> Task :shazamkit:stripReleaseDebugSymbols NO-SOURCE
+> Task :shazamkit:checkReleaseAarMetadata
+> Task :youlyplus:syncReleaseLibJars
+> Task :youlyplus:bundleReleaseLocalLintAar
+> Task :shazamkit:copyReleaseJniLibsProjectAndLocalJars
+> Task :shazamkit:extractDeepLinksForAarRelease
+> Task :shazamkit:extractReleaseAnnotations
+> Task :shazamkit:mergeReleaseConsumerProguardFiles
+> Task :shazamkit:mergeReleaseJavaResource
+> Task :artistvideo:checkReleaseAarMetadata
+> Task :shazamkit:syncReleaseLibJars
+> Task :shazamkit:bundleReleaseLocalLintAar
+> Task :artistvideo:stripReleaseDebugSymbols NO-SOURCE
+> Task :artistvideo:copyReleaseJniLibsProjectAndLocalJars
+> Task :artistvideo:extractDeepLinksForAarRelease
+> Task :artistvideo:extractReleaseAnnotations
+> Task :artistvideo:mergeReleaseConsumerProguardFiles
+> Task :artistvideo:mergeReleaseJavaResource
+> Task :artistvideo:syncReleaseLibJars
+> Task :artistvideo:bundleReleaseLocalLintAar
+> Task :artistvideo:writeReleaseLintModelMetadata
+> Task :audio-dsp:writeReleaseLintModelMetadata
+
+> Task :innertube:compileReleaseKotlin
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/innertube/src/main/kotlin/com/music/innertube/YouTube.kt:317:28 Unnecessary safe call on a non-null receiver of type 'Tabs.Tab.TabRenderer'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/innertube/src/main/kotlin/com/music/innertube/YouTube.kt:346:28 Unnecessary safe call on a non-null receiver of type 'Tabs.Tab.TabRenderer'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/innertube/src/main/kotlin/com/music/innertube/models/YTItem.kt:138:9 'when' is exhaustive so 'else' is redundant here.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/innertube/src/main/kotlin/com/music/innertube/pages/RelatedPage.kt:134:17 Unnecessary safe call on a non-null receiver of type 'Runs'.
+
+> Task :innertube:compileReleaseJavaWithJavac NO-SOURCE
+> Task :innertube:bundleLibCompileToJarRelease
+> Task :betterlyrics:lintVitalAnalyzeRelease
+> Task :artistvideo:lintVitalAnalyzeRelease
+> Task :innertube:mergeReleaseGeneratedProguardFiles
+> Task :innertube:exportReleaseConsumerProguardFiles
+> Task :innertube:processReleaseJavaRes
+> Task :innertube:bundleLibRuntimeToJarRelease
+> Task :innertube:generateReleaseLintModel
+> Task :innertube:createFullJarRelease
+> Task :innertube:mergeReleaseConsumerProguardFiles
+> Task :betterlyrics:writeReleaseLintModelMetadata
+> Task :innertube:mergeReleaseJavaResource
+> Task :innertube:writeReleaseLintModelMetadata
+> Task :innertube:syncReleaseLibJars
+> Task :innertube:bundleReleaseLocalLintAar
+> Task :core:writeReleaseLintModelMetadata
+> Task :audio-dsp:lintVitalAnalyzeRelease
+> Task :kugou:writeReleaseLintModelMetadata
+> Task :kugou:lintVitalAnalyzeRelease
+> Task :lrclib:writeReleaseLintModelMetadata
+> Task :paxsenixlyrics:writeReleaseLintModelMetadata
+> Task :simpmusic:writeReleaseLintModelMetadata
+> Task :youlyplus:writeReleaseLintModelMetadata
+> Task :lyrics:writeReleaseLintModelMetadata
+> Task :lrclib:lintVitalAnalyzeRelease
+> Task :usbaudio:writeReleaseLintModelMetadata
+> Task :playback:writeGmsReleaseLintModelMetadata
+> Task :paxsenixlyrics:lintVitalAnalyzeRelease
+> Task :shazamkit:writeReleaseLintModelMetadata
+> Task :simpmusic:lintVitalAnalyzeRelease
+> Task :shazamkit:lintVitalAnalyzeRelease
+> Task :youlyplus:lintVitalAnalyzeRelease
+> Task :artistvideo:generateReleaseLintVitalModel
+> Task :audio-dsp:generateReleaseLintVitalModel
+> Task :betterlyrics:generateReleaseLintVitalModel
+> Task :innertube:generateReleaseLintVitalModel
+> Task :kugou:generateReleaseLintVitalModel
+> Task :lrclib:generateReleaseLintVitalModel
+> Task :paxsenixlyrics:generateReleaseLintVitalModel
+> Task :shazamkit:generateReleaseLintVitalModel
+> Task :simpmusic:generateReleaseLintVitalModel
+> Task :usbaudio:generateReleaseLintVitalModel
+> Task :youlyplus:generateReleaseLintVitalModel
+> Task :app:validateSigningUniversalGmsRelease
+> Task :app:writeUniversalGmsReleaseAppMetadata
+> Task :app:writeUniversalGmsReleaseSigningConfigVersions
+> Task :usbaudio:lintVitalAnalyzeRelease
+> Task :core:kspReleaseKotlin
+> Task :core:extractReleaseAnnotations
+> Task :innertube:lintVitalAnalyzeRelease
+> Task :core:compileReleaseKotlin
+> Task :core:compileReleaseJavaWithJavac NO-SOURCE
+> Task :core:mergeReleaseGeneratedProguardFiles
+> Task :core:exportReleaseConsumerProguardFiles
+> Task :core:bundleLibCompileToJarRelease
+> Task :core:bundleLibRuntimeToJarRelease
+> Task :core:processReleaseJavaRes
+> Task :core:createFullJarRelease
+> Task :core:generateReleaseLintModel
+> Task :core:mergeReleaseConsumerProguardFiles
+> Task :core:mergeReleaseJavaResource
+> Task :core:syncReleaseLibJars
+> Task :core:bundleReleaseLocalLintAar
+> Task :core:generateReleaseLintVitalModel
+> Task :playback:kspGmsReleaseKotlin
+> Task :playback:extractGmsReleaseAnnotations
+> Task :lyrics:kspReleaseKotlin
+> Task :lyrics:extractReleaseAnnotations
+
+> Task :playback:compileGmsReleaseKotlin
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/playback/src/main/kotlin/echo/music/iad1tya/playback/queues/YouTubeQueue.kt:49:51 Unnecessary non-null assertion (!!) on a non-null receiver of type 'MediaMetadata'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/playback/src/main/kotlin/echo/music/iad1tya/playback/queues/YouTubeQueue.kt:51:50 Unnecessary non-null assertion (!!) on a non-null receiver of type 'MediaMetadata'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/playback/src/main/kotlin/echo/music/iad1tya/playback/queues/YouTubeQueue.kt:72:40 Unnecessary non-null assertion (!!) on a non-null receiver of type 'MediaMetadata'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/playback/src/main/kotlin/echo/music/iad1tya/playback/queues/YouTubeQueue.kt:73:47 Unnecessary non-null assertion (!!) on a non-null receiver of type 'MediaMetadata'.
+
+> Task :playback:compileGmsReleaseJavaWithJavac NO-SOURCE
+> Task :playback:processGmsReleaseJavaRes
+> Task :playback:transformGmsReleaseClassesWithAsm
+> Task :playback:generateGmsReleaseLintModel
+> Task :playback:mergeGmsReleaseGeneratedProguardFiles
+> Task :playback:exportGmsReleaseConsumerProguardFiles
+> Task :playback:bundleLibRuntimeToJarGmsRelease
+> Task :playback:bundleLibCompileToJarGmsRelease
+> Task :playback:createFullJarGmsRelease
+> Task :playback:mergeGmsReleaseConsumerProguardFiles
+> Task :playback:mergeGmsReleaseJavaResource
+> Task :playback:syncGmsReleaseLibJars
+> Task :playback:bundleGmsReleaseLocalLintAar
+> Task :playback:generateGmsReleaseLintVitalModel
+
+> Task :lyrics:compileReleaseKotlin
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/DeepLService.kt:86:43 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/DeepLService.kt:97:41 Elvis operator (?:) always returns the left operand of non-nullable type 'String'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/DeepLService.kt:105:15 Condition is always 'false'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/MistralService.kt:152:43 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/MistralService.kt:163:41 Elvis operator (?:) always returns the left operand of non-nullable type 'String'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/MistralService.kt:171:15 Condition is always 'false'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/OpenRouterService.kt:161:43 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/OpenRouterService.kt:173:41 Elvis operator (?:) always returns the left operand of non-nullable type 'String'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/OpenRouterService.kt:293:41 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/OpenRouterStreamingService.kt:154:45 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/api/OpenRouterStreamingService.kt:164:74 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/lyrics/src/main/kotlin/echo/music/iad1tya/lyrics/LyricsHelper.kt:28:3 This annotation is currently applied to the value parameter only, but in the future it will also be applied to field.
+- To opt in to applying to both value parameter and field, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+
+> Task :lyrics:compileReleaseJavaWithJavac
+> Task :lyrics:mergeReleaseGeneratedProguardFiles
+> Task :lyrics:exportReleaseConsumerProguardFiles
+> Task :lyrics:processReleaseJavaRes
+> Task :lyrics:bundleLibRuntimeToJarRelease
+> Task :lyrics:createFullJarRelease
+> Task :playback:lintVitalAnalyzeGmsRelease
+> Task :app:extractIncludeUniversalGmsReleaseProto
+> Task :app:generateUniversalGmsReleaseProto
+> Task :lyrics:bundleLibCompileToJarRelease
+> Task :lyrics:generateReleaseLintModel
+> Task :lyrics:mergeReleaseConsumerProguardFiles
+> Task :lyrics:mergeReleaseJavaResource
+> Task :lyrics:syncReleaseLibJars
+> Task :lyrics:bundleReleaseLocalLintAar
+> Task :core:lintVitalAnalyzeRelease
+> Task :lyrics:generateReleaseLintVitalModel
+> Task :lyrics:lintVitalAnalyzeRelease
+> Task :app:kspUniversalGmsReleaseKotlin
+> Task :app:compileUniversalGmsReleaseKotlin
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/gms/kotlin/com/music/echo/playback/CastConnectionHandler.kt:217:48 Unnecessary safe call on a non-null receiver of type '(Mutable)List<MediaQueueItem!>'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/gms/kotlin/com/music/echo/playback/CastConnectionHandler.kt:764:43 'fun resume(value: Boolean?, onCancellation: ((Throwable) -> Unit)?): Unit' is deprecated. Use the overload that also accepts the `value` and the coroutine context in lambda.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/gms/kotlin/com/music/echo/playback/CastConnectionHandler.kt:773:41 'fun resume(value: Boolean?, onCancellation: ((Throwable) -> Unit)?): Unit' is deprecated. Use the overload that also accepts the `value` and the coroutine context in lambda.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ai/AiPlaylistGenerator.kt:161:47 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ai/AiPlaylistModifier.kt:145:47 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ai/AiRecommendationHelper.kt:133:45 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/data/SponsorBlockRepository.kt:42:41 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/discord/DiscordAssetRegistrar.kt:202:37 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/discord/DiscordAssetRegistrar.kt:212:49 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/discord/DiscordAssetRegistrar.kt:234:41 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/discord/DiscordAssetRegistrar.kt:243:65 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/discord/GatewayClient.kt:191:50 No cast needed.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/discord/GatewayClient.kt:210:35 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/discord/GatewayModels.kt:24:59 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/AudioDeviceBottomSheet.kt:598:58 'val Icons.Filled.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.VolumeUp.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/AudioDeviceBottomSheet.kt:827:62 'val Icons.Filled.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.VolumeUp.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/AudioDeviceBottomSheet.kt:827:89 'val Icons.Filled.VolumeOff: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.VolumeOff.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/AudioDeviceBottomSheet.kt:878:9 'when' is exhaustive so 'else' is redundant here.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/AudioDeviceBottomSheet.kt:929:9 'when' is exhaustive so 'else' is redundant here.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/AudioDeviceBottomSheet.kt:1255:40 'val Icons.Filled.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.VolumeUp.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/BluetoothUtils.kt:27:40 'var isBluetoothA2dpOn: Boolean' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/BluetoothUtils.kt:27:74 'var isBluetoothScoOn: Boolean' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/changelog/changelogscreen.kt:145:63 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/changelog/changelogscreen.kt:146:61 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/changelog/changelogscreen.kt:147:62 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/changelog/changelogscreen.kt:434:25 'fun ClickableText(text: AnnotatedString, modifier: Modifier = ..., style: TextStyle = ..., softWrap: Boolean = ..., overflow: TextOverflow = ..., maxLines: Int = ..., onTextLayout: (TextLayoutResult) -> Unit = ..., onClick: (Int) -> Unit): Unit' is deprecated. Use Text or BasicText and pass an AnnotatedString that contains a LinkAnnotation. Check LinkAnnotation's documentation for more details and samples.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/changelog/changelogscreen.kt:441:47 'static fun startActivity(p0: Context, p1: Intent, p2: Bundle?): Unit' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/changelog/changelogscreen.kt:596:44 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/changelog/changelogscreen.kt:597:56 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/changelog/changelogscreen.kt:598:48 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/commitscreen/commitscreen.kt:134:62 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/commitscreen/commitscreen.kt:138:67 Java type mismatch: inferred type is 'Nothing?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/commitscreen/commitscreen.kt:306:37 'static fun startActivity(p0: Context, p1: Intent, p2: Bundle?): Unit' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/updater/echomusicupdater.kt:263:29 'fun largeTopAppBarColors(containerColor: Color = ..., scrolledContainerColor: Color = ..., navigationIconContentColor: Color = ..., titleContentColor: Color = ..., actionIconContentColor: Color = ...): TopAppBarColors' is deprecated. Use topAppBarColors instead.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/updater/echomusicupdater.kt:339:39 'static fun startActivity(p0: Context, p1: Intent, p2: Bundle?): Unit' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/updater/echomusicupdater.kt:482:21 'fun ClickableText(text: AnnotatedString, modifier: Modifier = ..., style: TextStyle = ..., softWrap: Boolean = ..., overflow: TextOverflow = ..., maxLines: Int = ..., onTextLayout: (TextLayoutResult) -> Unit = ..., onClick: (Int) -> Unit): Unit' is deprecated. Use Text or BasicText and pass an AnnotatedString that contains a LinkAnnotation. Check LinkAnnotation's documentation for more details and samples.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/updater/echomusicupdater.kt:489:43 'static fun startActivity(p0: Context, p1: Intent, p2: Bundle?): Unit' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/echomusic/updater/echomusicupdater.kt:534:50 'fun LinearProgressIndicator(progress: Float, modifier: Modifier = ..., color: Color = ..., trackColor: Color = ..., strokeCap: StrokeCap = ...): Unit' is deprecated. Use the overload that takes `progress` as a lambda.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/extensions/ExtensionManager.kt:106:41 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/extensions/ExtensionManager.kt:143:37 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/extensions/ExtensionManager.kt:168:52 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/extensions/ExtensionManager.kt:188:41 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/extensions/ExtensionManager.kt:204:56 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/listentogether/ListenTogetherServers.kt:43:5 This is a delicate API and its use requires care. Make sure you fully read and understand documentation of the declaration that is marked as a delicate API.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/listentogether/ListenTogetherServers.kt:48:22 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/playback/AudioExportService.kt:131:32 Elvis operator (?:) always returns the left operand of non-nullable type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/playback/AudioExportService.kt:160:24 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/spotify/LoadSpotifyRecommendationsUseCase.kt:80:68 Unnecessary safe call on a non-null receiver of type 'List<SpotifyImage>'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/component/BottomSheetMenu.kt:72:79 'val windowInsets: WindowInsets' is deprecated. Renamed as modalWindowInsets.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/component/Lyrics.kt:1283:74 Unnecessary non-null assertion (!!) on a non-null receiver of type 'String'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/component/MetroLyrics.kt:929:33 Unnecessary non-null assertion (!!) on a non-null receiver of type 'MetroWordTimestamp'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/component/UpdaterComponents.kt:276:7 'fun ClickableText(text: AnnotatedString, modifier: Modifier = ..., style: TextStyle = ..., softWrap: Boolean = ..., overflow: TextOverflow = ..., maxLines: Int = ..., onTextLayout: (TextLayoutResult) -> Unit = ..., onClick: (Int) -> Unit): Unit' is deprecated. Use Text or BasicText and pass an AnnotatedString that contains a LinkAnnotation. Check LinkAnnotation's documentation for more details and samples.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/component/UpdaterComponents.kt:280:27 'static fun startActivity(p0: Context, p1: Intent, p2: Bundle?): Unit' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/component/backdrop/internal/Paint.kt:18:8 'fun asFrameworkPaint(): Paint' is deprecated. Use platform-specific extension to get platform reference.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/component/backdrop/internal/Paint.kt:23:8 'fun asFrameworkPaint(): Paint' is deprecated. Use platform-specific extension to get platform reference.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/menu/PlaylistMenu.kt:736:33 Condition is always 'true'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/menu/YouTubePlaylistMenu.kt:152:47 Elvis operator (?:) always returns the left operand of non-nullable type 'String'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/menu/YouTubePlaylistMenu.kt:672:59 Elvis operator (?:) always returns the left operand of non-nullable type 'String'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/player/Player.kt:1759:34 Unnecessary safe call on a non-null receiver of type 'MediaMetadata'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/DetailedListeningHistoryScreen.kt:36:50 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/ListeningSummaryScreen.kt:35:42 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/SpotifyImportScreen.kt:50:52 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/StatsScreen.kt:237:43 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Int'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/StatsScreen.kt:237:46 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Int'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/StatsScreen.kt:238:43 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Int'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/StatsScreen.kt:238:46 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Int'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/artist/ArtistScreen.kt:361:70 Unnecessary safe call on a non-null receiver of type 'ArtistPage'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/artist/ArtistScreen.kt:454:47 Unnecessary safe call on a non-null receiver of type 'ArtistPage'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/artist/ArtistScreen.kt:455:51 Unnecessary safe call on a non-null receiver of type 'ArtistPage'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/equalizer/axion/AutoEqBottomSheet.kt:45:25 Redundant creation of Json format. Creating instances for each usage can be slow.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/library/LocalSongScreen.kt:488:33 'fun largeTopAppBarColors(containerColor: Color = ..., scrolledContainerColor: Color = ..., navigationIconContentColor: Color = ..., titleContentColor: Color = ..., actionIconContentColor: Color = ...): TopAppBarColors' is deprecated. Use topAppBarColors instead.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/library/LocalSongScreen.kt:810:22 Unnecessary non-null assertion (!!) on a non-null receiver of type 'LocalSongScanSummary'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/playlist/CachePlaylistScreen.kt:455:74 Elvis operator (?:) always returns the left operand of non-nullable type 'Int'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/playlist/LocalPlaylistScreen.kt:1227:38 Condition is always 'true'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/recognition/RecognitionScreen.kt:270:17 'when' is exhaustive so 'else' is redundant here.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/search/suggestions/AppleMusicScraper.kt:33:22 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/settings/ExtensionSettings.kt:89:45 'fun <reified VM : ViewModel> hiltViewModel(viewModelStoreOwner: ViewModelStoreOwner = ..., key: String? = ...): VM' is deprecated. Moved to package: androidx.hilt.lifecycle.viewmodel.compose.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/settings/ListenBrainzManager.kt:110:26 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/settings/ListenBrainzManager.kt:179:26 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/settings/PlayerSettings.kt:215:11 'when' is exhaustive so 'else' is redundant here.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/settings/PlayerSettings.kt:235:11 'when' is exhaustive so 'else' is redundant here.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/settings/PlayerSettings.kt:398:21 'when' is exhaustive so 'else' is redundant here.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/screens/settings/PlayerSettings.kt:416:21 'when' is exhaustive so 'else' is redundant here.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/theme/Theme.kt:65:9 'when' is exhaustive so 'else' is redundant here.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/utils/ShowMediaInfo.kt:177:46 Redundant call of conversion method.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/utils/ShowMediaInfo.kt:183:41 Redundant call of conversion method.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/ui/utils/ShowMediaInfo.kt:197:68 Redundant call of conversion method.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/ComposeToImage.kt:102:71 Redundant call of conversion method.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/DataStoreCompose.kt:42:39 No cast needed.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/DataStoreCompose.kt:82:35 Check for instance is always 'false'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/DataStoreCompose.kt:82:69 No cast needed.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/LocalFileDownloader.kt:95:22 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/WebAuthSessionCleaner.kt:72:5 'fun clearFormData(): Unit' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/WebAuthSessionCleaner.kt:74:5 'fun clearUsernamePassword(): Unit' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/cipher/CipherWebView.kt:633:37 Unnecessary safe call on a non-null receiver of type 'FunctionNameExtractor.SigFunctionInfo'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/cipher/CipherWebView.kt:634:39 Unnecessary safe call on a non-null receiver of type 'FunctionNameExtractor.SigFunctionInfo'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/cipher/CipherWebView.kt:635:39 Unnecessary safe call on a non-null receiver of type 'FunctionNameExtractor.SigFunctionInfo'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/cipher/CipherWebView.kt:673:37 Unnecessary safe call on a non-null receiver of type 'FunctionNameExtractor.NFunctionInfo'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/cipher/PlayerConfigStore.kt:315:33 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/cipher/PlayerJsFetcher.kt:227:22 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/cipher/PlayerJsFetcher.kt:266:22 Unnecessary safe call on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/potoken/PoTokenGenerator.kt:29:24 This is a delicate API and its use requires care. Make sure you fully read and understand documentation of the declaration that is marked as a delicate API.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/utils/potoken/PoTokenWebView.kt:309:63 Unnecessary non-null assertion (!!) on a non-null receiver of type 'ResponseBody'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/viewmodels/ArtistViewModel.kt:152:39 Unnecessary safe call on a non-null receiver of type 'ArtistItem'.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/viewmodels/BackupRestoreViewModel.kt:143:49 Java type mismatch: inferred type is 'String?', but 'String' was expected.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/viewmodels/CreateAiPlaylistViewModel.kt:186:42 No cast needed.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/widget/EchoMusicWidgetManager.kt:305:26 'fun notifyAppWidgetViewDataChanged(p0: Int, p1: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/widget/EchoMusicWidgetManager.kt:861:28 Redundant call of conversion method.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/widget/EchoMusicWidgetManager.kt:880:26 Redundant call of conversion method.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/widget/EchoMusicWidgetManager.kt:894:43 Redundant call of conversion method.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/widget/EchoMusicWidgetManager.kt:894:75 Redundant call of conversion method.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/widget/EchoMusicWidgetManager.kt:920:26 Redundant call of conversion method.
+w: file:///home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/src/main/kotlin/com/music/echo/widget/EchoMusicWidgetManager.kt:1338:11 'fun setRemoteAdapter(p0: Int, p1: Intent!): Unit' is deprecated. Deprecated in Java.
+
+> Task :app:compileUniversalGmsReleaseJavaWithJavac
+> Task :app:hiltCollectClassesUniversalGmsRelease
+> Task :app:hiltAggregateDepsUniversalGmsRelease
+> Task :app:processUniversalGmsReleaseJavaRes
+> Task :app:hiltJavaCompileUniversalGmsRelease
+> Task :app:generateUniversalGmsReleaseLintVitalReportModel
+> Task :app:mergeUniversalGmsReleaseJavaResource
+> Task :app:lintVitalAnalyzeUniversalGmsRelease
+> Task :app:lintVitalReportUniversalGmsRelease
+> Task :app:lintVitalUniversalGmsRelease
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1792109520523.json
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:mergeUniversalGmsReleaseResources'.
+> A failure occurred while executing com.android.build.gradle.internal.res.ResourceCompilerRunnable
+   > Resource compilation failed (Failed to compile values resource file /home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/build/intermediates/incremental/universalGmsRelease/mergeUniversalGmsReleaseResources/merged.dir/values/values.xml. Cause: java.lang.IllegalStateException: Can not extract resource from com.android.aaptcompiler.ParsedResource@24a70e4b.). Check logs for more details.
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:mergeUniversalGmsReleaseResources'.
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExecuter.java:135)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:133)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:121)
+	at org.gradle.api.internal.tasks.execution.ProblemsTaskPathTrackingTaskExecuter.execute(ProblemsTaskPathTrackingTaskExecuter.java:41)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:209)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.DefaultNodeExecutor.executeLocalTaskNode(DefaultNodeExecutor.java:55)
+	at org.gradle.execution.plan.DefaultNodeExecutor.execute(DefaultNodeExecutor.java:34)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:355)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:343)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:339)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:84)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:339)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:328)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:459)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:376)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing com.android.build.gradle.internal.res.ResourceCompilerRunnable
+	at org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java:289)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.java:130)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$withoutLocks$2(DefaultWorkerLeaseService.java:344)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:42)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLocks(DefaultWorkerLeaseService.java:342)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLocks(DefaultWorkerLeaseService.java:326)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLock(DefaultWorkerLeaseService.java:331)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:126)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:92)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForAll(DefaultAsyncWorkTracker.java:78)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForCompletion(DefaultAsyncWorkTracker.java:66)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$3.run(TaskExecution.java:267)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:29)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:26)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:47)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeAction(TaskExecution.java:244)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeActions(TaskExecution.java:227)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeWithPreviousOutputFiles(TaskExecution.java:210)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.execute(TaskExecution.java:176)
+	at org.gradle.internal.execution.steps.ExecuteStep.executeInternal(ExecuteStep.java:110)
+	at org.gradle.internal.execution.steps.ExecuteStep.access$000(ExecuteStep.java:47)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:64)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:61)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:209)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:61)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:47)
+	at org.gradle.internal.execution.steps.CancelExecutionStep.execute(CancelExecutionStep.java:42)
+	at org.gradle.internal.execution.steps.TimeoutStep.executeWithoutTimeout(TimeoutStep.java:75)
+	at org.gradle.internal.execution.steps.TimeoutStep.execute(TimeoutStep.java:55)
+	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:51)
+	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:29)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.executeMutable(RemovePreviousOutputsStep.java:70)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.executeMutable(RemovePreviousOutputsStep.java:40)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:25)
+	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:62)
+	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:27)
+	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:69)
+	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:46)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:39)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:28)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:25)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:192)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$1(BuildCacheStep.java:76)
+	at org.gradle.internal.Either$Right.fold(Either.java:176)
+	at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:62)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:74)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:49)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:46)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:35)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:75)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:35)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
+	at org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCachingStateStep.java:49)
+	at org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCachingStateStep.java:27)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:71)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:39)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:63)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:34)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:25)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:64)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:42)
+	at org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeExecutionStep.java:77)
+	at org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeExecutionStep.java:46)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.executeWithNonEmptySources(AbstractSkipEmptyWorkStep.java:133)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:59)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:36)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:36)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:23)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:77)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:43)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:25)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$execute$0(AssignMutableWorkspaceStep.java:35)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:305)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:31)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:22)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:39)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:44)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:31)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:132)
+	... 30 more
+Caused by: com.android.aaptcompiler.ResourceCompilationException: Resource compilation failed (Failed to compile values resource file /home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/build/intermediates/incremental/universalGmsRelease/mergeUniversalGmsReleaseResources/merged.dir/values/values.xml. Cause: java.lang.IllegalStateException: Can not extract resource from com.android.aaptcompiler.ParsedResource@24a70e4b.). Check logs for more details.
+	at com.android.aaptcompiler.ResourceCompiler.compileResource(ResourceCompiler.kt:129)
+	at com.android.build.gradle.internal.res.ResourceCompilerRunnable$Companion.compileSingleResource(ResourceCompilerRunnable.kt:34)
+	at com.android.build.gradle.internal.res.ResourceCompilerRunnable.run(ResourceCompilerRunnable.kt:15)
+	at com.android.build.gradle.internal.profile.ProfileAwareWorkAction.execute(ProfileAwareWorkAction.kt:74)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)
+	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:102)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:209)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)
+	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:176)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$withLocksAcquired$0(DefaultWorkerLeaseService.java:269)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:42)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:267)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:259)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133)
+	... 2 more
+Caused by: com.android.aaptcompiler.ResourceCompilationException: Failed to compile values resource file /home/runner/work/Echo-Music-Gabxversion-/Echo-Music-Gabxversion-/app/build/intermediates/incremental/universalGmsRelease/mergeUniversalGmsReleaseResources/merged.dir/values/values.xml
+	at com.android.aaptcompiler.ResourceCompiler.compileTable(ResourceCompiler.kt:192)
+	at com.android.aaptcompiler.ResourceCompiler.access$compileTable(ResourceCompiler.kt:1)
+	at com.android.aaptcompiler.ResourceCompiler$getCompileMethod$1.invoke(ResourceCompiler.kt:138)
+	at com.android.aaptcompiler.ResourceCompiler$getCompileMethod$1.invoke(ResourceCompiler.kt:138)
+	at com.android.aaptcompiler.ResourceCompiler.compileResource(ResourceCompiler.kt:123)
+	... 34 more
+Caused by: java.lang.IllegalStateException: Can not extract resource from com.android.aaptcompiler.ParsedResource@24a70e4b.
+	at com.android.aaptcompiler.TableExtractor.extractResourceValues(TableExtractor.kt:270)
+	at com.android.aaptcompiler.TableExtractor.extract(TableExtractor.kt:181)
+	at com.android.aaptcompiler.ResourceCompiler.compileTable(ResourceCompiler.kt:188)
+	... 38 more
+
+
+BUILD FAILED in 5m 50s
+575 actionable tasks: 575 executed
