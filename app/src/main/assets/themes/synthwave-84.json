@@ -1,0 +1,69 @@
+{
+  "format": "flux-theme",
+  "version": 1,
+  "id": "synthwave-84",
+  "name": "Synthwave '84",
+  "author": "Flux",
+  "description": "Noite de neon: rosa choque, ciano e pôr do sol laranja sobre roxo profundo, com títulos em itálico e brilho na capa.",
+  "mode": "dark",
+  "albumColors": false,
+  "colors": {
+    "seed": "#FF4FA3",
+    "primary": "#FF5FAE",
+    "onPrimary": "#3D0022",
+    "primaryContainer": "#6E1449",
+    "onPrimaryContainer": "#FFD9EA",
+    "inversePrimary": "#B0005F",
+    "secondary": "#45E3FF",
+    "onSecondary": "#00323C",
+    "secondaryContainer": "#0D4E61",
+    "onSecondaryContainer": "#CBF6FF",
+    "tertiary": "#FFB54D",
+    "onTertiary": "#3D2400",
+    "tertiaryContainer": "#6B3F00",
+    "onTertiaryContainer": "#FFE1B8",
+    "background": "#0F0A1E",
+    "onBackground": "#F5EFFF",
+    "surface": "#150F29",
+    "onSurface": "#F5EFFF",
+    "surfaceVariant": "#2B2050",
+    "onSurfaceVariant": "#CDBDF2",
+    "surfaceTint": "#FF5FAE",
+    "inverseSurface": "#F5EFFF",
+    "inverseOnSurface": "#241B3D",
+    "surfaceBright": "#3A2E62",
+    "surfaceDim": "#0F0A1E",
+    "surfaceContainerLowest": "#0A0616",
+    "surfaceContainerLow": "#130D26",
+    "surfaceContainer": "#1A1332",
+    "surfaceContainerHigh": "#221A3F",
+    "surfaceContainerHighest": "#2C224F",
+    "outline": "#8572C2",
+    "outlineVariant": "#3D3169",
+    "error": "#FFB4AB",
+    "onError": "#690005",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
+    "scrim": "#000000"
+  },
+  "shapes": {
+    "style": "rounded",
+    "scale": 1.0
+  },
+  "typography": {
+    "font": "condensed",
+    "titleWeight": 900,
+    "italicTitles": true
+  },
+  "player": {
+    "artworkCorner": 8,
+    "background": [
+      "#7B1D6E",
+      "#2E0F50",
+      "#0F0A1E"
+    ],
+    "artworkTilt": -2,
+    "artworkBackdrop": "secondary",
+    "titleShadow": "#FF5FAE"
+  }
+}

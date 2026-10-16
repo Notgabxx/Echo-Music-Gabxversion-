@@ -824,8 +824,9 @@ fun HomeScreen(
           val base =
             when (section) {
               HomeSection.QuickPicks -> 10000
+              // A shortcut grid: always near the top, above "Listen again".
+              HomeSection.SpeedDial -> 9500
               is HomeSection.HomePageSection -> 9000 - (section.index * 10)
-              HomeSection.SpeedDial,
               HomeSection.DailyDiscover -> 500
               HomeSection.KeepListening,
               HomeSection.AccountPlaylists,
@@ -836,8 +837,8 @@ fun HomeScreen(
 
           val modifier =
             when (section) {
-              HomeSection.QuickPicks -> 0
-              HomeSection.SpeedDial,
+              HomeSection.QuickPicks,
+              HomeSection.SpeedDial -> 0
               HomeSection.DailyDiscover -> sectionRandom.nextInt(-200, 400)
               HomeSection.KeepListening,
               HomeSection.AccountPlaylists,
@@ -851,7 +852,8 @@ fun HomeScreen(
         val defaultOrder =
           mapOf(
             HomeSection.QuickPicks to 1000,
-            HomeSection.SpeedDial to 100,
+            // Above the YouTube Music sections (900 and down), such as "Listen again".
+            HomeSection.SpeedDial to 950,
             HomeSection.FromTheCommunity to 80,
             HomeSection.DailyDiscover to 70,
             HomeSection.KeepListening to 60,

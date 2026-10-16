@@ -99,6 +99,7 @@ fun FloatingNavigationToolbar(
   aiHubContentDescription: String = "",
   onSettingsClick: (() -> Unit)? = null,
   onPersonalizeClick: (() -> Unit)? = null,
+  onThemesClick: (() -> Unit)? = null,
   scrollBehavior: FloatingToolbarScrollBehavior? = null,
   onSearchLongClick: (() -> Unit)? = null,
   isSelected: (Screens) -> Boolean,
@@ -170,6 +171,7 @@ fun FloatingNavigationToolbar(
         hasOverflowMenu = hasOverflowMenu,
         onSettingsClick = onSettingsClick,
         onPersonalizeClick = onPersonalizeClick,
+        onThemesClick = onThemesClick,
         onShuffleClick = onShuffleClick,
         shuffleEnabled = shuffleEnabled,
         shuffleIconRes = shuffleIconRes,
@@ -198,6 +200,7 @@ private fun ToolbarItemsContainer(
   hasOverflowMenu: Boolean = false,
   onSettingsClick: (() -> Unit)? = null,
   onPersonalizeClick: (() -> Unit)? = null,
+  onThemesClick: (() -> Unit)? = null,
   onShuffleClick: (() -> Unit)? = null,
   shuffleEnabled: Boolean = false,
   shuffleIconRes: Int? = null,
@@ -282,6 +285,7 @@ private fun ToolbarItemsContainer(
           pureBlack = pureBlack,
           onSettingsClick = onSettingsClick,
           onPersonalizeClick = onPersonalizeClick,
+          onThemesClick = onThemesClick,
           onShuffleClick = onShuffleClick,
           shuffleEnabled = shuffleEnabled,
           shuffleIconRes = shuffleIconRes,
@@ -307,6 +311,7 @@ fun FloatingToolbarOverflowMenuButton(
   pureBlack: Boolean,
   onSettingsClick: (() -> Unit)? = null,
   onPersonalizeClick: (() -> Unit)? = null,
+  onThemesClick: (() -> Unit)? = null,
   onShuffleClick: (() -> Unit)?,
   shuffleEnabled: Boolean,
   shuffleIconRes: Int?,
@@ -381,6 +386,16 @@ fun FloatingToolbarOverflowMenuButton(
                       description = { Text(stringResource(R.string.personalization_desc)) },
                       icon = painterResource(R.drawable.palette),
                       onClick = { closeThen(onPersonalizeClick) }
+                    )
+                  )
+                }
+                if (onThemesClick != null) {
+                  add(
+                    Material3SettingsItem(
+                      title = { Text(stringResource(R.string.themes_title)) },
+                      description = { Text(stringResource(R.string.themes_entry_desc)) },
+                      icon = painterResource(R.drawable.brush_themes),
+                      onClick = { closeThen(onThemesClick) }
                     )
                   )
                 }

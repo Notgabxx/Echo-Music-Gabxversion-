@@ -1,0 +1,66 @@
+{
+  "format": "flux-theme",
+  "version": 1,
+  "id": "tube-classico",
+  "name": "Tube Clássico",
+  "author": "Flux",
+  "description": "Inspirado no YouTube de 2009: página clara, vermelho clássico, links azuis, cantos quase retos e o player escuro de vídeo antigo.",
+  "mode": "light",
+  "albumColors": false,
+  "colors": {
+    "seed": "#CC181E",
+    "primary": "#CC181E",
+    "onPrimary": "#FFFFFF",
+    "primaryContainer": "#FCE4E2",
+    "onPrimaryContainer": "#7A0B0F",
+    "inversePrimary": "#FF8A80",
+    "secondary": "#1C62B9",
+    "onSecondary": "#FFFFFF",
+    "secondaryContainer": "#E3EDFA",
+    "onSecondaryContainer": "#0D3770",
+    "tertiary": "#995A00",
+    "onTertiary": "#FFFFFF",
+    "tertiaryContainer": "#FFE8C2",
+    "onTertiaryContainer": "#4A2C00",
+    "background": "#F1F1F1",
+    "onBackground": "#222222",
+    "surface": "#FFFFFF",
+    "onSurface": "#222222",
+    "surfaceVariant": "#E8E8E8",
+    "onSurfaceVariant": "#555555",
+    "surfaceTint": "#CC181E",
+    "inverseSurface": "#333333",
+    "inverseOnSurface": "#F1F1F1",
+    "surfaceBright": "#FFFFFF",
+    "surfaceDim": "#DCDCDC",
+    "surfaceContainerLowest": "#FFFFFF",
+    "surfaceContainerLow": "#F9F9F9",
+    "surfaceContainer": "#F3F3F3",
+    "surfaceContainerHigh": "#EBEBEB",
+    "surfaceContainerHighest": "#E3E3E3",
+    "outline": "#AAAAAA",
+    "outlineVariant": "#D8D8D8",
+    "error": "#B3261E",
+    "onError": "#FFFFFF",
+    "errorContainer": "#F9DEDC",
+    "onErrorContainer": "#410E0B",
+    "scrim": "#000000"
+  },
+  "shapes": {
+    "style": "rounded",
+    "scale": 0.25
+  },
+  "typography": {
+    "font": "system",
+    "titleWeight": 700,
+    "italicTitles": false
+  },
+  "player": {
+    "artworkCorner": 2,
+    "background": [
+      "#3B3B3B",
+      "#1C1C1C",
+      "#050505"
+    ]
+  }
+}

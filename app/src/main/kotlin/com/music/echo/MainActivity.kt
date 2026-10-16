@@ -1408,6 +1408,11 @@ class MainActivity : ComponentActivity() {
                         onPersonalizeClick = {
                           navController.navigate("settings/appearance") { launchSingleTop = true }
                         },
+                        onThemesClick = {
+                          navController.navigate("settings/appearance/themes") {
+                            launchSingleTop = true
+                          }
+                        },
                         onSearchLongClick = onRailSearchLongClick,
                         isSelected = { screen ->
                           currentRoute == screen.route ||

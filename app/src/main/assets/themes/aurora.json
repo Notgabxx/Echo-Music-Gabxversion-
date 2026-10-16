@@ -1,0 +1,66 @@
+{
+  "format": "flux-theme",
+  "version": 1,
+  "id": "aurora",
+  "name": "Aurora",
+  "author": "Flux",
+  "description": "Céu do norte: azul-petróleo profundo com verde-menta, azul e lilás de aurora boreal. Limpo e calmo para ouvir à noite.",
+  "mode": "dark",
+  "albumColors": false,
+  "colors": {
+    "seed": "#2FBF9B",
+    "primary": "#62F0C4",
+    "onPrimary": "#00382A",
+    "primaryContainer": "#0F5443",
+    "onPrimaryContainer": "#B9FFE6",
+    "inversePrimary": "#006B53",
+    "secondary": "#8EB6FF",
+    "onSecondary": "#0A2D66",
+    "secondaryContainer": "#203F77",
+    "onSecondaryContainer": "#DAE6FF",
+    "tertiary": "#CBA9FF",
+    "onTertiary": "#30105E",
+    "tertiaryContainer": "#4B3081",
+    "onTertiaryContainer": "#ECDEFF",
+    "background": "#071416",
+    "onBackground": "#E4F6F2",
+    "surface": "#0B1B1E",
+    "onSurface": "#E4F6F2",
+    "surfaceVariant": "#183439",
+    "onSurfaceVariant": "#AACFC8",
+    "surfaceTint": "#62F0C4",
+    "inverseSurface": "#E4F6F2",
+    "inverseOnSurface": "#14292C",
+    "surfaceBright": "#22403F",
+    "surfaceDim": "#071416",
+    "surfaceContainerLowest": "#051012",
+    "surfaceContainerLow": "#0A191C",
+    "surfaceContainer": "#0F2226",
+    "surfaceContainerHigh": "#152B30",
+    "surfaceContainerHighest": "#1C363C",
+    "outline": "#61908A",
+    "outlineVariant": "#26443F",
+    "error": "#FFB4AB",
+    "onError": "#690005",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
+    "scrim": "#000000"
+  },
+  "shapes": {
+    "style": "rounded",
+    "scale": 1.2
+  },
+  "typography": {
+    "font": "sans_flex",
+    "titleWeight": 700,
+    "italicTitles": false
+  },
+  "player": {
+    "artworkCorner": 20,
+    "background": [
+      "#0F5B51",
+      "#123145",
+      "#071416"
+    ]
+  }
+}

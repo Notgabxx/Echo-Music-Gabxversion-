@@ -1,0 +1,67 @@
+{
+  "format": "flux-theme",
+  "version": 1,
+  "id": "fita-k7",
+  "name": "Fita K7",
+  "author": "Flux",
+  "description": "Um walkman dos anos 80: corpo de alumínio escovado, azul metálico, o laranja do botão de destaque e letras de painel.",
+  "mode": "dark",
+  "albumColors": false,
+  "colors": {
+    "seed": "#3E5A88",
+    "primary": "#FF8A3D",
+    "onPrimary": "#2B1200",
+    "primaryContainer": "#5C2C0D",
+    "onPrimaryContainer": "#FFDCC7",
+    "inversePrimary": "#A24A0E",
+    "secondary": "#8FB0DE",
+    "onSecondary": "#0E2341",
+    "secondaryContainer": "#2E4A78",
+    "onSecondaryContainer": "#D9E6FF",
+    "tertiary": "#D7DBE1",
+    "onTertiary": "#1B1E22",
+    "tertiaryContainer": "#4A5059",
+    "onTertiaryContainer": "#EEF1F5",
+    "background": "#15171B",
+    "onBackground": "#E9EBEE",
+    "surface": "#1B1E23",
+    "onSurface": "#E9EBEE",
+    "surfaceVariant": "#2A2F37",
+    "onSurfaceVariant": "#B2BAC6",
+    "surfaceTint": "#FF8A3D",
+    "inverseSurface": "#E9EBEE",
+    "inverseOnSurface": "#22262C",
+    "surfaceBright": "#3A4049",
+    "surfaceDim": "#15171B",
+    "surfaceContainerLowest": "#101215",
+    "surfaceContainerLow": "#191C21",
+    "surfaceContainer": "#20242A",
+    "surfaceContainerHigh": "#282D34",
+    "surfaceContainerHighest": "#323841",
+    "outline": "#717A88",
+    "outlineVariant": "#3B424C",
+    "error": "#FFB4AB",
+    "onError": "#690005",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
+    "scrim": "#000000"
+  },
+  "shapes": {
+    "style": "rounded",
+    "scale": 0.55
+  },
+  "typography": {
+    "font": "condensed",
+    "titleWeight": 800,
+    "italicTitles": false
+  },
+  "player": {
+    "artworkCorner": 8,
+    "background": [
+      "#40608F",
+      "#25364F",
+      "#121418"
+    ],
+    "artworkFrame": "#C9CDD3"
+  }
+}

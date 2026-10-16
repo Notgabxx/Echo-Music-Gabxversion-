@@ -50,7 +50,16 @@ As cores `on…` são as do texto e dos ícones em cima da cor correspondente. M
 
 ## Exemplo completo
 
-O tema **Midnight Hour**, que já vem no app, está em [`app/src/main/assets/themes/midnight-hour.json`](app/src/main/assets/themes/midnight-hour.json).
+Os temas que já vêm no app ficam em [`app/src/main/assets/themes`](app/src/main/assets/themes) e servem de exemplo:
+
+| Tema | Estilo |
+| :-- | :-- |
+| **Tube Clássico** | Claro, vermelho e azul de link, cantos quase retos e player escuro de vídeo antigo |
+| **Fita K7** | Walkman dos anos 80: alumínio, azul metálico e laranja |
+| **Synthwave '84** | Neon rosa e ciano sobre roxo, títulos em itálico |
+| **Café Lo-fi** | Tons de café, sálvia e terracota, títulos com serifa, capa de polaroide |
+| **Aurora** | Azul-petróleo com verde-menta e lilás |
+| **Midnight Hour** | Azul da meia-noite e ciano, cantos cortados, play em losango |
 
 ## Boas práticas
 

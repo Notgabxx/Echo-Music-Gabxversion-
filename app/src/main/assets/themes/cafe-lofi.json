@@ -1,0 +1,67 @@
+{
+  "format": "flux-theme",
+  "version": 1,
+  "id": "cafe-lofi",
+  "name": "Café Lo-fi",
+  "author": "Flux",
+  "description": "Fim de tarde numa cafeteria: tons de café com leite, verde-sálvia e terracota, cantos bem macios, títulos com serifa e capa de polaroide.",
+  "mode": "dark",
+  "albumColors": false,
+  "colors": {
+    "seed": "#C8956A",
+    "primary": "#E8BC8E",
+    "onPrimary": "#3B2412",
+    "primaryContainer": "#5B3F2A",
+    "onPrimaryContainer": "#FFE3C9",
+    "inversePrimary": "#8C5A30",
+    "secondary": "#AFC3A0",
+    "onSecondary": "#1E2B17",
+    "secondaryContainer": "#3C4B34",
+    "onSecondaryContainer": "#DDECD0",
+    "tertiary": "#E6A080",
+    "onTertiary": "#3F1709",
+    "tertiaryContainer": "#6B3624",
+    "onTertiaryContainer": "#FFDCCD",
+    "background": "#1A1512",
+    "onBackground": "#F3E8DB",
+    "surface": "#201A16",
+    "onSurface": "#F3E8DB",
+    "surfaceVariant": "#3A2F28",
+    "onSurfaceVariant": "#D5C3B2",
+    "surfaceTint": "#E8BC8E",
+    "inverseSurface": "#F3E8DB",
+    "inverseOnSurface": "#2B231E",
+    "surfaceBright": "#463A31",
+    "surfaceDim": "#1A1512",
+    "surfaceContainerLowest": "#140F0D",
+    "surfaceContainerLow": "#1E1814",
+    "surfaceContainer": "#261F1A",
+    "surfaceContainerHigh": "#302720",
+    "surfaceContainerHighest": "#3A2F27",
+    "outline": "#94816F",
+    "outlineVariant": "#4B3E35",
+    "error": "#FFB4AB",
+    "onError": "#690005",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
+    "scrim": "#000000"
+  },
+  "shapes": {
+    "style": "rounded",
+    "scale": 1.5
+  },
+  "typography": {
+    "font": "serif",
+    "titleWeight": 600,
+    "italicTitles": false
+  },
+  "player": {
+    "artworkCorner": 22,
+    "background": [
+      "#5C3F2E",
+      "#34261E",
+      "#1A1512"
+    ],
+    "artworkFrame": "#EADCC8"
+  }
+}
