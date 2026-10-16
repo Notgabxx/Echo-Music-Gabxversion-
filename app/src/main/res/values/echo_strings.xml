@@ -1138,5 +1138,5 @@
     <string name="themes_applying">Applying theme…</string>
     <string name="themes_help">A theme is a .json file with colors, font, corner style and the player background. The format is explained in THEMES.md in the Flux repository.</string>
     <string name="personalization">Personalization</string>
-    <string name="personalization_desc">Themes, colors, fonts and the player's look</string>
+    <string name="personalization_desc">Themes, colors, fonts and the player\'s look</string>
 </resources>
